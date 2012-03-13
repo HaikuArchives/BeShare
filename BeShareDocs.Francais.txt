@@ -1,0 +1,80 @@
+BeShare v2.28
+par Jeremy Friesner
+jaf@lcsaudio.com
+====================
+
+
+BeShare est un programme de partage de fichiers conçu pour BeOS.  Il fonctionne de la même manière que d'autres programmes de partage de fichiers ( par exemple Napster, Hotline, etc ) mais comporte certains avantages:
+
+- BeShare vous permet de télécharger et d'envoyer tout type de fichier ( image, programme, etc ), pas uniquement des fichiers mp3.
+- Vous pouvez voir les attributs des fichiers partagés ( comme dans le Tracker de BeOS ).
+- Votre requête est toujours en "direct", si un nouveau fichier correspondant à votre requête est disponible, il est automatiquement ajouté dans la liste des résultats.  Vous n'avez pas à "rafraichir" la liste des résultats.
+- BeShare comporte un système de discussion rudimentaire pour le coté social entre utilisateurs.
+- BeShare supporte n'importe quel nombre d'envois et de téléchargements simultanés en parallèle, mais il mettra en "série" les requêtes simultanées d'un fichier pour donner une efficacité à l'hôte.
+- BeShare peut se connecter à tout serveur MUSCLE ( voir http://www.lcscanada.com/muscle pour les détails ).
+- BeShare est livré avec les sources, et sert d'exemple pour la création de client MUSCLE.
+
+
+Comment utiliser BeShare
+===============
+
+Pour lancer BeShare, double-cliquez simplement sur son icone.  Quand le programme est lancé, vérifiez que la case "Server" ( ou "Serveur" en français ) contient le nom ou l'adresse IP du serveur MUSCLE auquel vous voulez vous connecter, et choisisez "Connect to ..." ( "Connecter à ..." ) du menu "File" ( "Fichier" ).  Une fois que vous êtes connecté, vous pouvez taper une ligne de requête dans la zone "Query" ( "Requête" ), et cliquer sur "Start Query" ( "Démarrer Requête" ).  Tous les fichiers correspondants à votre requête seront affichés dans la zone de résultats de la fenêtre.  Notez qu'une fois les fichiers affichés dans la liste des résultats, différents attributs des fichiers sont visibles ( par exemple : "Bit Rate" ou "Play Length" pour les fichiers mp3 ).  Pour voir les attributs disponibles, cliquez sur le menu "Attributes" ( "Attributs" ) et cochez ceux qui vous intéressent.
+
+Si un fichier de la liste des résultats vous intéresse, cliquez dessus et ensuite sur "Download Selected Files" ( "Télécharger les fichiers sélectionnés" ).  Le fichier sera téléchargé dans le répertoire "downloads" se trouvant dans le même répertoire que le programme BeShare.  Vous verrez apparaitre une 'boite' indiquant le statut du téléchargement à droite de la liste de résultats.
+
+Si vous désirez partager des fichiers et les rendre ainsi téléchargeables depuis votre ordinateur, placez simplement ces fichiers dans le répertoire "shared" se trouvant dans le même répertoire que le programme BeShare.  Tous les fichiers se trouvants dans ce répertoire seront téléchargeables par les autres utilisateurs.  Notez que vous ne verrez pas vos fichiers partagés dans la liste des résultats lors de vos requêtes, mais les autres utilisateurs les verront.  Il est possible d'utiliser les "symlinks" ( liens symboliques ) dans le répertoire "shared" pour limiter la taille de celui-ci, les vrais fichiers seront téléchargés.
+
+Voilà un petit aperçu de l'utilisation de BeShare.  Vous pouvez aussi utiliser un nom d'utilisateur et le taper dans la case "User Name" ( "Nom d'utilisateur" ) en haut à droite de la fenêtre, et discuter en tapant du texte dans la case "Chat" ( "Discussion" ) dans le bas de la fenêtre.  Sachez cependant qu'il n'est pas garanti que votre nom d'utilisateur soit unique, mais chaque utiisateur reçoit un ID ( numéro ) de session unique.
+
+Les commandes IRC "/me" et "/msg" fonctionnent comme dans les autres programmes IRC.
+Par exemple:
+
+/me claps and cheers
+affichera dans la zone de discussion de tous les utilisateurs:
+Action: <votre_nom_d'utilisateur> claps and cheers
+
+/msg Jeremy Psst... hey buddy!
+affichera seulement le message "Psst... hey buddy!" chez les utilisateurs nommés Jeremy.  Vous pouvez spécifier un ID à la place d'un nom d'utlisateur. 
+Vous pouvez aussi utiliser les "wildcards". Par exemple:
+
+/msg J* Look!
+affichera le message "Look!" à tous les utilisateurs dont le nom commence par "J".
+
+
+Crédits
+=====
+
+BeShare est écrit par Jeremy Friesner (jaf@lcsaudio.com)
+Classes MUSCLE par Level Control Systems (http://www.lcsaudio.com)
+Classes ColumnListView par Brian Tietz (btietz@fastwave.net)
+Classes SplitPane par YNOP Talton (ynop@acm.org)
+Traduction espagnole par Phantom (socca@uol.com.ar)
+Traduction allemande par hoshy (beat.rupp@gmx.net)
+Traduction néerlandaise par Zathros (ted@nds.nl)
+Traduction portuguèse par BGA (bga@din.uem.br)  
+Traduction française par Didier Bertrand didix@mail.be)
+Traduction italienne par Dario Accornero (bexoft@bexoft.com)
+
+Pour toute remarque concernant BeShare, contacter:
+Jeremy Friesner (jaf@lcsaudio.com) en anglais;
+Ted Leeuwesteijn (Ted@nds.nl) en néerlandais;
+Didier Bertrand (didix@belgacom.net) en français.
+
+
+Historique
+======
+
+Voir le fichier BeShareDocs.txt ( fichier original en anglais ) pour l'historique des versions de BeShare.
+BeShare est disponible en français depuis la version 1.61.
+
+
+Problèmes connus avec BeShare
+====================
+
+- Il est possible qu'une erreur concernant un "thread" survienne lors de la connexion au serveur.  Cette erreur est due à un problème dans le net_server de BeOS.  Pour la résoudre, redémarrez le service "Network" ( BeOS > Preferences > Network > Restart Networking ) et ensuite redémarrez BeShare et essayez à nouveau de vous connecter.
+
+- BeShare n'est pas capable de transférer des fichiers si les deux machines sont derrières des firewalls ( pare-feux ).  Malheureusement, il n'y a rien à y faire.
+
+- Lors d'une requête par nom d'utilisateur ( par exemple: *@Jeremy ), la partie "nom d'utilisateur" de la requête n'est pas en "direct".  C'est à dire que votre client ( BeShare ) traduit le nom d'utilisateur de la requête en ID, d'après la liste des utilisateurs connectés, lors du lancement de la requête.  La requête se fera donc uniquement auprès des utilisateurs déjà connectés.
+Par exemple, si vous faites une requête sur "*@J*", et que l'utilisateur Jeremy se connecte par après, ses fichiers ne seront pas repris dans la liste des résultats, à moins que vous ne cliquiez sur "Stop Query" ( "Arrêter Requête" ) et ensuite sur "Start Query" ( "Démarrer Requête" ).
+

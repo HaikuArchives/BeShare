@@ -1,0 +1,59 @@
+BeShare v2.28
+by Jeremy Friesner
+jaf@lcsaudio.com
+============
+
+Beshare is een BeOS georienteerd bestands deel programma. Het werkt als gelijkwaardige andere programma's om bestanden te delen(bijv. Napster, Hotline, etc) maar met enige voordelen aan meerwaarde.
+Bijvoorbeeld met de volgende mogelijkheden:
+
+- BeShare laat je alle soorten bestanden binnenhalen of delen, niet alleen mp3 bestanden zoals bovengenoemde programma's
+- Wanneer je door de bestanden bladerd kan je de attributen zien (gelijkwaardig aan de BeOS Tracker)
+- De zoek funktie is altijd "live", zodat je de nieuw toegevoegde bestanden gelijk kan zien in het venster waar je zoekresultaat in gepresenteerd word. (Je hoeft hiervoor niet te verversen)
+- BeShare bezit een basis "chat"(praat) funktie voor de meer sociale tiepjes onder jullie.
+- BeShare ondersteund elke hoeveelheid "uploads" en "downloads" in paralelle mode, maar zal de bandbreedte gelijk verdelen onder de huidige bestanden voor elke gast computer. Dit is gedaan om de effektiviteit van de verbinding te garanderen.
+- BeShare kan met elke bekende MUSCLE server een verbinding opbouwen. (zie: http//www.lcscanada.com/muscle voor details)
+- BeShare komt vergezelt van de originele source bestanden en dient als voorbeeld om een MUSCLE client te maken.
+
+Hoe gebruik je BeShare?
+==============
+
+Om beshare te te gebruiken klik je gewoon op de BeShare pictogram, Wanneer je het venster ziet wees ervan overtuigd dat een beshare server is geselecteerd, dan kies je verbind met.... in the menu bestand.
+Eenmaal verbonden kan je een zoek opdracht geven door het in te tiepen in de zoekregel, dan klik je op start om het zoeken te laten beginnen. Elk bestand die voldoet aan uw zoek opdracht zal in het daaronder liggende venster worden getoond. U zult kunnen zien dat waneer de bestanden zich presenteren er verschillende soorten attributen gerelateerd tot die bestanden zich laten zien.. Dit kan zijn Speeltijd, type enz. Kijk in het menu Attributen welke u wil laten zien.
+
+Wanneer u een bestand ziet dat u hebben wilt dan dubbelklikt u of u klikt het aan en selecteer de knop "Haal geselcteerde bestanden op". Het bestand zal dan terechtkomen in de folder "downloads" welke zich in de BeShare folder bevind. Als alles goed gaat zal er een status balk naast verschijnen(rechts) die aangeeft de snelheid en de vooruitgang van het binnenhalen.
+
+Als je zelf bestanden wil delen kan je ze in de "shared" folder plaatsen, je mag ook symlinks gebruiken naar die bestanden. Alle bestanden aangegeven in de "shared" folder worden dan gezien door de andere BeShare gebruikers. Je ziet niet je eigen gegevens omdat dat niet nodig is daar je zelf weet wat je deelt.
+
+Dat is het wel zo'n beetje wat betreft gebruiken van BeShare, Je kan ook een alias gebruiken door dit rechts bovenaan in regel "Gebruikers Naam" in te vullen. Denk eraan dat gebruikersnamen niet uniek zijn maar elke gebruiker krijgt gegarandeerd zijn eigen "ID"(Nr)
+
+IRC commandos zoals "/me" en "/msg" werken zoals in elke ander IRC programma.
+Bijvoorbeeld:
+
+/me claps and cheers
+toont bij elke gebruiker als:
+Aktie: <jouw gebruikersnaam> claps and cheers
+
+en als je bijvoorbeeld het volgende invoert:
+/msg Jeremy Psst... hey buddy!
+Dan komt het bericht alleen op het venster van diegene die deze naam dragen, je kan ook een gebruikers Nr selecteren indien er meerdere met die naam aanwezig zijn. Je kan zelfs "wildcards" gebruiken zoals
+Bijvoorbeeld:
+
+/msg J* Look!
+
+Dit stuurt een bericht met de inhoud:  Look!  
+naar: Jeremy, Joanna, Joellen enz.
+
+Credits
+=====
+
+BeShare is gemaakt door Jeremy Friesner (jaf@lcsaudio.com)
+De MUSCLE klassen zijn gemaakt door Level Control Systems (http://www.lcsaudio.com)
+de Listview klasse is gemaakt door Brian Tietz (btietz@fastwave.net)
+De splitplane klasse is gemaakt door YNOP Talton (ynop@acm.org)
+
+Voor revisie geschiedenis zie BeShareDocs.txt(engels)
+Sinds versie 1.60 in nederlands beschikbaar.
+
+Correspondentie over de nederlandse versie kan gericht worden naar Ted Leeuwesteijn(Ted@nds.nl) in het Nederlands, en in het Engels naar Jeremy Friesner (jaf@lcsaudio.com)
+
+Veel plezier ermee.

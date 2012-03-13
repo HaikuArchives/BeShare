@@ -1,0 +1,65 @@
+BeShare v2.28
+por Jeremy Friesner
+jaf@lcsaudio.com
+==================
+
+Tradução Português-BR:
+Matheus Gomes Bombonato
+nom4d3@bol.com.br
+==================
+
+BeShare é um programa nativo-BeOS para compartilhar arquivos.
+Ele funciona de maneira parecida com outros programas (Napster, Hotline, etc), mas com algumas vantagens:
+
+- BeShare lhe permite mandar e receber todos os tipos de arquivos, e não somente mp3.
+- Quando navega-se pelos arquivos, pode-se ver os atributos (parecido com o Tracker do Be).
+- Sua busca fica sempre funcionando, então se aparecem novos arquivos que encaixem na sua busca, você os verá imediatamente, sem a necessidade de atualizar a lista.
+- Ele inclui um mecanismo básico de chat para contatos com o pessoal que freqüenta o BeShare.
+- BeShare suporta qualquer número de download e upload de arquivos simultâneos em paralelo, mas publicará em séries os pedidos de arquivos simultâneos para uma melhor eficiência do host.
+- BeShare se conecta a qualquer servidor MUSCLE (veja http://www.lcscanada.com/muscle para maiores detalhes).
+- BeShare vem com o código fonte, e um exemplo de como escrever um cliente MUSCLE.
+
+
+Como usar o BeShare
+================
+
+Para executar o BeShare, simplesmente dê um duplo-clique sobre seu ícone. Quando abrir a janela, tenha a certeza da opção 'Server' (Servidor), estar preenchida com algum IP ou nome do servidor MUSCLE que se deseja conectar, e vá até a opção 'Connect' (Conectar) do menu 'File'. Uma vez conectado, você já pode digitar sua busca na opção 'Query' e clicar em 'Start Query' (Começar Busca). Qualquer arquivo que se pareça com sua sua busca, será mostrado no painel ao centro da janela. Note que uma vez que os arquivos foram listados, você poderá ver os atributos associados com cada um (Ex: 'Bit Rate' (frequência) ou 'Play Length' (duração) para arquivos mp3). Confira o menu 'Attributes' para configurar os atributos que se deseja ver após a consulta.
+
+NOTA:  Se você estiver atrás de um Firewall, marque a opção
+            "I'm Firewalled" no menu "Settings". Deste modo, outras
+             pessoas que não estão atrás de firewalls estarão aptas a fazer o download
+             de você, mas outras pessoas que também estiverem atrás de firewalls,
+             não poderão ver seus arquivos do seu diretório "shared".
+
+Se você encontrou o que lhe interessa, selecione o(s) arquivo(s) e clique em 'Download File(s)', ou simplesmente dê um duplo-clique sobre o arquivo.
+Ele será baixado dentro da pasta "downloads" dentro da pasta do BeShare e você verá o status do recebimento do arquivo ao lado direito da janela.
+
+Se você deseja deixar alguns arquivos seus disponíveis para que outras pessoas possam pegar de sua máquina, simplesmente coloque-os dentro da pasta "shared" do diretório do BeShare. Qualquer arquivo que estiver dentro do diretório "shared" estará disponível para que outras pessoas possam pegar. Note que você não verá seus arquivos nas suas buscas, mas outras pessoas poderão vê-los. (Nota: você pode criar links dos arquivos para a pasta "share", podendo compartilhar até arquivos de outras partições!).
+
+Você também deve escolher um nome de usuário, no campo a direita dos servidores, e conversar utilizando o campo abaixo. Os nomes de usuários não precisam ser únicos, pois cada um tem seu ID de sessão diferente.
+
+Comandos de IRC "/me" e "/msg" funcionam igual à um cliente IRC padrão. Isto quer dizer que digitando:
+
+/me aplaude e assovia
+
+mostrará na janela do chata para todos da seguinte maneira:
+
+Action  <Seu_nome_de_usuário> aplaude e assovia
+
+e digitando:
+
+/msg Jeremy Psiu... ei amigo!
+
+Somente o usuário Jeremy verá sua mensagem "Psiu... ei amigo!" (Note que você também pode utilizar seu ID de seção ao invés do nome de usuário). Você pode também utilizar coringas nos nomes se desejar.
+Exemplo:
+
+/msg J* Olá!
+
+Mandará a mensagem "Olá!" para Jeremy, Joanna, Joellen, etc. Todos que comecem com a letra "J".
+
+Créditos
+========
+BeShare foi escrito por Jeremy Friesner (jaf@lcsaudio.com)
+MUSCLE classes por Level Control Systems (http://lcsaudio.com)
+ColumnListView classes por Brian Tietz (btietz@fastwave.net)
+SplitPane class is por YNOP tatlon (ynop@acm.org)

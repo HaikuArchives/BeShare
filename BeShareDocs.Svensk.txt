@@ -1,0 +1,130 @@
+BeShare v2.28
+by Jeremy Friesner
+jaf@lcsaudio.com
+===================
+
+BeShare är ett fildelningsprogram. Det fungerar precis som alla andra 
+liknande program (Napster, Hotline, osv) men det har en del fördelar:
+
+- BeShare låter dig ladda upp eller ner vilka filer som helst,
+  inte bara mp3.
+- När du söker efter filer så kan du se deras egenskaper (ungefär som
+  Be's Tracker view)
+- Din sökning är alltid "aktiv" så om det finns nya filer som matchar
+  din sökning så kommer dom att direkt visas i resultatlistan (du
+  behöver inte klicka på "refresh" eller något annat)
+- BeShare har en enkel chatfunktion för dom som vill vara sociala.
+- BeShare stödjer flera samtidiga upp och nerladdningar men flera
+  samtidiga filbegäran till en värdmaskin blir lagda i kö.
+- BeShare kan ansluta sig till alla MUSCLE servrar (se
+  http://www.lcscanada.com/muscle för mer information)
+
+
+Bruksanvisning för BeShare
+===================
+
+För att starta BeShare så klickar du på dess ikon. När BeShare
+ har startat så väljer du i Settings/Language Svenska som språk
+och startar om BeShare. När du har gjort detta så ska du se till att
+ "Server"-rutan innehåller namnet eller IP addressen på den MUSCLE 
+server du önskar att ansluta dig till och sedan så väljer du "Anslut till"
+ i Arkiv menyn. När du är ansluten så kan du skriva en söktext i 
+"Sök"-rutan och därefter klickar du på "Starta Sökning". Filer som 
+matchar din sökning kommer att visas i resultatlistan. Notera att när 
+filerna visar sig i resultatlistan så kommer olika egenskaper som är 
+associerad till dessa filer (t.ex."Bit Rate" eller "Play Length" för mp3
+-filer) att eventuellt bli tillänglig för visning. Titta på "Attribut"-menyn 
+för att se om det är några egenskaper som du vill se på.
+
+Om du ser någon fil som du vill ha så klicka på den och sedan så klickar 
+du på  "Ladda Ner Valda Filer"-knappen. Filen kommer att laddas ner till 
+"downloads"-mappen i BeShare-mappen. I rutan till höger så ser du hur 
+mycket av filen som är nerladdad.
+
+Om du vill att andra ska kunna ladda ner filer ifrån dig så så är det bara 
+att lägga filerna i "shared"-mappen i BeShare-mappen. Alla filer som 
+ligger i denna mapp eller i någon undermapp i denna mapp är 
+tillgängliga för andra att ladda ner irån dig. Notera att du inte kan se
+dina egna filer i resultatlistan när du söker men andra kan se dom 
+(symboliska länkar kan vara till stor hjälp här!)
+
+Det här var det mest grundläggande om BeShare. Du kan skriva in ditt 
+användarnamn i textrutan längst upp till höger och chattar gör du genom 
+att skriva in önskad text i rutan längst ner. Notera att det inte är säkert att
+ditt användarnamn är unikt men varje användare får ett eget ID-nummer
+
+IRC kommandona "/me" och "/msg" fungerar som vanligt.Det vill säga att 
+
+/me applåderar och hurrar
+
+kommer att visas i allas chatfönster som
+
+Action: <DittAnvändarNamn> applåderar och hurrar
+
+och skriver du in
+
+/msg Jeremy Psst... hej kompis!
+
+Så kommer endast användare som heter Jeremy att se ditt medelande
+"Jeremy Psst... hej kompis!" (du kan också skriva in användar ID istället 
+för användarnamnet om du vill) Du kan också använda jokrar i namnet
+t.ex.
+
+/msg J* Se här!
+
+Skickar ett medelande "Se här!" till Jeremy, Joanna, Joellen, osv.
+När man får ett privat medelande så kommer denna text att vara ljusblå
+istället för den vanliga svarta texten.
+
+För information om andra tillgängliga kommandon så skriver du
+/help i chatrutan.
+
+
+BMessage support
+===================
+
+Se BeShareDocs.txt
+
+
+Medverkanden
+===================
+
+BeShare är skriven av Jeremy Friesner (jaf@lcsaudio.com)
+PowerPC executables built by Kancept
+MUSCLE classes by Level Control Systems (http://www.lcsaudio.com)
+ColumnListView class is by Brian Tietz (btietz@fastwave.net)
+SplitPane class is by YNOP Talton (ynop@acm.org)
+Spanish translation by Phantom (socca@bemail.org)
+German translation by hoshy (beat.rupp@gmx.net)
+Dutch translation by Zathros (Ted@3rd-rock.net)
+Portuguese translation by BGA (bga@bug-br.org.br)  
+French translation by Didier Bertrand (didix@mail.be)
+Italian translation by Dario Accornero (bexoft@bexoft.com)
+Russian translation by Oleg V. Kourapov (2sheds@newmail.ru)
+Swedish and Esperanto translations by Göran (e8gz@etek.chalmers.se)
+Norwegian translation by Eivind Ødegård (gingermig@yahoo.no)
+Serbian translation by bug-yugo / Nikola Pizurica (pizurica@neobee.net)
+Hungarian translation by Mate Helfrich / mch (mch@freemail.hu)
+Bulgarian translation by Zlatko Zlayinov (zlati74@rambler.bg)
+
+all translator addresses:  socca@bemail.org, beat.rupp@gmx.net, 
+ted@3rd-rock.net, bga@bug-br.org.br, didix@mail.be, bexoft@bexoft.com, 
+2sheds@newmail.ru, e8gz@etek.chalmers.se, gingermig@yahoo.no, 
+pizurica@neobee.net, mch@freemail.hu, zlati74@rambler.bg, 
+cypress@globeline.ro, atilla@turkbug.org, kuyeboy@163.com
+
+
+Historia
+===================
+
+Se BeShareDocs.txt
+
+
+Kända problem med BeShare
+===================
+
+Se BeShareDocs.txt
+
+
+
+

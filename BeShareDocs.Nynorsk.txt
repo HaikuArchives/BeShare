@@ -1,0 +1,75 @@
+BeShare v2.28
+by Jeremy Friesner
+jaf@lcsaudio.com
+===================
+
+BeShare er eit fildeleprogram som er skrive særskilt for BeOS. Det verkar på same måten som andre liknande program (Napster, Hotline osb.), men har ein del føremunar:
+
+- Med BeShare kan du laste opp eller ned alle slags filer, ikkje berre mp3. 
+- Når du søkjer etter filer, kan du sjå på eigenskapane deira, slik du kan i Tracker-vindaugo i BeOS.
+- Førespurnaden din er alltid aktiv; når nye filer kjem til som passar med det du søkjer etter, blir dei lagde til resultatlista med ein gong. Du treng ikkje klikke "forny" eller noko som helst. 
+- BeShare har ein enkel pratemekanisme for dei som vil vera sosiale.
+- Med BeShare kan du laste opp og ned kor mange filer du vil på ein gong, men fleire samtidige førespurnader til ei vertsmaskin blir lagde etter kvarandre.
+- BeShare kan knyte seg til alle MUSCLE-tenarar (sjå på http://www.lcscanada.com/muscle om du vil veta meir).
+- Heile koden er med i BeShare-pakka. Slik kan du lære koss du kan skrive ein MUSCLE-klient.
+
+
+Bruksrettleiing for BeShare
+===================
+
+For å starte BeShare, berre dobbelklikk på BeShare-knappen. Når du ser brukarruta, sjå til at lista som er merkt "Tenar" står avkryssa med den tenaren eller IP-adressa du vil knyte deg til. Vel "Knyt til" frå Fil-menyen. Når du er tilknytt, kan du skrive inn ein førespurnad i "Førespurnad"-lista, trykkje "Finn!"-knappen og vente på at resultata skal koma opp i resultatlista.  Legg merkje til at eigenskapane for ulike filer (t.d. "Lengd" og "Bitrate" for mp3-filer) er tilgjengelege. Sjå på "Eigenskapar"-menyen for å finne ut om det er nokon eigenskapar å sjå på.
+
+Om du finn ei fil du vil ha, kan du fyrst klikke på ho, so på "Last ned fil(er)"-knappen. Fila vil bli lasta ned til "downloads"-mappa under BeShare-mappa. Til høgre i ruta skal du no sjå kor mykje av fila som er lasta ned.
+
+Om du vil at andre skal kunna laste ned filer frå deg, er det berre å leggje filene i "shared"-mappa under BeShare-mappa. Andre brukarar kan då laste ned alle filer som ligg i eller innunder denne mappa. Du kjem ikkje til å sjå dine eigne filer i resultatlista, men andre brukarar vil sjå dei. (NB! Det er lurt å bruke symbolske lenkjer her!)
+
+Det var i grunnen alt. Du kan skrive inn eit anna brukarnamn enn "Anonymous" øvst til høgre, og prate ved å skrive inn tekst heilt nedst. Brukarnamn er ikkje garantert unike, men kvar brukar får eit eige brukarnummer for kvar gong ho bruker BeShare.
+
+IRC-kommandoane "/me" og "/msg" verkar slik dei gjer elles. Det vil seia at
+
+/me hoppar og skrålar
+
+kjem fram på prateruta til alle brukarar som
+
+Action: <Brukarnamnet ditt> hoppar og skrålar
+
+Når du skriv inn
+
+/msg OlaNordmann Hei du Ola!
+
+vil berre OlaNordmann-brukaren sjå "Hei du Ola!". Du kan og skrive inn eit brukarnummer i staden for brukarnamn, om du ynskjer det. Du kan til og med bruke jokerar på dei namna du vil sende til, t.d.
+
+/msg O* Sjå her!
+
+vil sende meldinga til Ola, Olga, Ove osb. 
+
+Om du vil ha hjelp til andre kommandoar, skriv du inn /help i pratelinja di.
+
+Dei som har vore med
+================
+BeShare er skrive av Jeremy Friesner (jaf@lcsaudio.com)
+MUSCLE-klasser av Level Control Systems (http://www.lcsaudio.com)
+ColumnListViewClass av Brian Tietz (btietz@fastwave.net)
+SplitPane-klasse av YNOP Talton (ynop@acm.org)
+Spansk-omsetjing av Phantom (socca@uol.com.ar)
+Tysk-omsetjing av hoshy (beat.rupp@gmx.net)
+Nederlandsk-omsetjing av Zathros (ted@nds.nl)
+Portugisisk-omsetjing av BGA (bga@din.uem.br)
+Fransk-omsetjing av Didier Bertrand (didix@mail.be)
+Italiensk-omsetjing av Dario Accornero (bexoft@bexoft.com)
+Russisk-omsetjing av Oleg V. Kourapov (2sheds@newmail.ru)
+Svensk- og Esperanto-omsetjing av Göran (e8gz@etek.chalmers.se)
+Nynorsk-omsetjing av Eivind (gingermig@yahoo.no)
+
+Versjonshistorie
+=================
+
+Her kan du sjå på den originale BeShareDocs.txt-fila. Der står alle endringane i alle versjonane.  BeShare har vore å få på nynorsk sidan versjo1.81)
+
+Kjende feil med BeShare
+==================
+- Av og til får du feilmeldingar som "kan ikkje knyte tråd" når du prøver å knyte til tenaren. Dette kjem av at net_server i BeOS har nokre feil. For å løyse problemet, lyt du avslutte BeShare, starte netverket på nytt, og starte opp att BeShare.
+
+- BeShare er ikkje i stand til å overføre filer om båe maskinene er bak brannmurar. Dette er ikkje mykje å gjera ved.
+
+- Når du sender førespurnader sortert etter brukarnamn (t.d. *@OlaNordmann), er ikkje brukarnamn-delen av førespurnaden aktiv. Det tyder at brukarnamn-biten av førespurnaden blir omsett til ei liste av brukarnummer av klienten din kvar gong du sender ein førespurnad, og førespurnaden vil då berre liste filer som ein av brukarnummera eig. Om du då sender ein "*@O*"-førespurnad, og OlaNordmann loggar inn etter du har starta førespurnaden, vil du ikkje sjå filene hans i resultatlista di, med mindre du trykkjer Stogg førespurnad og Start førespurnad att. Dumt, eg veit det...

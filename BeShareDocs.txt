@@ -1,0 +1,1239 @@
+BeShare v2.28
+by Jeremy Friesner
+jaf@lcsaudio.com
+===================
+
+BeShare is a BeOS-native file sharing program.  It operates similarly to 
+other such programs (Napster, Hotline, etc) but with a few advantages:
+
+- BeShare allows you to upload or download any type of file, not just mp3.
+- When browsing files, you can see their attributes (similar to Be's 
+  Tracker view)
+- Your query is always "live", so if new files that match your query become 
+  available, you will see them added to the results list right away (you 
+  won't have to click "refresh" or anything first)
+- BeShare includes a rudimentary chat mechanism for you social types.
+- BeShare supports any number of simultaneous uploads and downloads in
+  parallel, but will serialize simultaneous file requests to any given 
+  host for efficiency.
+- BeShare connects to any MUSCLE server (see 
+  http://www.lcscanada.com/muscle for details)
+- BeShare comes with source, and serves as an example of how to write 
+  a MUSCLE client.  
+
+
+How to use BeShare
+==================
+
+To run BeShare, just double click its icon.  When you see the GUI, make 
+sure that the "Server" string gadget contains the name or IP address of 
+the MUSCLE server you wish to connect to, and then choose "Connect" from 
+the File menu.  Once you are connected, you can type a query string in 
+to the "Query" string gadget, and click "Start Query".  Any files that 
+match your query will be shown in the results panel in the middle of the
+window.  Note that once files have appeared in your results list, 
+different attributes associated with those files (e.g. "Bit Rate" or 
+"Play Length" for mp3 files) may be available for viewing.  Check the 
+"Attributes" menu to see if there are any attributes that you wish to 
+look at.
+
+If you see a file you want, click on it, then click the "Download File(s)"
+button.  The file will be downloaded into the "downloads" directory next 
+to the BeShare executable.  (You should see a download status box appear 
+on the right side of the window).
+
+If you wish to make files available for other people to download from 
+your machine, simply put the files in a directory named "shared" next 
+to the BeShare executable.  Any files in or under the shared directory 
+will be available for other people to download.  Note that you won't 
+see these files as results in your own queries, but other people will see 
+them.  (Note: symlinks can be very helpful here!)
+
+That's about it;  you can also set your username using the string gadget 
+in the upper right, and chat by typing text into the string gadget at 
+the bottom.  Note that user names are NOT guaranteed to be unique, but
+every user does receive a guaranteed unique session ID.
+
+IRC commands "/me" and "/msg" work as expected.  That is to say,
+entering
+
+/me claps and cheers
+
+will show up on everybody's chat window as 
+
+Action:  <YourUserName> claps and cheers
+
+and entering
+
+/msg Jeremy Psst... hey buddy!
+
+Will make it so only user(s) named Jeremy see your message
+"Psst... hey buddy!"  (Note that you can specify a session ID instead
+of a user name here if you wish)  You can even do wildcarding on
+the names if you want, e.g.
+
+/msg J* Look!
+
+Will send the message "Look!" to Jeremy, Joanna, Joellen, etc.
+When receiving a private message, the text will show up
+in light blue rather than the tradition black color.
+
+For information about other available commands, type
+/help into the chat line.
+
+BMessage support
+================
+
+BeShare listens for certain BMessages arriving at the port
+of its main BMessage object.  The primary reason for this
+is so that you can control BeShare via hotkey from SpicyKeys.
+
+Here are some examples of text strings that you can type in
+to the "Application" column of the SpicyKeys GUI to bind
+a key to a BeShare action:
+
+*SendMessage application/x-vnd.Sugoi-Beshare 'scrn' name=filename.png
+   - Tells BeShare to share a /screenshot (optionally with a specified filename)
+
+*SendMessage application/x-vnd.Sugoi-Beshare 'halt'
+   - Tells BeShare to pause all uploads
+
+*SendMessage application/x-vnd.Sugoi-Beshare 'resu'
+   - Tells BeShare to resume all uploads
+
+*SendMessage application/x-vnd.Sugoi-Beshare 'name' name=MyName
+   - Tells BeShare to change your user name to MyName
+
+*SendMessage application/x-vnd.Sugoi-Beshare 'stat' status=MyStatus
+   - Tells BeShare to change your user status to MyStatus
+
+*SendMessage application/x-vnd.Sugoi-Beshare 'serv' server=beshare.tycomsystems.com
+   - Tells BeShare to switch to the specified MUSCLE server.
+
+*SendMessage application/x-vnd.Sugoi-Beshare 'quer' query=*.mpg
+   - Tells BeShare to switch to the specified file query
+
+*SendMessage application/x-vnd.Sugoi-Beshare 'quer' query=
+   - Tells BeShare to switch to disable the file query
+
+*SendMessage application/x-vnd.Sugoi-Beshare 'pane' pos=50%
+   - Tells BeShare how to arrange its SplitPanes.  This command has 
+     several arguments:
+       pos = position of a pane's splitter, either in pixels or as a percentage
+             of the pane's height or width.
+       which = which splitter to set.  0 is the main pane, 1 is the files area
+               splitter, and 2 is the chat are splitter
+       dir = direction to align the splitter.  V is vertical, H is horizontal,
+             or it can be left unspecified to retain the current alignment.
+     Multiple panes can be set in a single command by specifying arguments
+     multiple times.  Arguments that aren't specified will be given reasonable
+     defaults.
+
+Credits
+=======
+
+BeShare is written by Jeremy Friesner (jaf@lcsaudio.com)
+PowerPC executables built by Kancept
+MUSCLE classes by Level Control Systems (http://www.lcsaudio.com)
+ColumnListView class is by Brian Tietz (btietz@fastwave.net)
+SplitPane class is by YNOP Talton (ynop@acm.org)
+Spanish translation by Phantom (socca@bemail.org)
+German translation by hoshy (beat.rupp@gmx.net)
+Dutch translation by Zathros (Ted@3rd-rock.net)
+Portuguese translation by BGA (bga@bug-br.org.br)  
+French translation by Didier Bertrand (didix@mail.be)
+Italian translation by Dario Accornero (bexoft@bexoft.com)
+Russian translation by Oleg V. Kourapov (2sheds@newmail.ru)
+Swedish and Esperanto translations by Göran (e8gz@etek.chalmers.se)
+Norwegian translation by Eivind Ødegård (gingermig@yahoo.no)
+Serbian translation by bug-yugo / Nikola Pizurica (pizurica@neobee.net)
+Hungarian translation by Mate Helfrich / mch (mch@freemail.hu)
+Bulgarian translation by Zlatko Zlayinov (zlati74@rambler.bg)
+Finnish translation by Garjala
+Japanese translation by Koichi Kimura
+
+all translator addresses:  socca@bemail.org, beat.rupp@gmx.net, ted@3rd-rock.net, bga@bug-br.org.br, didix@mail.be, bexoft@bexoft.com, 2sheds@newmail.ru, e8gz@etek.chalmers.se, gingermig@yahoo.no, pizurica@neobee.net, mch@freemail.hu, zlati74@rambler.bg, cypress@globeline.ro, atilla@turkbug.org, kuyeboy@163.com
+
+History
+=======
+
+v2.28  * Merged in Pintaio's corrections to the Spanish  
+         translation strings.
+       * Merged in Monni's correction to the Finnish
+         translation strings.
+       o Updated the code to work the with the MUSCLE 3.20
+         API changes.  Note that this version of BeShare
+         requires MUSCLE 3.20 or higher to compile.
+
+v2.27  - Included François Revo's patch that lets BeShare
+         auto-detect the proper language to use from environment
+         variables when launched for the first time under Zeta.
+       * Trailing ampersands are now included in URL links.
+       * Query strings generated by dragging shared files into
+         the chat view were not being formed correctly.  Fixed.
+       * Fixed a deadlocking problem that would cause BeShare
+         to occasionally freeze up when Private Chat Windows
+         were in use.  Thanks to Andrew for pointing out this bug!
+       * BeShare now launches HTTP links via the MIME type of
+         application/x-vnd.Be.URL.http instead of text/html.
+       * Merged in Oliver Tappe's HashFunctor namespace patch
+         so that BeShare compiles correctly with gcc-2.95.3
+
+v2.26  - Added Japanese and Finnish translation strings to
+         BeShare.  Thanks to Koichi Kimura, Garjala, and Monni
+         for providing the translations.  :^)
+       - Dropped-in filenames now use a more human-readable
+         label to decorate the beshare: URL.
+       * Incorporated translation fixes from Monni.
+       * /screenshot now presents a usable URL when invoked
+         with a filename including spaces.
+       * SendNotifyQueuedMessage() now checks to make sure
+         _mtt is non-NULL before dereferencing it, avoiding
+         a potential crash.
+       * Fixed a bug that would cause disconnected clients
+         to remain in the user list in certain cases.
+
+v2.25  - Added a Swedish translation of the documentation
+         to the distribution.  Thanks Paul!
+       - Added a /font command, that lets you specify the
+         font you want to use in the chat pane.
+       - Added a "Shortest Uploads First" option that 
+         tells BeShare to give priority to people downloading
+         less data.
+       - Dragging multiple files from the results list to
+         the chat now produces the proper URL text.
+       * "Open File" and "Open Folder" were broken if 
+         "Retain File Paths" was enabled.  Fixed.
+
+v2.24  - Added Xuqing Kuang's Simplified Chinese language 
+         translation.  Thanks kuye!
+       - Added Atilla Ozturk's Turkish language translation.
+         Thanks Atilla!
+       * BeShare will now download from firewalled clients that
+         don't advertise a valid port number (read: Unizone ;^))
+       * BeShare now parses URL labels with brackets
+         nested inside them properly.
+       * Some more English strings have been translated into
+         the various other languages.
+
+v2.23  - The "Open File" and "Open Folder" entries in
+         transfer pane's pop-up menu now show submenus
+         listing all the files in the selected transfers,
+         rather than applying only to the current item.
+       - The /screenshot command now includes the user's
+         username and the current time and date in the
+         generated screenshot filename.
+       - The BeShare window can now be made as thin
+         as 308 pixels wide.  Some of the controls at the
+         top of the display will auto-disappear to make room.
+       * Fixed a problem where DoUpload() could blow
+         the stack and crash if too many files were
+         specified in a single download request.  
+         Thanks to Zaranthos for reporting this problem.
+
+v2.22  - Added a "Data Compression" submenu to the 
+         Settings menu.  If you are connected to a
+         MUSCLE server that is v2.40 or newer, you can
+         use this enable data compression on Messages 
+         going to/from the server.
+       - BeShare now stores shared-file nodes on the
+         muscle-server in ZLib-compressed format.  This
+         means that less RAM is used on the server, but
+         it also means that older BeShare clients won't
+         be able to see the attributes of files posted
+         by BeShare new clients (v2.22 or higher).
+       - BeShare's BApplication object  now accepts an 
+         'smsg' BMessage, containing a BMessage to
+         forward to the MUSCLE server.
+       - Added mmu_man's ui_colors() patch for Dano.
+         (You'll need to recompile BeShare under Dano
+         for the code to take effect though)
+       - You can now start downloads by dragging files
+         from the results view to the transfer view,
+         if you prefer to do it that way.
+       * BeShare no longer requires a "port" field in
+         the name-node posted by other clients.
+
+v2.21  - Banned users now see an error string telling
+         them how long they are banned until (thanks to
+         Monni and Garjala for the suggestion).
+       - Added marcone's code-patch that allows you to
+         drag file results out of the BeShare window and
+         into Tracker to make them download to the folder
+         you dragged them to.  Thanks Marco!
+       - You can now remove entries from the four BMenuFields
+         by holding down the control key and selecting the
+         item you wish to remove.
+       * Fixed crash that would occur if you resized the 
+         transfers pane to be very small during a transfer.
+       * Compiled against MUSCLE 2.31, which fixes the bug
+         that caused rate-limited uploads to sometimes
+         stall.  (thanks to Garjala for all his help in
+         finding this bug!)
+
+v2.20  - Moved some of the miscellaneous info that
+         was collecting at the bottom of the /help
+         into its own command, /info.
+       - File-transfer completion stats are now visible
+         (if known) even when the transfer is disconnected.
+       - Added support for the "beshare://servername/query"
+         URL format, so that you can point people to files
+         located on other MUSCLE servers.
+       - BeShare now handles file-requests that come in
+         during a shares-rescan more gracefully, by blocking
+         them until the shares-rescan is complete.
+       * Fixed a bug that would cause aborted 
+         transfers not to be saved if they were
+         never reconnected before quitting.
+       * Fixed a bug that would cause aborted 
+         transfers to disappear on login if 
+         "AutoClear Finished Downloads" was checked.
+         
+v2.19  - If a beshare_settings file is found in the
+         same folder as the BeShare executable, that
+         file is now used as the settings file instead
+         of home/config/settings/beshare_settings.
+       - /help now reports the total number of kB
+         uploaded and downloaded this session.
+       * Tightened up the user name matching a bit,
+         when matching on names with spaces in them.
+       * Labelled-URL-links are no longer recognized
+         if they span across carriage returns (to 
+         avoid unintentional links in the catsup)
+       * Logged URLs now undergo [label substitution].
+       * Fixed a bug that would sometimes cause the
+         query-in-progress radar animation to 
+         disappear prematurely.
+
+v2.18  - File information uploading now happens at 
+         'low priority', so that it no longer blocks 
+         outgoing chat text and file queries for long 
+         periods of time.
+       - Middle-clicking on a split-pane separator
+         bar now causes the two child widgets to swap
+         positions.
+       * Tweaked the name highlighting to not trigger
+         if your name is the start of a longer word.
+
+v2.17  - Relaxed the SplitPanes' sizing restrictions.
+       - Added a 'pane' BMessage that can be used to set
+         the configuration of BeShare's SplitPanes.  See
+         documentation for details.
+       - The ColumnListViews now use QuickSort instead
+         of BubbleSort for sorting.  Thanks to Ramshankar
+         (aka Somebody) for his help with this.
+       - Dragging files into the BeShare window will now
+         cause a beshare: link specifying those files to
+         be added to your outgoing chat text line.
+       - Entries in the recent-queries popup menu are now
+         truncated to a maximum of 32 characters.
+       * ToolTips now only show up after a short delay,
+         instead of immediately on mouse-over.
+       * Included Infinity's new Hungarian translations.
+       * Fixed some errors in the French and Italian
+         translation string tables.
+       * The query popup menu was inverting the query
+         list order every time it restored.  Fixed.
+
+v2.16  - Transfer animations are now limited to a max of 10fps
+         in order to limit the amount of CPU they eat up.
+       - BeShare now accepts a 'scrn' BMessage that causes it
+         to do a /screenshot (see docs for details)
+       * Fixed the tool-tip-sends-you-to-another-workspace bug.
+       * Fixed several bugs that occurred when a labelled URL
+         was placed into a username, status, or client string.
+
+v2.15  - Added a /screenshot command, which captures and shares
+         a screenshot of your computer's desktop, in PNG format.
+       - Added an "upload finished" sound and system message.
+       - Hyperlinks can now be followed by a name tag that will
+         replace them in the text view.  Example usage:
+         Click http://www.lcscanada.com/muscle [right here!]
+       - Rolling over a hyperlink now shows the hyperlink
+         URL in a pop-up "tool tip" style window.
+       * The "Show User ID" option was broken (always enabled,
+         even when it wasn't checked).  Fixed.
+
+v2.14  - File transfer items are now double buffered so
+         that they won't flicker while animating.
+       - Added a Romanian localization (Thanks, Cypress!)
+       * Removed the zoink work around, as it was b0rked and
+         messed up Unicode characters.
+       * TextControls' low-color was being set incorrectly.  Fixed.
+       * Rendering of text in the FileTransfer boxes is now cleaner.
+       * Added some additional German translations strings.
+
+v2.13  - Added VitViper's colors prefs panel.  Thanks VitViper!  :^)
+       - Added a /color command to enable/disable custom colors.
+       - Private Chat Windows can now create their own log files
+         (enabled by a "Log" checkbox in the Private Chat Window)
+       * Fixed the high-ASCII-last-char-causes-chat-text-run-on
+         problem (sorry Zoink!)
+       * Locally-queued Download transfers were being cancelled 
+         if they didn't start within 5 minutes.  Fixed.
+       * /aliases now work in the private chat windows.
+
+v2.12  - The /onidle message no longer triggers as soon as the
+         last transfer finishes, but rather at the next stalled-
+         connection-check afterwards (i.e. up to a minute later).
+         This avoids having it trigger after every transfer in
+         a sequence.
+       - The Hungarian translation strings have been updated.
+       * The stalled connection reaper wasn't properly reaping
+         connections that never transferred any bytes at all.  Fixed.
+       * Fixed the pending-chat-text-gets-sent-when-you-change-name
+         bug, and improved tab-focus handling a bit.
+       * Changed the %lli and %llu sprintf() format strings for 
+         64-bit integers back to %Li and %Lu, since mwcc doesn't 
+         parse the new format (thanks to Brian Francis for reporting 
+         this)
+
+v2.11  - Added Zsolt Bihari's Hungarian translation strings to
+         BeShare.  Thanks, Zsolt!
+       - The default muscle server (and server-list-update 
+         server) is now beshare.tycomsystems.com (since the 
+         BeFAQs server is no longer being maintained)
+       - share: is now a synonym for beshare: in the chat log.
+       - BeShare's BApplication object now accepts BMessages 
+         to control certain operational aspects (name, status,
+         transfer pause, etc).  This allows apps such as 
+         SpicyKeys to easily control BeShare.  See
+         BeShareDocs.txt for details on the what messages 
+         BeShare accepts.
+       * Replaced ShareWindow::OpenTrackerFolder() with linn's
+         kosher version.
+       * BeShare would play the 'download finished' sound
+         when an upload finished.  Fixed so that now the
+         sound is only played when a download finishes.
+
+v2.10  - You can now specify a per-transfer bandwidth limit,
+         either by right-clicking on the transfer box, or via
+         the new /setdownloadrate and /setuploadrate commands.
+       * BeShare would create subfolders in the downloads folder
+         if the uploading client told it to, even if "Retain
+         File Paths" wasn't checked.  Fixed.
+       * Resuming a download through a symlink now works as
+         expected (thanks to Shard for finding this problem)
+       * transfer speed estimation now uses 30 blocks instead
+         of 10, so that the average doesn't wiggle so much.
+       * BeShare's install ID is now saved in a separate file,
+         rather than in the beshare_settings file.  This prevents
+         confusion when settings files are shared, or when 
+         multiple settings files are used.
+
+v2.09  - File transfer rates are now calculated using a
+         running average over the last 10 blocks received,
+         rather than a total average over the entire transfer.
+         This method reflects changes in transfer rate more
+         accurately.
+       * BeShare would sometimes mark uploads as "waiting on
+         local machine" when they shouldn't have been.  Fixed.
+
+v2.08  - BeShare now accepts URL drops from NetPositive, etc.
+         (i.e. drag a link into BeShare and it puts the URL in the
+         chat text entry box)
+       * Compiled against MUSCLE 2.15, which (hopefully) fixes
+         the "Unknown uploader" problem (at least, once everyone
+         upgrades, it should), as well as makes things a little
+         more efficient
+
+v2.07  - BeShare now supports "partial hash compare mode" where
+         only the last 64 kilobytes of a resumed file is examined.
+         This means that md5 hashing times do not get longer when 
+         resuming larger files.  Note that both BeShare clients 
+         must be version 2.07 or higher, in order for this feature 
+         to be used.
+       - Added some more Swedish and Esperanto translation strings
+         (thanks Goran!) and removed the [Ln] annotation brackets
+         from the Russian, Serbian, and Bulgarian translations, 
+         since they are no longer necessary.
+       - BeShare now has Korean language localization.  Thanks
+         to dogigi for providing the translation strings!
+       - When downloading, BeShare now transmits your name/sessionID
+         to the remote peer immediately, instead of waiting for the
+         md5 hashing to complete.  This allows the uploader to see
+         who you are immediately.  (Note:  for this to work, both
+         clients must be running 2.07 or higher)
+       - When calculating an md5 hash for an upload, the client
+         now sends the downloader a "queued, please wait" signal
+         for the duration of the md5 hashing time.
+       * Removed the auto-ping-for-client-version-info hack,
+         since it would sometimes cause spurious ping responses,
+         and isn't necessary for new clients.
+
+v2.06  - Integrated in Vitaliy Mikitchenko's (a.k.a. VitViper's) 
+         client-column feature for the users list.  Thanks, Vitaliy!
+       - BeShare now auto-reconnects to the server if the server
+         disconnects it unexpectedly.  If the auto-reconnect fails,
+         it will try again after increasing time intervals.
+       - Added in some support for the "/me's" idiom.  However, note
+         that older clients won't display this idiom correctly, only
+         people with this version (or newer) of BeShare will see it as 
+         "binky's brain hurts".  Older clients will see "/me's brain hurts".
+       - BeShare's md5 hash code cache attribute now includes the
+         file-modification-timestamp as well as the file size.  This
+         additional check will make sure that files whose contents
+         have changed are properly re-hashed if necessary (even if the
+         file size has not changed).
+       - The shared-file set is now updated appropriately whenever
+         volumes are mounted and unmounted.  (thanks to Shard for 
+         suggesting this feature)
+       - The language menu's entries are now always displayed in their
+         native language, rather than in the current language.
+       - File transfer requests now send user name as well as session ID,
+         so that the remote client can show a user name even for unknown
+         session IDs.
+       * The idle-connection-reaper is no longer allowed to kill sessions
+         that are doing the "Examining files..." thing.  This should help
+         resumes of very large files work more reliably.
+       * non-BONEd BeShare now sends a maximum of 1000 bytes per call to 
+         send().  (This may help with some net_server+router setups. 
+         BeShare must be compiled against MUSCLE 2.11 or higher for this
+         to work)
+       * file-removed messages are now batched together, so unsharing
+         large numbers of files at once is more bandwidth-efficient and
+         uses less server CPU.
+
+v2.05  - File-hashing threads now run at B_LOW_PRIORITY.
+       - Added a /fontsize command so you can make your chat font bigger
+         or smaller to suit your tastes.
+       - Code updated to compile with MUSCLE 2.11.
+       * The upload loading indicator in the users list was broken in 2.04
+         (always showed '?').  Fixed.
+       * Added in some missing translation strings.
+       * Fixed a bug in the auto-restart-download code that would cause 
+         resurrected downloads to appear to be from "Unknown", rather than
+         the downloader.
+
+v2.04  - Added the filechopper utility to the BeShare archive.  filechopper
+         is handy if a crash has munged your download and now it won't resume...
+         run filechopper on the file to remove garbage bytes from the end.
+       - BeShare now caches full-file-checksums in an attribute, so that if
+         another full-file checksum is required on the file later on, it will
+         be much quicker.  (note that partial-file-checksums remain uncached)
+       * Downloads from people behind firewalls wouldn't start properly.  Fixed.
+       * Results table columns and sort order settings are now persistent.
+
+v2.03  - Added /shell command to the chat-command repertoire.
+         This command lets you execute a shell command from the chat window.
+       - Added /onidle command to the chat-command repertoire.
+         This command lets you tell BeShare a command it should execute
+         when all uploads and downloads have stopped.
+       - Rewrote the chat-text-when-to-scroll-to-bottom logic, and
+         made the ChatWindow change appearance slightly when it is
+         "scrolled back" so you know what it is doing.
+       - Added a priv: URL type that when clicked on opens up a 
+         private message window with its argument.  (e.g. priv:username)
+       * Updated the BeShareAndMuscle article in the html subfolder
+         to reflect recent changes to the MUSCLE API.
+       * Updated BeShare to use the new MUSCLE 2.00 APIs.  BeShare
+         now requires MUSCLE 2.00 or higher to compile against.
+       * Improved BeShare's font-sensitivity (with shatty's help) 
+       * BeShare now recognizes https:// URLs
+
+v2.02  - BeShare now remembers downloads when you quit, and restores
+         them when you re-launch BeShare.  (Note:  This works for 
+         downloads from users of BeShare v2.02 only)
+       - BeShare now auto-restarts interrupted downloads when the
+         remote user logs back in (Note: see above note)
+       * "Awaiting Callback..." boxes now abort themselves when they
+         see the user they were waiting for a callback from disconnect
+         from the server.
+       * transfer boxes are now better about remembering the remote
+         user's handle, even when the connection is broken.
+
+v2.01  - There is now a Sound-prefs-panel sound setting for a sound
+         that will be made by PrivateChatWindows when they receive
+         text and don't have the GUI focus.
+       * Added new Bulgarian translation strings.
+         
+v2.00  - You can now toggle off display and logging of User IDs via 
+         the Settings->Display and Settings->Log submenus.  (thanks to
+         Technix for submitting this patch)
+       - Changed source code to comply with the changes introduced into
+         v1.90 of MUSCLE.  BeShare now requires v1.90+ of MUSCLE to compile.
+       - Added an "AutoUpdate Server List" menu item to the Settings menu.
+         When this item is checked (which it is by default), BeShare will
+         automatically check with beshare.com on startup for new servers.
+       * Building the file list during a download request is now done
+         in a separate thread, so that large file lists don't lock the GUI.
+       * BeShare was putting NUL bytes ('\0') into its chat log output.
+         These would cause some programs (e.g. vi) to get confused if you copied
+         and pasted text from BeShare.  Fixed.  (thanks to marcone for spotting this)
+       * Fixed a bug that caused batch uploads to only transmit the
+         retained-file-path of the first file in the upload batch.
+         (more thanks to Technix for reporting this ;^))
+
+v1.99  - The keyboard shortcut to disconnect is now alt-shift-B.
+       - Added norseland.dnsalias.net and beshare.TyComSystems.com
+         to the default server list, and removed beshare.bentonrea.com :^(
+         BeShare.BeFAQs.com is now the default server. (thanks BeGirl!)
+       - Pressing alt-L in a PrivateChatWindow now clears the chat log there.
+       - BeShare now checks once a minute to see if any settings have
+         been changed, and saves the settings file if they have.
+         This helps keep settings from being lost if there is a crash.
+       * BeShare now only prepends "BeShare v" to the version string
+         in the /ping response if the version string begins with a number.
+       * Some previously missing translation strings are now present.
+
+v1.98  - Special "Save BeOS" version, available only on the BeFAQs CD!
+       * Fixed a bug that caused symlinks not to get shared properly.
+
+v1.97  - Multi-line pasting into the chat text line now retains
+         the line spacing information properly.
+       * File upload-resume was broken in v1.96.  Fixed.
+       * /title now affects the window the command was
+         entered in to, instead of always the main window.
+
+v1.96  - Added Bulgarian language support (thanks to Zlatko
+         Zlayinov for the translation!)
+       - Added a "Path" attribute so you can see what subdirectory
+         of the "shared" folder a shared file is being shared from.
+       - Added a "Retain File Paths" item to the Settings menu.
+         When checked, downloads will be made into a subfolder of
+         the 'downloads' folder that matches the path of the remote
+         machine's 'shared' folder.
+       - Incorporated Hugh's (aka Gregor Rosenauer's) patches to allow 
+         keyboard-based scrolling of the chat text view (by holding 
+         down the control key and pressing arrow keys, page up, 
+         page down, home, end, etc).  Thanks, Gregor!
+       - Hugh's other UI change is also here--after you've scrolled back
+         in the chat view, entering chat text won't scroll you back down
+         to the bottom until you press enter.  People seem to prefer that, 
+         so that's how it is now.  :^)
+       - Added /alias and /unalias commands, handy for making chat shortcuts.
+       - Added a /title command so you can force a custom title into
+         the yellow tab of the BeShare window if you want to.
+       - Added a "Remove Selected" entry to the transfer-item pop-up.
+       - Added a "Move to Top" and "Move to Bottom" entries to the 
+         transfer-item pop-up.
+       - Added beshare.homeip.net (ZurGs' server) to the default server list
+       * Incorporated Hugh's fixes to the German translation strings.
+       * Added a missing comma into the _portugueseStrings
+       * User ID is now shown in the title bar even if you
+         are viewing query results.
+       * Open file descriptors are now closed when the TCP connection
+         is severed, rather than waiting until the GUI's transfer
+         box is disposed of.
+
+v1.95  - Added a "Load" column to the users list, that shows the
+         current number of uploads from that user, and the user's
+         maximum-simultaneous-uploads setting.  (good for knowing
+         how long your wait to download might be)
+       - Added a separate "Status" string entry box and 
+         user-list-column (so you don't have to cram your 
+         status into your user name anymore)
+       - Renamed the previous /status command (the one that
+         checks the MUSCLE server's status) to /serverinfo.
+       - Added a new /status command that can be used to set
+         your status from the command line, e.g. "/status eating"
+       - Added profuzion.org to the default server list.
+       - If both clients in a transfer are v1.95 or higher, the
+         file data will be XOR'd as it goes across.  (this is in 
+         order to circumvent certain fascist routers that filter 
+         based on packet content!)
+       - Added an "Open Logs Folder" menu item to the File menu.
+       - BeShare's title bar now displays your session ID while
+         you are logged in.
+       * Fixed a bug that would cause text to be repeated in the
+         log file when your name was mentioned.
+       * Outgoing /msg's were being filtered based on the
+         "Chat" menu item's state, rather than "Private Messages".  Fixed.
+       * Fixed a parsing bug that would sometimes mess up the URL 
+         highlighting in multiline text output (e.g. Xavier's
+         catsup output)
+       * Fixed the refresh problem that occurred when resizing
+         right-justified columns in the user-list view.
+       * Changed the factory-default username to "binky".
+       * Changed BeShare to use the new include paths used
+         by MUSCLE v1.80+ (so you'll need MUSCLE v.180+ to
+         recompile it)
+       * Blue focus rectangles are now drawn completely for
+         all ColumnListViews.
+       * Underbars ('_') are now parsed as letters for 
+         username-highlighting purposes.
+
+v1.94  - Added "Server Uptime" to the results of /status
+       - /ping now returns the client's uptime, as well as
+         the time elapsed since the client logged in to the server.
+       - Added a "File Sharing Enabled" checkbox item to the 
+         Settings menu so you can disable your file sharing without 
+         having to move files around.
+       - Added a "Ban User" item to the pop-up menu for uploads,
+         so that if someone is uploading from you and you don't
+         want them to, you can ban them from uploading from you
+         (temporarily or permanently).
+       - Added a /unban command that removes all upload bans.
+       - Added a /autopriv command so that you can specify users
+         that can remotely/automatically open a private chat window 
+         when they /msg you.
+       * Fixed bug that prevented the launch of items that were
+         queued for upload but not transferring yet.
+ 
+v1.93  - Selecting "Restart Transfer" on a download that is in
+         the "Queued (Local machine too busy)" state now forces
+         the download to begin immediately.
+       - Added Technix's /watch feature so you can specify a user 
+         or users to highlight in red (and optionally play a sound)
+         when they say something publically.
+       - /away now accepts an optional argument to indicate why
+         you are away.  (e.g. "/away gone to Fiji")
+       - Added /onlogin and /clearonlogin commands so that you
+         can program BeShare to automatically execute a series
+         of statements when you log in to the server.
+       - Added beshare.dyndns.org to the default server list.
+       - Added a BeShare-PrivateWndw sound so that you can have
+         a sound play whenever incoming text appears in a 
+         private chat window.
+       - Added a /status command so you can see some information
+         about the current state of the MUSCLE server you are
+         logged in to.
+
+v1.92  - Added an "Open Folder" option to the pop up menu
+         to let you open the folder that the item being
+         transfered is in.  (Thanks to Technix for this feature)
+       - BeShare can now be launched by double-clicking its
+         settings file.  If launched this way, any changes made
+         to the settings will be saved into the same file on
+         exit.  (Useful for maintaining several independant
+         settings files if desired)
+       - "Reset Layout" now resets drag bar positions as well
+         as drag bar orientation
+       - Added bebox.jocose.org to the default server list.
+       - BeShare now pings the server after five minutes of
+         inactivity (this way it can detect a broken TCP
+         connection more quickly)
+       * Hopefully fixed the 'gray gunk in the text controls'
+         display bug that some people were seeing.
+       * The LRU query and username menu fields weren't LRUing
+         properly.  Fixed.
+
+v1.91  - Added an auto-away feature (including an Auto Away
+         submenu in the Settings menu).  This feature will
+         add an "(away)" tag to your username after so many
+         minutes of inactivity.  Thanks to Alan for this feature!
+       - Added a /awaymsg command to you to change the away tag.
+       - Added a /away command that puts you immediately into
+         the away-state.
+       - The initial shared-files scan is now done in a 
+         separate thread, so that the BeShare window will 
+         stay responsive during the scan.
+       * Incorporated Phantom's translation fixes into the
+         Spanish BeShare strings.
+       * BeShare now recognizes high-ASCII letters (i.e. all
+         those accented umlauty thingies) for name-highlighting
+         purposes.
+       * a.k.a is now spelled a.k.a.  (note period at the end)
+
+v1.90  - BeShare now allows audio:// URLs which, when clicked,
+         launch audio/x-scpls (e.g. SoundPlay) to let you listen to
+         streaming audio.
+       - You can now select 'Restart Transfer' on a queued upload
+         session (i.e. one that says "Local machine too busy") to 
+         force it to start immediately.
+       - You can now select 'Halt Transfer' on an uploading session
+         to temporarily stop the upload.  It will change to the
+         "Local machine too busy" state until you restart it again.
+       - URL tags are now case insensitive (e.g. "HTTP://" is highlighted)
+       * ReflowingTextView::MouseDown() wasn't calling the base class
+         method.  Fixed.
+       * Removed the compatibility patch so that BeShare will transfer
+         file attributes of all types now, and not just the 'common types'.
+         This may cause trouble transferring to BeShare versions before v1.80,
+         but you've all upgraded by now, haven't you?
+       * BeShare now only uploads readily viewable attribute types to the server.
+
+v1.85  - Strings that look like beshare:query will now be highlighted
+         in the chat text window, and clicking on them will start
+         the indicated query going.
+       - /query is now accepted as a synonym for /start.
+       - Removed the "Beep When Mentioned" menu item, and replaced it
+         with entries in the BeOS "Sounds" prefs panel.  The new entries
+         will be added the first time BeShare runs.  Set any
+         or all of those to get your beep of choice.  Many thanks to 
+         Alan for sending in the patch to implement this!  (Note:
+         this is enabled for Intel machines only--the PowerPC I have here
+         to compile on is R4.5 and doesn't support this.  You may
+         be able to get this working by recompiling it under R5/PPC)
+       - The About Box now contains buttons to take you to the
+         BeShare web page, or the BeBits BeShare application page.
+       - The number of file you are sharing is now shown in the title bar.
+       * When opening the shared or download folder, Tracker is no longer 
+         called using a hard-coded path name; find_directory() is used instead.
+
+v1.84  - /ping responses now contain the version number of the
+         client responding to the ping.  (If a version number isn't
+         displayed, the client is v1.83 or earlier)
+       - BeShare now sends a checksum along with each packet of file 
+         data, and on receiving such a checksum, uses it to double-check
+         the data's integrity.  If the checksum doesn't match the data, 
+         it will abort the connection.  
+       - The transfer windows now show the name of the next file 
+         that will be transferred, even if the transfer hasn't
+         started yet.
+       - If you specify a hostname on the command line, BeShare
+         will connect to that server automatically when it starts.
+         (ex: "BeShare.x86 beshare.bentonrea.com")
+       * The Home and End keys now behave properly when the chat
+         BTextView has the focus.
+       * Bumped the maximum size of the user-name drop menu to 20.
+         (To accomodate my multitudinous identities)
+
+v1.83  * Fixed a bug that would cause BeShare to crash if someone
+         with a blank username tried to download a file from it.
+       * Got rid of an unnecessary data copy that was occurring
+         during uploading.
+       * The ColumnListView class wasn't doing bounds checking in
+         its SetSorting() methods, making it possible to crash
+         BeShare while recalling an attribute preset whose columns
+         were not present.  Fixed.
+       * The download-restart logic was totally b0rked.  Rewritten
+         to make sense.  (so auto-resumes now work correctly)
+       * Users with blank names would sometimes get /msg's that weren't
+         meant for them.  Changes so that users with blank names can only
+         be /msg'd via their session ID.
+
+v1.82  - Added Serbian language support.
+       * Finally fixed the downloads-don't-always-resume problem.
+         (Note that unless the users at both ends of the download
+          are using v1.82 or higher, the problem may still occur)
+
+v1.81  - BeShare now contains a special-case exception so that it
+         no longer shares the /boot/home/config/settings directory.
+         This is to prevent people from accidentally sharing their 
+         password files, etc.
+       - Added Norwegian language support.
+       - Downloads that were able to get some data before being
+         disconnected will now automatically restart themselves.
+         This should allow people to leave downloads unattended
+         even over flaky connections.
+       - The User Name text control now has a recent-names pulldown
+         menu, similar to the ones the query and server text controls
+         already had.
+       - Made the User Name field a little bit wider.
+       * Entering /clear into a Private Chat Window now clears
+         the Private Chat Window instead of the main chat window.
+       * BeShare no longer asks "are you sure you want to quit?"
+         if the B_QUIT_REQUESTED message came from outside the
+         app (e.g. from a system shutdown or the 'quit' command
+         line app)
+       * It was possible to restart a completed download, causing
+         BeShare to get confused and think it was an upload session.  
+         Now the "Restart Download" item is disabled if the download
+         had fully completed.
+
+v1.80  - Added Oleg/2shed's Russian language translation.
+       - Added Göran/BUser's Swedish and Esperanto language translations.
+       - Added some previously missing strings for other languages.
+       - BeShare now asks 'are you sure you want to quit?'
+         if you try to close the BeShare window while 
+         file transfers are going on.
+       - Added a "Modification Time" attribute to the attributes menu.
+       - Added some separator bars to the attributes menu.
+       - File update counter postings are now limited to
+         a maximum of one per second, to avoid flickering
+         in everyone else's user list.
+       - Added a /ping command (note that only BeShare 1.80+
+         clients will reply to the ping requests)
+       * "Malkovich" was misspelled as "Malkovitch".  Fixed.
+       * BeShare is now compiled against MUSCLE 1.50, 
+         fixing a minor incompatibility in the MUSCLE
+         protocol that could cause BeShare to disconnect
+         from the server in some circumstances.
+       * BeShare now only transmits BFS attribute types that
+         are parsable by old versions of BeShare.  This maintains
+         compatibility with old BeShare clients in the short term,
+         although this hack will be removed in future versions.
+         (thanks to Benji Park for spotting this problem!)
+
+v1.74  - Added BeShare.BeFAQs.com to the server list
+       - Added a results page size selection submenu to the
+         Settings menu.
+       - Bots now have their names italicized in the user list.
+       - Added French docs to the distribution.
+       - Right clicking on the results view now brings up
+         a pop up menu of pages to switch to, when appropriate.
+       - Added a /ignore command that lets you specify a user
+         or set of users whose chat messages you wish not to see.
+       - The transfer list now presents a pop-up menu when right
+         clicked.  This pop-up menu lets you move, halt, restart 
+         or launch the selected transfer items.
+       * Fixed a race condition that would sometimes cause interrupted
+         downloads to be removed from the display when they shouldn't be. 
+       * Fixed the unique-file-name generator.  Now it will go
+         from "filename.txt" to "filename.txt 2" to "filename.txt 3",
+         instead of "filename.txt" to "filename.txt 2" to
+         "filename.txt 2 2".
+       * Chat text view now scrolls to the bottom whenever you
+         enter a character into the chat text entry gadget, even
+         if the chat text entry gadget already had the focus.
+       * Fixed a bug in the chat history that made it sometimes
+         display the wrong text when you pressed up-arrow.
+       * Text from private chat windows is now logged to the log file.
+       * Added some printf's to the md5 hashing code, in the hopes
+         of some day figuring out why file downloads don't always
+         resume.
+
+v1.73  - The chat text view now automatically scrolls to
+         the bottom when you type into the chat text entry box.
+       - Orange-name highlighting now only occurs if your name
+         is at the start of a word in the text (this cuts down
+         on unintentional matches)
+       - New default servers are now automatically added to the
+         server pull-down menu on startup.
+       - Sorting selections are now saved and restored in the
+         users list and in the attributes-presets.
+       * trailing slashes are now treated as part of the click-URLs.
+       * BeShare now closes the log file when you disable
+         file logging, and opens a new one when you re-enable it.
+       * Fixed a truly nasty bug that would cause BeShare to
+         crash whenever duplicate filenames showed up in the
+         results list.
+
+v1.72  - The transfer box now shows the remote user's session
+         ID in addition to their handle.
+       - Empty query strings are no longer intepreted as '*'.
+       - Pressing return in the file query box now enables
+         the query implicitely.
+       - Large result sets are now broken into 'pages' of
+         1000 items each.  Arrow buttons are provided to
+         switch from one page to another.  Note that each
+         page is sorted internally, rather than sorting
+         over the entire result set!
+       - Common, well-formed URLs in the chat window are
+         now highlighted in blue, and clickable (similar to
+         how BeMail works).
+       - Rewrote the chat filtering code, and added logging-to-file
+         capability.  The "Log" submenu now controls logging to a
+         file, while the new "Display" submenu controls what types
+         of info are displayed in the Chat view.
+       - Changed 12.18.240.15 to beshare.bentonrea.com
+         in the default servers menu.
+       - Intel Executable now requires BeOS R5.0.3.  (You can still
+         run it under R4.5, but you'll have to recompile it yourself)
+       - Now compiled with optimizations turned on.
+       - Removed the logging of query changes, as it wasn't very useful.
+       * The SplitPane draggers could be dragged from the edges
+         of the window, which was kind of weird.  Fixed.
+       * Text in private chat windows that started with "//"
+         was being sent to everybody, not just the private-chat
+         participants.  Fixed.
+       * Fixed some other minor text parsing bugs
+       * Now uses DispatchMessage() instead of BMessageFilters
+         to redirect focus.  This will hopefully clear up the
+         assertion failures some people were seeing.
+
+v1.71  - Changed the shared-file lookup to use an in-memory
+         lookup table, rather than iterating through the shared
+         directory tree each time.  (suggested by Christopher Tate)
+       - You can now right-click on the users list in the main
+         window to open a Private Chat Window to one or more users.
+       - Private chat windows now contain a list of users specified
+         by the private chat filter string (so you know for sure 
+         who you are talking at)
+       - There is now a little radar animation that shows up whenever
+         the server is busy retrieving the initial results of your
+         query.  (So you can tell when all results are available)
+       * Fixed a bug where BeShare would crash if you
+         entered a blank line into the chat text entry.
+         Thanks to Zathros (Ted Leeuwesteijn) for reporting this bug.
+       * Chat BTextView rectangle wasn't being sized correctly on startup.
+       * Tab completion now works correctly in the private chat windows.
+
+v1.70  - Added "Private chat window" capability.
+       - Added Save and Restore Presets submenus to the
+         Attributes menu, so that you can save how you
+         have the results table configured and later restore it. 
+       - session IDs are now sorted numerically, rather than
+         lexically, in the user table.
+       - widths and sorting of columns in the user table is
+         now persistent.
+       - All string sorting is now done case insensitive.
+       - Chat line now has the focus on startup.
+       - File-searches are now done in a separate thread,
+         so that they won't freeze up the GUI.
+       - You can now toggle between firewalled and non-firewalled
+         without having to disconnect from the server first.
+       - double-clicking on a file in the results view now
+         starts a download of that file.
+       - /commands are now case insensitive
+       - unknown /commands now result in an error message being
+         printed locally, rather than the /command text being
+         sent as a chat message.  (to send a chat message starting
+         with '/', you'll need to start your message with '//')
+       - Leading and trailing spaces are now automatically trimmed
+         off of your user name when you enter it.
+       * You can now send a /msg by username to people
+         whose usernames contain spaces.
+       * Chat window now scrolls down correctly even when
+         you enter large amounts of text.
+       * Tab completion no longer adds a space after the
+         end of a tab completed name.
+       * BeShare's tab completion no longer disables the 
+         Twitcher when the chat text entry control has the focus.
+       * Queries for e.g. *.mp3@123 were being altered into
+         e.g. *.mp3@*123*.  This would cause the server to 
+         return unwanted results if the session ID you were 
+         interested in was a substring of other session IDs.
+         Fixed.
+
+v1.63  - Added "Max Simultaneous Downloads Per User" menu.
+       - Added tab-completion for user names in the chat
+         window.  Thanks to BGA for his help in coding this!
+       - Added Italian localization (thanks to Dario Accornero
+         for translating!)
+       - alt-Enter now works the same as Enter, to quiet those
+         hardcore ICQ junkies.
+       - Added a "Login on Startup" option.
+       - Added a separate log toggle for choosing whether or
+         not to see private messages (vs. public chat messages)
+       * Fixed a bug that would send garbage data if you
+         /msg'd somebody without any message
+       * Incorporated German and Dutch translation fixes from
+         hoshy and Zathros.
+       * Now compiles cleanly even in paranoid -Wall mode.
+         Thanks to Christopher Tate for cleaning up the code!!
+       * Changed the subscription to just use beshare/* so that
+         it works better with FreeBSD servers.
+       * The "Open Download Folder" and "Open Shared Folder" 
+         menu items didn't work if there were spaces in BeShare's
+         path.  Now, they do.
+
+v1.62  - Added optional Timestamp logging to the chat view.
+       - Added an "AutoClear Completed Downloads" menu option.
+       * Downloading from firewalled users was broken in v1.61.  Fixed.
+       * Fixed a bug that was causing it to look as if users
+         were logging back in immediately after they logged off.
+       * Changed the your-name-mentioned highlighting from red 
+         to orange, to make it visible to people who can't 
+         differentiate red from black.
+       * BeShare would sometimes beep when it wasn't supposed to.  Stopped.
+       * The your-name-mentioned coloring wasn't being positioned
+         right in /action messages.  Fixed.
+
+v1.61  - You now have the option of enabling/disabling logging
+         of chat comments in the chat window.
+       - The firewall port range is now 7000-7050.
+       - The Query label is now a drop-down menu that allows you
+         to quickly recover your 20 most recently used queries.
+       - The "couldn't start thread" error message now suggests
+         that you restart networking.
+       - The MD5 hash file read buffer is now 256k instead of 1k.
+         This should speed up the initialization of file resume downloads.
+       - Added more language support:  BeShare now speaks French and Malkovitch.
+       - Added a "reaper" that will forcibly abort connections that
+         are active, but haven't transferred any data for more than
+         five minutes.  This keeps moribund connections from permanently
+         tying up open download slots.
+       - /msg Now takes wildcards in the target user name.
+       - Added a "Beep When Mentioned" feature, so you can be notified
+         when people are talking to or about you.
+       - If someone mentions your name, it will be shown in red in the chat log.
+       - Added a "Max Simultaneous Uploads Per User" feature to cut down on
+         slot-hogging.
+       - File counts that you can't access due to firewalling issues
+         now have (parentheses around them).
+       * The settings file is now found with find_directory()
+         rather than with a hard-coded path string.
+       * The GUI now holds Portuguese text strings without clipping them.
+       * "Full User Queries" option now works reliably.
+       * Callback accepting is now done on the "standard" ports starting
+         at 7000, so that it will work over properly portmapped firewalls.
+       * Portuguese text now fits in the GUI better.
+       * Fixed the "query gets reposted when you click Start, then
+         change focus" bug.
+
+v1.60  - Added some localization support.  BeShare now speaks
+         English, Spanish, Dutch, German, and Portuguese!  
+         If you want another language added to BeShare, please email me.
+         (Thanks to Phantom, Zathros, BGA, and hoshy for translating)
+       - BeShare now reports the total byte count of the
+         displayed result set, in the title bar.
+       - Added some more irc-style commands, including /clear,
+         /start, /stop, /disconnect, /quit, and /help. Enter
+         /help for instructions on how to use them.
+       - Added "# Files shared" and "Connection speed" columns 
+         to the users table.  (Note:  "# Files shared" will only
+         be set correctly if the user has BeShare 1.60 or above)
+       - When you change your name in the "Username" text box,
+         focus now automatically jumps to the chat text entry.
+       - Double clicking a file transfer box now launches
+         the file mentioned in the box, as if you had double-clicked it.
+       - Added a "history" function:  using the arrow keys while the
+         chat text entry box has the focus allows you to review the
+         last 500 lines you typed in.
+       - Transfer boxes now have a little scrolly barber shop stripe
+         animation in them that gives you an idea of how quickly you 
+         are sending or receiving file data messages.  (Mmm, Juicyfruit!)
+       - MD5 calculations are now done in separate background threads.
+         This should keep BeShare's GUI from freezing up when resuming
+         downloads or uploads of very large files.
+       - Empty MIME attribute entries no longer show up in the
+         Attributes menu.
+       * Fixed a bug in the file-examining routine that was
+         associating the wrong data-type with file attributes.
+         (this was the bug that was causing Track numbers to show up
+         as rectangle characters.  Note that the rectangles will still
+         be seen if the person sharing the file hasn't upgraded!)
+
+v1.52b - BeShare now tries to listen on ports 7000 through 7010
+         before choosing an arbitrary port to listen on.  It also prints
+         out the port it is listening on into the chat window.  (This
+         makes it easier for people behind firewalls/NAT boxes to share
+         files)
+       - Server hostnames/IP addresses are now automatically added to a
+         BMenuField so that you can select them from a list.  No more
+         forgetting your server's address!
+       - Added whitespace stripping to the chat text parsing
+       - Results and users lists are now navigable via the arrow keys, 
+         pageup/pagedown, home/end, etc.
+       - Pressing return while the results list has the focus is now
+         the same as clicking the "download selected files" button.
+       - Pressing an alphanumeric key while any of the four main panels 
+         has the focus automatically transfers the focus the chat text
+         entry box.
+       - Included PPC build in this release.
+
+v1.51b - Added "Open Shared Folder" and "Open Downloads Folder" entries
+         to the File menu.
+       - Log Uploads has been moved into a "Log" submenu, and is joined
+         by "Log User Events" and "Log Query Changes" toggles.
+       - Hard-coded attributes in the "Attributes" menu now have
+         keyboard shortcuts
+       - Added "Full User Queries" toggle to the Settings menu.
+         When set, this mysterious setting will make double-clicking
+         a username set the current query to "*@sessionID", rather than
+         "currentFileQuery@sessionID".
+       - The BeShare title bar now tells you how many results you
+         currently have displayed.
+       * time remaining now shows hours:minutes:seconds if necessary,
+         instead of just minutes:seconds
+       * Fixed a bug that was causing duplicate MIME entries
+         to show up in the Attributes menu.
+
+v1.50b - BeShare now supports sharing of directories and
+         symlinks to directories.  (Note that duplicate filenames
+         aren't supported--if you share two or more files with the same
+         name, only one will show up in the file listings, and
+         it will be indeterminate which file people get when they
+         select that listing for download)
+       - You can now do query-by-session-ID, e.g. "*@172".
+       - double-clicking a user's name will now set the current
+         query to only look at that user's files.
+       - Added bytes-per-second and ETA indicators to the transfer boxes.
+       - IRC-style "/nick" command now supported.
+       - "/action" is now supported as a synonym for "/me".
+       - The username you specify with "/msg" is now case-insensitive.
+
+v1.41b * Transferring files to and from people behind firewalls
+         was broken.  It's fixed now.
+       - PowerPC version is gone again, as I'm at home and
+         don't have a PowerPC handy to compile it on... 
+
+v1.40b - Added "max simultaneous downloads" menu.  Now
+         you can select and queue up as many transfers as you
+         want, and BeShare will delay starting them until
+         there is "room" for them.
+       - BeShare queries can now be of the form
+         fileExp@userExp, where userExp is the name of  
+         another user (or a regular expression matching
+         against other user's names).  When a query is
+         of this form, only files that match both expressions
+         will be shown.  (Limitation: the user expression is
+         evaluated statically, and thus isn't 'live')
+         Simple Example: *.mp3@Jeremy
+         Fancy Example:  *.(mp?,avi)@(Jeremy,Joanna,*away)
+       - If you have scrolled back in the chat view, the
+         view will no longer automatically scroll back down
+         to the bottom of the chat listing when a new 
+         message is received.
+       - BeShare now filters out 'old' query results
+         so that when you change queries, you won't
+         end up with bits of the old result set in your
+         new result set.
+       - BeShare now sends a PR_COMMAND_JETTISON_RESULTS
+         message when the query is halted or changed, so
+         that you don't have to finish downloading the old
+         result set before you getting the new one.
+       - PowerPC version included again!
+       * The initial shared-file-data upload is now partitioned
+         into 50-filename segments, for better performance.
+       * Increasing a threshold via the "Max Simultaneous..."
+         menus will now immediately activate any queued
+         transfers so that the new threshold is met.
+       * Removed key-shortcut for 'About' (so now
+         you can alt-a to select all in the chat window)
+       * Changed 'Connect' key binding to alt-N.
+         (alt-C was interfering with Copy/Paste)
+       * Greatly reduced the flicker in the download status bars.
+       * Fixed a race condition in MUSCLE that was causing
+         BeShare to crash occasionally during uploads.
+
+v1.30b - Tweaked the download meter text a bit.
+       - Added SplitPane controllers to the GUI so you 
+         can rearrange the layout to your liking.  (Thanks 
+         to YNOP Talton for his excellent SplitPane class!)
+       - Added automatic download resume.  Now if you
+         attempt to download a file that you already
+         have the first piece of, the download will append
+         to your current file instead of starting anew.
+         Note that both the sending AND receiving clients 
+         must be v1.30 or later for auto-resuming to happen!
+       - Added a "Reset Layout" option to the File menu.
+         This will reset the split pane bars to their
+         default orientations... good for when you get lost in the UI...
+
+v1.20b - Added Settings menu with some more options.
+       - Added better firewall handling.  Now you can share files
+         from behind a firewall, as long as the person you are
+         sharing them with isn't also behind a firewall.  (people
+         who are behind firewalls won't see the files of other
+         people who are also behind a firewall)
+       - You can now specify the maximum number of simultaneous
+         downloads allowable.  If more sessions than that occur,
+         the latter sessions will not begin downloading until 
+         the previous ones finish.
+       - You can now advertise your upload bandwidth, and see
+         the upload bandwidths of other users.
+       - Added support for IRC-style /msg and /me commands.
+       - Added "Clear Log" menu item.
+       - User list is now sortable.
+       * PPC version no longer included precompiled... if you
+         want to run PPC you'll have to compile it yourself.
+       * Fixed a bug where your server setting would be lost
+         if you quit without first connecting to the server.
+       * The Chat text view now reflows text and in general
+         behaves itself better.
+
+v1.11b - Tweaked the UI code so that updating the result list is
+         more efficient.  This should be noticable when you are
+         listing a large number of files at once.
+       - Added a log message that tells how many files you are sharing. 
+
+v1.10b - Changed the peer-to-peer protocol around so that
+         people behind firewalls can at least download files.
+         First public release.
+
+v1.00b - Beta for Martin
+
+
+Known problems with BeShare
+===========================
+
+- Sometimes you may get errors about "Couldn't create thread" when 
+  connecting to the server.  This comes from a problem in BeOS's 
+  net_server;  to solve it, restart networking, then restart 
+  BeShare, and try again.
+
+- BeShare is not able to transfer files if both machines are behind
+  firewalls.  There isn't much that can be done about this.
+
+- When doing a query-by-username (e.g. *@Jeremy), the username
+  portion of the query is not "live".  That is to say, the name
+  portion of the query is translated into a list of session IDs
+  on your client at the time you start the query, and the query
+  will only match files owned by one of those session IDs.  So
+  if you do a "*@J*" query, and Jeremy logs in after you started
+  the query, his files won't show up in your result set (unless
+  you do a Stop Query followed by a Start Query).  Lame, I know...
+

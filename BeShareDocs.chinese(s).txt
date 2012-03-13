@@ -1,0 +1,129 @@
+BeShare v2.28
+di Jeremy Friesner
+jaf@lcsaudio.com
+===================
+
+Translation Simplified Chinese
+by Xuqing Kuang(kuye)
+kuyeboy@163.com
+===================
+
+    BeShare 是一个基于的 BeOS 平台的原生文件共享工具，它的操作方式与其它文件共享
+工具（如 Napster、Hotline 等）类似，但它有一些高级特性。
+
+- BeShare 允许你共享并下载任何类型的文件，包括 mp3。
+- 当你浏览共享文件时，你可以看见它们的属性（就像在 BeOS 中使用 Tracker 
+  浏览文件一样）。
+- 你的查询可以一直处于“活动状态”，所以当有新的文件符合你的查询条件时，你将
+  会看见它们立刻被添加到搜索结果栏里（你并不需要事先点击类似“刷新”一样的按钮）
+- BeShare 内置了一个拥有基本功能的聊天机制帮助你进行社交活动。
+- BeShare 支持任意数量的并行上、下载，并将在未来支持从多个主机中同时下载同一个
+  文件以获取更好的下载速度。
+- BeShare 可以连接到任何一个 MUSCLE 服务器（详细情况请参考 
+  http://www.lcscanada.com/muscle）
+- BeShare 连同源代码一起发布，它将作为一个范例教你如何为 MUSCLE 编写客户端应用
+  程序。
+
+怎样使用 BeShare
+==================
+
+    想要运行 BeShare，只需要双击它的图标即可。当你看见它的界面时，请确认服务器”
+框中的域名或者 IP 地址是你希望连接到的主机地址，然后点击“文件”菜单中的“连接”
+选项连接到服务器，当你成功连接之后，你可以在“查询”框中输入你的查询条件，然后单
+“开始查找”按钮。当有文件符合你的查询条件时它将显示在窗口中的查询结果栏中。
+摘要：在每一次查找后的结果列表中，不同的文件具有不同的属性可以查看（如 mp3 文件
+的“音质速率”以及“播放时间”）。 请查看“属性”菜单中是否有你所感兴趣的属性。
+
+    如果你想下载某个文件，选中它，然后点击“下载文件(s)”按钮，该文件将会被下载到
+ BeShare 执行文件所在文件目录下的“downloads”目录下（此时你应该能看见在窗口右边
+增加了一条下载进度条）。
+    如果你希望将本机上的文件共享给其它人，只需要简单地将该文件放置到 BeShare 执行目录下的名称为“shared”的目录中。该目录下的任何文件都将能够被其它人下载，你将
+在搜索结果中看不到你自己共享出来的文件，但别人却可以看到它们。
+摘要：符号链接将在共享文件的过程中非常有用！
+
+    在 BeShare 里，你还能够通过右上方的“昵称栏”改变你的昵称，并且通过底部的“聊
+天栏”与其他人对话。
+摘要：在 BeShare 中并不保证昵称没有重复，但是你的对话序列号绝对是独一无二的
+
+BeShare 中的命令“/me”和“/msg”使用起来和 IRC 非常类似，假设你输入了：
+/me clips and cheers
+
+然后将会显示：
+动作：<你的昵称> claps and cheers
+
+然后输入：
+/msg jeremy Psst... hey buddy!
+后将会只有叫 Jeremy 的用户能看见你的“Psst... hey buddy!"这条消息。
+摘要：在这里你可以用对话序列号来代替昵称，如果你希望如此的话。
+
+在这里我们也能使用通配符，例如：
+/msg J& Look!
+
+这条消息将发送给所有昵称以 J 开头的用户—Jeremy、Joanna、Joellen、等等
+摘要：当接收到一个私聊消息后，该消息将以亮蓝色显示出来。
+
+如果想获得更多的信息，请在聊天栏中输入：
+/help
+
+BMessage 支持
+================
+
+        BeShare 利用它的主 BMessage 对象监听所有已验证的 BMessage，它的主要用途在于你
+可以通过在SpickyKeys 中定义热键来控制 BeShare 的行为：
+
+    这里有一些文字范例，你可以将它们输入进 SpickyKeys 的“Application”栏以梆定控制
+键来控制 BeShare 行为。
+
+*SendMessage application/x-vnd.Sugoi-Beshare 'scrn' name=filename.png
+   - 控制 BeShare 去共享一个屏幕截图（你可以自己指定该文件名）
+
+*SendMessage application/x-vnd.Sugoi-Beshare 'halt'
+   - 控制 BeShare 暂停所有上载
+
+*SendMessage application/x-vnd.Sugoi-Beshare 'resu'
+   - 控制 BeShare 恢复所有上载
+
+*SendMessage application/x-vnd.Sugoi-Beshare 'name' name=MyName
+   - 控制 BeShare 改变你的昵称为 MyName
+
+*SendMessage application/x-vnd.Sugoi-Beshare 'stat' status=MyStatus
+   - 控制 BeShare 改变你的状态为 MyStatus
+
+*SendMessage application/x-vnd.Sugoi-Beshare 'serv' server=beshare.tycomsystems.com
+   - 控制 BeShare 切换到指定的 MUSCLE 服务器
+
+*SendMessage application/x-vnd.Sugoi-Beshare 'quer' query=*.mpg
+   - 控制 BeShare 指定另一个搜索条件
+
+*SendMessage application/x-vnd.Sugoi-Beshare 'quer' query=
+   - 控制 BeShare 禁止文件搜索
+
+*SendMessage application/x-vnd.Sugoi-Beshare 'pane' pos=50%
+   - 控制 BeShare 修改它栏与栏之间的分隔条。
+     该命令带有许多参数：
+       pos = 栏目之间的分隔条位置， either in pixels or as a percentage
+             of the pane's height or width.
+       which = 哪个分隔条将被修改， 0 是主栏，1 是文件区分割条，而 2 是聊天分割条。
+       dir = 分割条对齐的方位，V 是纵向，H 是横向，
+             or it can be left unspecified to retain the current alignment.
+     Multiple panes can be set in a single command by specifying arguments
+     multiple times.  Arguments that aren't specified will be given reasonable
+     defaults.
+
+BeShare 中已知的问题
+===========================
+
+- 有时你会在连接服务器的过程中得到一个“无法创建线程"的错误。
+  这是 BeOS 的 net_server 的问题，要解决它，只需要重新启动网
+  络服务，然后重新启动 BeShare 即可。
+
+- BeShare 无法在同时为防火墙后面的两台电脑传送文件。这不是什
+  么问题，我将能很快解决它。
+
+- 当一个用户名为查询条件时（如：*@Jeremy），本次查询将无法置于
+  “活动”模式。换句话说就是，当你开始搜索以昵称以 J 开头“*@J*”
+  的用户的所有文件时，BeShare 将仅仅列出“当时”所有以 J 开头的
+  用户的文件，如果 Jeremy 在你搜索后登陆服务器的话，他的文件
+  将不会在搜索结果中列出。
+  （当然，你可以停止搜索并重新开始一次）
+  还不明白怎么回事的朋友们，我知道，我会修复它的 ...

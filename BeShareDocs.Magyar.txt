@@ -1,0 +1,113 @@
+BeShare v2.28
+írta Jeremy Friesner
+jaf@lcsaudio.com
+(hungarian documentation)
+=========================
+
+BeShare egy BeOS-re írt file-megosztó program. Más ilyen programokhoz
+hasonlóan mûködik (Napster, Hotline, stb), de van néhány elõnye:
+
+- BeShare-rel akármilyen típusú filet tölthetsz le/fel, nem csak mp3-at
+- Böngészés közben láthatod a fileok tulajdonságait (hasonlóan a Trackerhez)
+- A lekérdezés mindig "élõ", így ha új fileok felelnek meg a keresésednek,
+  akkor azok azonnal bekerülnek az eredmények közé (nem kell a frissítésre
+  kattintanod)
+- BeShare-ben van egy kezdetleges csevegés, a társasági embereknek
+- BeShare akárhány párhuzamos fel- és letöltés mehet egyszerre, de a
+  hatékonyság érdekében az egyidejû file lekéréseket sorban rakja.
+- BeShare bármely MUSCLE szerverhez kapcsolódik (bõvebben lásd a
+  http://www.lcscanada.com/muscle címen)
+- BeShare-hez jár a forráskódja is, ami példázza, hogyan kell MUSCLE
+  klienst írni
+
+Hogyan mûködik a BeShare
+========================
+
+Az indításhoz csak kattints az ikonjára. Ha már látod a grafikus felüeltet,
+akkor gyõzõdj meg róla, hogy a "Server" szövegdobozban annak a MUSCLE
+szervernek az IP címe van, amelyikhez kapcsolódni akarsz, és aztán válaszd
+a "Connect" menüpontot a "File" menübõl. Ha már felkapcsolódtál, akkor
+beírhatod a keresési szöveget a "Query" szövegdobozba és kattints a
+"Start Query" gombra. Bármilyen file, ami megfelel a keresésednek, az
+megjelenik az eredmények panelen, az ablak közepén. Ha megjelentek fileok
+a listában, akkor azok különbözõ tulajdonságait (pl. bitrate vagy hossz az
+mp3-hoz) már meg is nézheted. Menj az "Attributes" menübe, ha ezekre vagy
+kíváncsi,
+
+Ha látsz egy filet, amit le akarsz tölteni, akkor kattitnts rá és nyomd meg a
+"Download File(s)" gombot. A file a "downloads" könyvtárba töltõdik majd le,
+a BeShare program mellé. (A letöltés állapotát jelzõ doboz az ablak jobb
+oldalán jelenik meg).
+
+Ha lehetõvé szeretnéd tenni, hogy mások fileokat töltsenek le a gépedrõl,
+akkor csak nyiss egy "shared" nevû könyvtárat a BeShare program mellett.
+Minden file, ami ebbe a könyvtárba kerül, azt más le tudja tölteni. Ezek a fileok
+nem kerülnek bele a te lekérdezésed eredményei közé, de mások látni fogják.
+(Tipp: a symlink-ek hasznosak erre a célra!)
+
+Nagyjából ennyi; beállíthatod a felhasználói nevedet a jobb felsõ
+szövegdobozban, és cseveghetsz az alul lévõ másik szövegdobozzal. Fontos,
+a felhasználói nevek nem garantáltan egyediek, de minden felhasználó kap
+egy garantáltan egyedi "session ID"-t.
+
+A "/me" és "/msg" IRC parancsok rendesen mûködnek. Szóval, ha beírod, hogy
+
+/me tapsol és éljenez
+
+akkor a csevegõablakban így fog megjelenni:
+
+Action:  <TeNeved> tapsol és éljenez
+
+vagy ha beírod, hogy
+
+/msg Jeremy Pszt... hé haver!
+
+akkor csak a Jeremy nevû felhasználó(k) fogják látni az üzenetedet, hogy
+"Pszt... hé haver!". (Session ID-t is adhatsz meg név helyett, ha akarsz)
+
+A nevek helyett használhatsz sablont is, például ha beírod, hogy
+
+/msg J* Nézd!
+
+akkor a "Nézd!" üzenetet megkapja Jeremy, Joanna, Joellen, stb. Ha egy
+privát üzenetet kapsz, akkor a szöveg világoskéken jelenik meg a szokásos
+fekete helyett.
+
+A többi parancsról a /help paranccsal tudhatsz meg többet.
+
+Közremûködõk
+============
+
+BeShare-t írta Jeremy Friesner (jaf@lcsaudio.com)
+MUSCLE osztályokat írta Level Control Systems (http://www.lcsaudio.com)
+ColumnListView osztályt írta Brian Tietz (btietz@fastwave.net)
+SplitPane osztályt írta YNOP Talton (ynop@acm.org)
+Spanyolra fordította Phantom (socca@bemail.org)
+Németre fordította hoshy (beat.rupp@gmx.net)
+Hollandra fordította Zathros (ted@nds.nl)
+Portugálra fordította BGA (bga@din.uem.br)  
+Franciára fordította Didier Bertrand (didix@mail.be)
+Olaszra fordította Dario Accornero (bexoft@bexoft.com)
+Oroszra fordította Oleg V. Kourapov (2sheds@newmail.ru)
+Svédre és eszperantóra fordította Göran (e8gz@etek.chalmers.se)
+Norvégra fordította Eivind Ødegård (gingermig@yahoo.no)
+Szerbre fordította bug-yugo / Nikola Pizurica (pizurica@neobee.net)
+Magyarra fordította mch (mch@freemail.hu)
+
+Ismert problémák a BeShare-ben
+==============================
+
+- Néha kaphatsz "Couldn't create thread" hibát, amikor egy szerverhez
+  próbálsz kapcsolódni,. Ez a BeOS net_server-e miatt van, a megoldásként
+  indítsd újra a hálózatot (Restart networking), aztán pedig a BeShare-t.
+
+- BeShare-rel nem lehet fileokat tölteni két olyan gép között, amelyek tûzfal
+  mögött vannak. Ezzel nem lehet mit csinálni.
+
+- Ha felhasználói név alapján keresel (pl, *@Jeremy), akkor a név része a
+  keresésnek nem "élõ". Ez azt jelenti, hogy a név átalakul egy "session ID"
+  listára amikor megkezdõdik a keresés, és a keresés csak azokra a fileokra 
+  fog vonatkozni, amelyek azoknál az azonosítójú felhasználóknál vannak. Így
+  Ha keresel a "*@J*" nevû embereknél és Jeremy a lekérés elküldése után
+  lép be, akkor az õ filejai nem kerülnek bele az eredményeid közé (hacsak
+  nem állítod le és indítod újra a keresést). Béna, tudom...

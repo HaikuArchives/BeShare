@@ -1,0 +1,11 @@
+
+In order to recompile BeShare, do the following:
+
+1. Make sure you have the BeOS developers tools 
+   (gcc or mwcc) installed on your machine.
+2. Download MUSCLE 3.20 or higher from 
+      http://www.lcscanada.com/muscle/index.html,
+   and unpack it so that the "muscle" directory is present in the
+   directory above this one.
+3. While in this directory, run "make".  After a minute or two, a fresh 
+   BeShare executable named either BeShare.x86 or BeShare.ppc should be ready.  

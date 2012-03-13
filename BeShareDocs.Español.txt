@@ -1,0 +1,59 @@
+BeShare v2.28
+por Jeremy Friesner
+jaf@lcsaudio.com
+==================
+
+Traducción Española: Osvaldo "Phantom" Gonzalez 
+(socca@uol.com.ar)
+
+BeShare es un programa nativo-BeOS para compartir archivos.
+Este opera de manera similar a otros programas (Napster, Hotline, etc) pero con algunas ventajas:
+
+-BeShare le permite a usted subir y bajar todo tipo de archivos, no solo mp3.
+-Cuando navega los archivos, puede ver los atributos (de manera similar al la vista del Tracker de Be)
+-Su búsqueda o query, está siempre "viva", entonces si aparecen nuevos archivos que encajan con tu busqueda, los verás agregados a tu lista de manera inmediata (no tendrá que clickear en ning�n botón para refrescar primero)
+-BeShare incluye un mecanismo rudimentario de chat para tus contactos sociales.
+-BeShare soporta cualquier número de bajada y subida de archivos simultáneos en paralelo, pero serializará los pedidos de archivos simultáneos  para dar una mejor eficiencia del host.
+-BeShare se conecta a cualquier servidor MUSCLE (ver http://www.lcscanada.com/muscle para detalles)
+-BeShare viene con el source, y sirve como un ejemplo de como escribir un cliente MUSCLE.
+
+
+Como usar BeShare
+================
+
+Para ejecutar BeShare, solo debe hacer doble click en su icono.  Cuando usted ve la interface gráfica, esté seguro que la lengûeta de "Server" contenga el nombre o dirección de IP del servidor MUSCLE al que se desea conectar, y luego elija "Connect" del menú File. Una vez conectado, puede tipear la busqueda deseada dentro del "Query", i clickee "Start Query". Cualquier archivo que coincida con su busqueda será mostrado en el panel de resultados en el medio de la ventana. Note que una vez que los archivos han aparecido en la lista de resultados, diferentes atributos asociados con cada uno (Ej. "Bit Rate" (frecuencia) o "Play Length" (duración) para archivos mp3s) serán habilitados para ver. Chequee el menú "Attributes" para ver si hay algún atributo que usted desee mirar.
+
+Si usted ve un archivo que quiere, clickee sobre él, luego clickee en el botón "Download File(s)" 
+El archivo será descargado dentro del directorio "downloads" cerca del BeShare ejecutable. (Usted debería ver el status de descarga aparecer en el lado derecho de la ventana).
+
+Si usted desea hacer que sus archivos están disponibles para que otra persona los descargue de su máquina, simplemente los debe poner dentro del directorio "shared" cerca del BeShare ejecutable. Cualquier archivo que esté en el directorio shared, estará disponible para que otras personas lo descarguen. Note que usted no verá esos archivos en sus propias busquedas, pero otras personas los verán. (Nota: symlinks serán de mucha ayuda aquí!)
+
+Usted también puede elegir su nombre de usuario, en el campo arriba a la derecha, y chatear tipeando el texto en el campo de abajo. Note que los nombres de usuario NO son garantizados para ser únicos, pero cada usuario recibe garantizado un ID único de sesión.
+
+Comandos de IRC "/me" y "/msg" funcionan como se esperaba. Eso es para decir.
+Entrando
+
+/me aplaude y alienta
+
+mostrará en la ventana de chat de todos como:
+
+Action  <Su_nombre_de_usuario> aplaude y alienta
+
+y entrando...
+
+/msg Jeremy Psst... hey amigo!
+
+Hará que solo el usuario Jeremy vea tu mensaje "Psst... hey amigo!" (Note que usted puede especificar su ID de sesión vez del nombre de usuario) Usted puede también hacer "wildcarding" en los nombres que quiere, ej.
+
+/msg J* Mira!
+
+Mandará el mensaje "Mira!" a Jeremy, Joanna, Joellen, etc.
+
+Créditos
+========
+
+BeShare fué escrito por Jeremy Friesner (jaf@lcsaudio.com)
+MUSCLE classes por Level Control Systems (http://lcsaudio.com)
+ColumnListView class es por Brian Tietz (btietz@fastwave.net)
+SplitPane class is por YNOP tatlon (ynop@acm.org)
+

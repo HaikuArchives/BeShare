@@ -1,0 +1,184 @@
+BeShare v2.28
+di Jeremy Friesner
+jaf@lcsaudio.com
+===================
+
+Traduzione italiana:
+Mattia Tristo
+mattia_tristo@libero.it
+===================
+
+
+BeShare é un programma di condivisione di file nativo per BeOS.
+Opera similmente ad altri programmi di questo tipo (Napster, 
+Hotline, etc) ma con alcuni vantaggi:
+
+- BeShare ti permette di uploadare o scaricare qualsiasi tipo di file, 
+	non solo mp3.
+- Mentre navighi tra i files, puoi vedere i loro attributi (similmente alla 
+	vista del Tracker della Be)
+- La tua query é sempre "live", cosi' se un nuovo file che riscontra le 
+	richieste della tua query diventa disponibile, lo vedrai da subito 
+	aggiunto alla lista dei risultati (non dovrai premere "refresh" o 
+	qualsiasi altro pulsante prima)
+- BeShare include un rudimentale meccanismo di chat per i tuoi affari 
+	sociali.
+- BeShare supporta un numero qualsiasi di uploads e downloads 
+	simultanei in parallelo, ma serializzerà le richieste simultanee 
+	dei files per un dato host per maggior efficienza.
+- BeShare si connette ad ogni server MUSCLE (vedere 
+	http://www.lcscanada.com/muscle per maggiori dettagli)
+- BeShare viene distribuito assieme al codice sorgente, e vuole 
+	essere un esempio di come scrivere un client MUSCLE.  
+
+
+Come usare BeShare
+==================
+
+Per eseguire BeShare, basta fare un doppio click sulla sua icona.  Quando 
+vedi la GUI, assicurati che la casella di testo "Server" contenga il nome  
+o l'indirizzo IP del server MUSCLE a cui ti vuoi connettere, e quindi scegli 
+"Connetti" dal menu File (NDT per vedere il programma in italiano selezionare, 
+nel menu "Settings", la voce "Languages", e quindi italiano). Una volta connesso, 
+puoi digitare una query nella casella di testo "Query", e cliccare su 
+"Start Query". Qualsiasi file che risolverà la tua query verrà immediatamente 
+mostrata nel pannello dei risultati nel mezzo della finestra. Nota che una volta 
+che i files sono apparsi nella lista dei risultati, i vari attributi associati con questi 
+files (es. "Bit Rate" o "Play Length" per i files mp3) saranno disponibili per la 
+visualizzazione. Controlla il menu "Attributes" per vedere se ci sono altri attributi 
+che vuoi visualizzare.
+
+Se vedi un file che vuoi, clicca su di esso, quindi clicca sul bottone "Download 
+File(s)". Il file verrà scaricato nella cartella "downloads" che si trova nella stessa 
+cartella dell'eseguibile BeShare.  (Dovresti veder apparire un rettangolo con lo 
+stato del download sul lato destro della finestra).
+
+Se vuoi rendere disponibili dei files alle altre persone per il download dalla tua 
+macchina, semplicemente metti i files nella cartella denominata "shared" che 
+si trova nella stessa cartella dell'eseguibile BeShare. Tutti gli altri files dentro o 
+in sottodirectory della cartella condivisa saranno resi disponibili agli altri per il 
+download. Nota che tu non vedrai questi files come risultato delle tue queries, 
+ma gli altri li vedranno.  (Nota: i link simbolici sono molto utili in questo caso!)
+
+Questo é quanto; puoi anche impostare il tuo nome utente usando la casella di 
+testo in alto a sinistra, e chattare digitando del testo nella casella in basso. Nota 
+che non é garantito che il nome utente sia unico, ma é garantito che ogni utente 
+riceva un unico ID di sessione.
+
+I comandi IRC "/me" e "/msg" funzionano come ti aspetti. Come dire che immettere
+
+/me batte le mani ed esulta
+
+mostrerà a tutti nella finestra della chat 
+
+Action:  <IlTuoNomeUtente> batte le mani ed esulta
+
+e immettendo
+
+/msg Jeremy Psst... hey ragazzo!
+
+Farà in modo che solo l'utente(o gli utenti) che si chiamano Jeremy vedranno il 
+messaggio "Psst... hey buddy!"  (Nota che puoi specificare un ID sessione 
+invece di un nome utente qui se vuoi). Puoi anche eseguire delle operazioni con 
+le wildcards sui nomi se vuoi, es.
+
+/msg J* Guarda!
+
+Manderà il messaggio"Guarda!" a Jeremy, Joanna, Joellen, ecc.
+Quando ricevi un messaggio privato, il testo verrà mostrato in blu chiaro invece 
+del tradizionale colore nero.
+
+Per informazioni sugli altri comandi, digita /help nella linea della chat.
+
+Supporto dei BMessage
+================
+
+BeShare ascolta per certi BMessages arriving sulla porta del suo oggetto principale 
+BMessage. La ragione principale per questo é che puoi controllare BeShare 
+attraverso degli hotkey da SpicyKeys.
+
+Qui trovi alcuni esempi di stringhe di testo che puoi digitare nella colonna 
+"Application" della GUI di SpicyKeys per collegare un tasto ad una azione di BeShare:
+
+*SendMessage application/x-vnd.Sugoi-Beshare 'scrn' name=filename.png
+   - Dice a BeShare di condividere uno /screenshot 
+	(opzionalmente con un nome di file specifico)
+
+*SendMessage application/x-vnd.Sugoi-Beshare 'halt'
+   - Dice a BeShare di mettere in pausa tutti gli uploads
+
+*SendMessage application/x-vnd.Sugoi-Beshare 'resu'
+   - Dici a BeShare di riprendere tutti gli uploads
+
+*SendMessage application/x-vnd.Sugoi-Beshare 'name' name=MyName
+   - Dice a BeShare di cambiare il tuo nome utente in MyName
+
+*SendMessage application/x-vnd.Sugoi-Beshare 'stat' status=MyStatus
+   - Dice a BeShare di cambiare il tuo stato utente in MyStatus
+
+*SendMessage application/x-vnd.Sugoi-Beshare 'serv' server=beshare.tycomsystems.com
+   - Dice a BeShare di cambiare server MUSCLE, in questo caso, 
+	al server beshare.tycomsystems.com.
+
+*SendMessage application/x-vnd.Sugoi-Beshare 'quer' query=*.mpg
+   - Dice a BeShare di cambiare la query, in questo caso, in *.mpg
+
+*SendMessage application/x-vnd.Sugoi-Beshare 'quer' query=
+   - Dice a BeShare di disabilitare la query dei files
+
+*SendMessage application/x-vnd.Sugoi-Beshare 'pane' pos=50%
+   - Dice a BeShare come arrangiare i suoi SplitPanes. Questo comando 
+	accetta più argomenti:
+       pos = posizione del divisorio di un pannello, sia in pixels che in percentuale 
+		dell'altezza o della larghezza di un pannello.
+       which = quale divisorio impostare.  0 stà per il principale, 1 per il divisorio 
+		dell'area dei files, e 2 per il divisorio della chat
+       dir = direzione di allineamento del divisorio.  V stà per verticale, H per 
+		orizzontale, o può essere lasciato non specificato per tenere 
+		l'allineamento corrente.
+     Pannelli multipli possono venire impostati in un singolo comando specificando 
+	degli argomenti più volte. Agli argomenti che non vengono specificati 
+	verranno assegnati dei valori ragionevoli di default.
+
+Crediti
+=======
+
+BeShare é stato scritto da Jeremy Friesner (jaf@lcsaudio.com)
+Gli eseguibili per PowerPC sono stati compilati da Kancept
+Le classi MUSCLE da Level Control Systems (http://www.lcsaudio.com)
+La classe ColumnListView é di Brian Tietz (btietz@fastwave.net)
+La classe SplitPane é di YNOP Talton (ynop@acm.org)
+La traduzione spagnola a cura di Phantom (socca@bemail.org)
+La traduzione tedesca a cura di hoshy (beat.rupp@gmx.net)
+La traduzione olandese a cura di Zathros (Ted@3rd-rock.net)
+La traduzione potoghese a cura di BGA (bga@bug-br.org.br)  
+La traduzione francese a cura di Didier Bertrand (didix@mail.be)
+La traduzione italiana a cura di Dario Accornero (bexoft@bexoft.com)
+La traduzione russa a cura di Oleg V. Kourapov (2sheds@newmail.ru)
+La traduzione svedese e in esperanto a cura di Göran (e8gz@etek.chalmers.se)
+La traduzione norvegese a cura di Eivind Ødegård (gingermig@yahoo.no)
+La traduzione serba a cura di bug-yugo / Nikola Pizurica (pizurica@neobee.net)
+La traduzione ungherese a cura di Mate Helfrich / mch (mch@freemail.hu)
+La traduzione bulgherese a cura di Zlatko Zlayinov (zlati74@rambler.bg)
+
+gli indirizzi di tutti i traduttori:  socca@bemail.org, beat.rupp@gmx.net, ted@3rd-rock.net, bga@bug-br.org.br, didix@mail.be, bexoft@bexoft.com, mattia_tristo@libero.it, 2sheds@newmail.ru, e8gz@etek.chalmers.se, gingermig@yahoo.no, pizurica@neobee.net, mch@freemail.hu, zlati74@rambler.bg, cypress@globeline.ro
+
+
+Problemi conosciuti con BeShare
+===========================
+
+- Talvolta puoi incontrare l'errore "Couldn't create thread" quando ti connetti 
+ad un server. Quest'errore proviene da un problema con il net_server di BeOS; 
+per risolverlo, riavvia il networking, quindi riavvia BeShare, e tenta di nuovo.
+
+- BeShare non é in grado di traferire files se entrambe le macchine sono dietro 
+un firewalls. C'é poco da fare in questo caso.
+
+- Quando si esegue una query-by-username (es. *@Jeremy), la porzione dello 
+username non é "live". Cioé, la porzione del nome della query viene tradotto in 
+una lista di ID di sessione sul tuo client quando inizia la query, e la query ritornerà 
+solo i files di possesse di uno di questi ID di sessione. Così se fai una query "*@J*",
+ e Jeremy si connette dopo che é iniziata la query, i suoi files non verranno
+ mostrati tra i risultati (a meno che tu non faccia uno Stop Query seguito da 
+uno Start Query).  Un pò da lamer, lo sò...
+
