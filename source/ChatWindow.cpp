@@ -1,19 +1,20 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-#include <app/Application.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <app/MessageFilter.h>
-#include <interface/Box.h>
-#include <interface/Font.h>
-#include <interface/ScrollBar.h>
-#include <interface/ScrollView.h>
-#include <interface/Input.h>
-#include <storage/Path.h>
+#include <Application.h>
+#include <Clipboard.h>
+#include <MessageFilter.h>
+#include <Box.h>
+#include <Font.h>
+#include <ScrollBar.h>
+#include <ScrollView.h>
+#include <Input.h>
+#include <Path.h>
 
-#include <support/Beep.h>
+#include <Beep.h>
 
 #include "ShareStrings.h"
 #include "ChatWindow.h"

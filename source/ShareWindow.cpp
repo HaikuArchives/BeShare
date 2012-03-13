@@ -45,7 +45,7 @@
 #include "PrivateChatWindow.h"
 
 #include "util/StringTokenizer.h"
-#include "util/SocketHolder.h"
+#include "util/Socket.h"
 #include "dataio/TCPSocketDataIO.h"
 #include "iogateway/MessageIOGateway.h"
 #include "message/Message.h"
@@ -1576,7 +1576,7 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
    // Start a thread to see if there are any new servers around
    if (_autoUpdateServers->IsMarked())
    {
-      AbstractReflectSessionRef plainSessionRef(new ThreadWorkerSession());
+      ThreadWorkerSessionRef plainSessionRef(new ThreadWorkerSession());
       plainSessionRef()->SetGateway(AbstractMessageIOGatewayRef(new PlainTextMessageIOGateway));
       if ((_checkServerListThread.StartInternalThread() == B_NO_ERROR)&&(_checkServerListThread.AddNewConnectSession(AUTO_UPDATER_SERVER, 80, plainSessionRef) != B_NO_ERROR)) _checkServerListThread.ShutdownInternalThread();
    }
@@ -2918,18 +2918,17 @@ void ShareWindow :: MessageReceived(BMessage * msg)
                {
                   case AST_EVENT_NEW_SOCKET_ACCEPTED:
                   {
-                     GenericRef tag;
+                     RefCountableRef tag;
                      if (next()->FindTag(AST_NAME_SOCKET, tag) == B_NO_ERROR)
                      {
-                        SocketHolderRef sref(tag, true);
-                        int socket = sref()?(sref()->ReleaseSocket()):-1;
+                        ConstSocketRef sref(tag, false);
                         uint32 remoteIP;
-                        if ((socket >= 0)&&(_sharingEnabled->IsMarked())&&((remoteIP = GetPeerIPAddress(socket)) > 0))
+                        if ((sref()) && (_sharingEnabled->IsMarked()) && ((remoteIP = GetPeerIPAddress(sref, true)) > 0))
                         {
                            uint64 banTime = IPBanTimeLeft(remoteIP);
                            if (banTime > 0)
                            {
-                              TCPSocketDataIO sockIO(socket, false);  // this will close the socket for us when it goes
+                              TCPSocketDataIO sockIO(sref, false);  // this will close the socket for us when it goes
                               MessageRef banRef = MakeBannedMessage(banTime, MessageRef());
                               if (banRef())
                               {
@@ -2951,7 +2950,7 @@ void ShareWindow :: MessageReceived(BMessage * msg)
                            {
                               ShareFileTransfer * newSession = new ShareFileTransfer(_shareDir, _netClient->GetLocalSessionID(), 0, 0, _maxUploadRate);
                               AddHandler(newSession);
-                              if (newSession->InitSocketUploadSession(socket, remoteIP, CountActiveSessions(true, NULL) >= _maxSimultaneousUploadSessions) == B_NO_ERROR) _transferList->AddItem(newSession);
+                              if (newSession->InitSocketUploadSession(sref, remoteIP, CountActiveSessions(true, NULL) >= _maxSimultaneousUploadSessions) == B_NO_ERROR) _transferList->AddItem(newSession);
                               else
                               {
                                  LogMessage(LOG_ERROR_MESSAGE, str(STR_COULDNT_START_SHAREFILETRANSFER_SESSION));
@@ -2962,7 +2961,7 @@ void ShareWindow :: MessageReceived(BMessage * msg)
                               DequeueTransferSessions();
                            }
                         }
-                        else CloseSocket(socket);
+                        //else CloseSocket(sref);
                      }
                   }
                   break;
@@ -4575,6 +4574,34 @@ SendChatText(const String & t, ChatWindow * optEchoTo)
    {
       SetFont(lowerText, true);
    }
+   // Zaranthos - uptime code from YNOP.  Coding help from YNOP and yuktar
+   else if (lowerText.StartsWith("/uptime"))
+   {
+      system_info info;
+      get_system_info(&info);
+    //microseconds snce January 1st, 1970
+      bigtime_t micro = system_time();
+      bigtime_t milli = micro/1000;
+      bigtime_t sec = milli/1000;
+      bigtime_t min = sec/60;
+      bigtime_t hours = min/60;
+      bigtime_t days = hours/24;
+    char str[100]; //the time string
+    for (int i=0; i<100; i++) str[i]=0; //clear the string
+    if (days) sprintf(str,"%Ld day%s,",days,days!=1?"s":""); //add days if >0
+    if (hours%24) sprintf(str,"%s %Ld hour%s,",str,hours%24,(hours%24)!=1?"s":""); //add hours if >0
+    if (min%60) sprintf(str,"%s %Ld minute%s,",str, min%60, (min%60)!=1?"s":""); //add minutes if >0
+    sprintf(str,"%s %Ld second%s",str,sec%60,(sec%60)!=1?"s":""); //add seconds
+ //	printf("%s\n",str);fflush(stdout); //send to stdout for debugging
+    String newText="BeOS System Uptime: ";
+    int i=0; while(str[i]!='\0') newText+=str[i++];
+    lowerText= newText.ToLowerCase();
+//   const char * txt = newText,Cstr()+(((lowerText.StartsWith("/me ")==false)&&(lowerText[0]=='/'))?1:0);
+     const char * txt = newText.Cstr()+0; // This doesn't do anything
+     _netClient->SendChatMessage("*", txt);  // if started with double slash, remove escape
+     LogMessage(LOG_LOCAL_USER_CHAT_MESSAGE, txt, NULL, NULL, false, optEchoTo);
+   // end Zaranthos except for uptime entry at the end of the help section.
+   }
    else if (lowerText.StartsWith("/nick "))
    {
       _userNameEntry->SetText(text->Cstr()+6);
@@ -4847,6 +4874,7 @@ SendChatText(const String & t, ChatWindow * optEchoTo)
       LogHelp("unalias",    STR_TOKEN_NAME,                    STR_REMOVE_AN_ALIAS,              optEchoTo);
       LogHelp("unban",      -1,                                STR_REMOVE_ALL_UPLOAD_BANS,       optEchoTo);
       LogHelp("watch",      STR_TOKEN_NAMES_OR_SESSION_IDS,    STR_SPECIFY_USERS_TO_WATCH,       optEchoTo);
+      LogHelp("uptime",     -1,                                STR_UPTIME,                       optEchoTo);
    }
    else if (lowerText.Equals("/info"))
    {

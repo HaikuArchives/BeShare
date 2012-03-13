@@ -331,7 +331,7 @@ SetBandwidthLimit(uint32 limit)
       _bandwidthLimit = limit;
       if (_mtt)
       {
-         PolicyRef pref;
+         AbstractSessionIOPolicyRef pref;
          if (_bandwidthLimit > 0) pref.SetRef(new RateLimitSessionIOPolicy(_bandwidthLimit));
          if (_uploadSession) _mtt->SetNewOutputPolicy(pref);
                         else _mtt->SetNewInputPolicy(pref);
@@ -418,13 +418,14 @@ InitAcceptSession(const char * remoteSessionID)
 
    // First try the "standard" ports (to satisfy those firewall-configging guys),
    // if none of those are available, we'll use any old port.
-   ReflectSessionFactoryRef factoryRef(new ThreadWorkerSessionFactory());
+   ThreadWorkerSessionFactoryRef factoryRef(new ThreadWorkerSessionFactory());
    status_t ret = B_ERROR;
-   for (int i=DEFAULT_LISTEN_PORT; i<=DEFAULT_LISTEN_PORT+LISTEN_PORT_RANGE; i++)
+   for (int i = DEFAULT_LISTEN_PORT; i <= DEFAULT_LISTEN_PORT + LISTEN_PORT_RANGE; i++)
    {
-      if ((ret = _mtt->PutAcceptFactory(((i<DEFAULT_LISTEN_PORT+LISTEN_PORT_RANGE)?i:0), factoryRef)) == B_NO_ERROR)
+      if ((ret = _mtt->PutAcceptFactory(((i < DEFAULT_LISTEN_PORT + LISTEN_PORT_RANGE) ? i : 0), factoryRef)) == B_NO_ERROR)
       {
-         _acceptingOn = factoryRef()->GetPort();
+      	#warning remake?
+         //_acceptingOn = factoryRef()->GetPort();
          ret = _mtt->StartInternalThread();
          break;
       }
@@ -438,7 +439,7 @@ InitAcceptSession(const char * remoteSessionID)
 
 status_t 
 ShareFileTransfer::
-InitSocketUploadSession(int socket, uint32 remoteIP, bool sendQueuedNotify)
+InitSocketUploadSession(const ConstSocketRef & socket, uint32 remoteIP, bool sendQueuedNotify)
 {
    _isAcceptSession = false;
    _remoteIP = remoteIP;
@@ -462,14 +463,14 @@ InitSocketUploadSession(int socket, uint32 remoteIP, bool sendQueuedNotify)
    return ret;
 }
 
-AbstractReflectSessionRef
+ThreadWorkerSessionRef
 ShareFileTransfer :: GetTransferSessionRef()
 {
-   AbstractReflectSessionRef workerRef;
+   ThreadWorkerSessionRef workerRef;
    if (_bandwidthLimit > 0)
    {
       workerRef.SetRef(new ThreadWorkerSession);
-      PolicyRef pref(new RateLimitSessionIOPolicy(_bandwidthLimit));
+      AbstractSessionIOPolicyRef pref(new RateLimitSessionIOPolicy(_bandwidthLimit));
       if (_uploadSession) workerRef()->SetOutputPolicy(pref);
                      else workerRef()->SetInputPolicy(pref);
    }

@@ -1,4 +1,4 @@
-BeShare v2.28
+BeShare v2.29
 írta Jeremy Friesner
 jaf@lcsaudio.com
 (hungarian documentation)

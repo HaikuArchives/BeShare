@@ -977,7 +977,7 @@ AddWatchedDirectory(const node_ref & dirNode, const BEntry & entry, thread_id * 
                   }
                }
             }
-            if (uploadMsg()->CountNames() > 0) SendMessageToSessions(uploadMsg, false);
+            if (uploadMsg()->GetNumNames() > 0) SendMessageToSessions(uploadMsg, false);
          }
          else WARN_OUT_OF_MEMORY;
       }

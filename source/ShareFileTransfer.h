@@ -112,7 +112,7 @@ public:
     * on our queue of things to do (i.e. not ready to be processed yet).
     * Call BeginTransfer() to start the actual transfer of data. 
     */
-   status_t InitSocketUploadSession(int socket, uint32 remoteIP, bool sendNotifyQueued);
+   status_t InitSocketUploadSession(const ConstSocketRef & socket, uint32 remoteIP, bool sendNotifyQueued);
 
    /* Handles notification BMessages from the BMessageTransceiverThread */
    virtual void MessageReceived(BMessage * msg);
@@ -232,7 +232,7 @@ public:
 private:
    status_t GenerateNewFilename(const BDirectory & dir, BEntry & getRetEntry, uint32 count) const;
    void DrawText(BView * lv, const BRect & r, const BBitmap * b, const char * text, float y, float labelBottom);
-   AbstractReflectSessionRef GetTransferSessionRef();
+   ThreadWorkerSessionRef GetTransferSessionRef();
    String GetFileSizeDataString(int64 bd, int64 fs) const;
 
    void DoUpload();

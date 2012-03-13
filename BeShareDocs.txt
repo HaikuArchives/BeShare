@@ -1,4 +1,4 @@
-BeShare v2.28
+BeShare v2.29
 by Jeremy Friesner
 jaf@lcsaudio.com
 ===================
@@ -156,6 +156,11 @@ all translator addresses:  socca@bemail.org, beat.rupp@gmx.net, ted@3rd-rock.net
 
 History
 =======
+v2.29  * Merged in YNOP and yuktar uptime code
+	* Compiled with gcc4 only 
+       o Updated the code to work the with the MUSCLE 4.63
+         API changes.  Note that this version of BeShare
+         requires MUSCLE 4.63. MUSCLE 5.xx are still broken
 
 v2.28  * Merged in Pintaio's corrections to the Spanish  
          translation strings.

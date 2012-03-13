@@ -377,6 +377,7 @@ static const char * _englishStrings[NUM_STRINGS] = {
    "Couldn't find font",
    "Shortest Uploads First",
    "Finnish"
+   "Display uptime"
 };
 
 static const char _spanishShortcuts[NUM_SHORTCUTS] = {
@@ -707,6 +708,7 @@ static const char * _spanishStrings[NUM_STRINGS] = {
    "No se puede encontrar la fuente",
    "Subidas de menor tamaño primero",
    "Finés"
+   "Display uptime"
 };
 
 static const char _germanShortcuts[NUM_SHORTCUTS] = {
@@ -1037,6 +1039,7 @@ static const char * _germanStrings[NUM_STRINGS] = {
    "Couldn't find font",
    "Shortest Uploads First",
    "Finnisch"
+   "Display uptime"
 };
 
 static const char _dutchShortcuts[NUM_SHORTCUTS] = {
@@ -1367,6 +1370,7 @@ static const char * _dutchStrings[NUM_STRINGS] = {
    "Couldn't find font",
    "Shortest Uploads First",
    "Finnish"
+   "Display uptime"
 };
 
 static const char _portugueseShortcuts[NUM_SHORTCUTS] = {
@@ -1697,6 +1701,7 @@ static const char * _portugueseStrings[NUM_STRINGS] = {
    "Couldn't find font",
    "Shortest Uploads First",
    "Finnish"
+   "Display uptime"
 };
 
 static const char _frenchShortcuts[NUM_SHORTCUTS] = {
@@ -2027,6 +2032,7 @@ static const char * _frenchStrings[NUM_STRINGS] = {
    "Couldn't find font",
    "Shortest Uploads First",
    "Finnish"
+   "Display uptime"
 };
 
 // DA@Y2K: Added Italian localisation.
@@ -2358,6 +2364,7 @@ static const char * _italianStrings[NUM_STRINGS] = {
    "Couldn't find font",
    "Shortest Uploads First",
    "Finnish"
+   "Display uptime"
 };
 
 static const char _russianShortcuts[NUM_SHORTCUTS] = {
@@ -2688,6 +2695,7 @@ static const char * _russianStrings[NUM_STRINGS] = {
    "Couldn't find font",
    "Shortest Uploads First",
    "Finnish"
+   "Display uptime"
 };
 
 static const char _esperantoShortcuts[NUM_SHORTCUTS] = {
@@ -3017,6 +3025,7 @@ static const char * _esperantoStrings[NUM_STRINGS] = {
    "Couldn't find font",
    "Shortest Uploads First",
    "Finnish"
+   "Display uptime"
 };
 
 static const char _swedishShortcuts[NUM_SHORTCUTS] = {
@@ -3299,7 +3308,7 @@ static const char * _swedishStrings[NUM_STRINGS] = {
    "Max nedladdningshastighet är",
    "Max uppladdningshastighet är",
    "Ungersk",
-   "Välj färger",  // translate me
+   "Välj färger",
    "Text Bakgrund",
    "Rullistens Text Bakgrund",
    "Gräns area",
@@ -3346,6 +3355,7 @@ static const char * _swedishStrings[NUM_STRINGS] = {
    "Couldn't find font",
    "Shortest Uploads First",
    "Finska"
+   "Visa uppkopplad tid"
 };
 
 static const char _norwegianShortcuts[NUM_SHORTCUTS] = {
@@ -3675,6 +3685,7 @@ static const char * _norwegianStrings[NUM_STRINGS] = {
    "Couldn't find font",
    "Shortest Uploads First",
    "Finnish"
+   "Display uptime"
 };
 
 static const char _serbianShortcuts[NUM_SHORTCUTS] = {
@@ -4004,6 +4015,7 @@ static const char * _serbianStrings[NUM_STRINGS] = {
    "Couldn't find font",
    "Shortest Uploads First",
    "Finnish"
+   "Display uptime"
 };
 
 static const char _bulgarianShortcuts[NUM_SHORTCUTS] = {
@@ -4334,6 +4346,7 @@ static const char * _bulgarianStrings[NUM_STRINGS] = {
    "Couldn't find font",
    "Shortest Uploads First",
    "Finnish"
+   "Display uptime"
 };
 
 static const char _koreanShortcuts[NUM_SHORTCUTS] = {
@@ -4663,6 +4676,7 @@ static const char * _koreanStrings[NUM_STRINGS] = {
    "Couldn't find font",
    "Shortest Uploads First",
    "Finnish"
+   "Display uptime"
 };
 
 //------------------------------------------------------------------------------------
@@ -4997,6 +5011,7 @@ static const char * _hungarianStrings[NUM_STRINGS] = {
    "Couldn't find font",
    "Shortest Uploads First",
    "Finnish"
+   "Display uptime"
 };
 
 //------------------------------------------------------------------------------------
@@ -5332,6 +5347,7 @@ static const char * _romanianStrings[NUM_STRINGS] = {
    "Couldn't find font",
    "Shortest Uploads First",
    "Finnish"
+   "Display uptime"
 };
 
 //====================================================================================
@@ -5671,6 +5687,7 @@ static const char * _schineseStrings[NUM_STRINGS] = {
    "Couldn't find font",
    "Shortest Uploads First",
    "Finnish"
+   "Display uptime"
 };
 
 // Translated by Atilla Ozturk (atilla@turkbug.org)
@@ -6001,6 +6018,7 @@ static const char * _turkishStrings[NUM_STRINGS] = {
    "Couldn't find font",
    "Shortest Uploads First",
    "Finnish"
+   "Display uptime"
 };
 
 //====================================================================================
@@ -6335,6 +6353,7 @@ static const char * _japaneseStrings[NUM_STRINGS] = {
    "フォントを見つけることができませんでした",
    "最短アップロード(F)",
    "Finnish"   //フィンランド語
+   "Display uptime"
 };
 
 static const char _finnishShortcuts[NUM_SHORTCUTS] = {
@@ -6664,6 +6683,7 @@ static const char * _finnishStrings[NUM_STRINGS] = {
    "Fonttia ei löytynyt",
    "Lyhin Lähetys Ensin",
    "Suomi"
+   "Display uptime"
 };
 
 int GetLanguage()

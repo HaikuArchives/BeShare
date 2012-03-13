@@ -5,7 +5,7 @@
 
 namespace beshare {
 
-#define VERSION_STRING "2.28"
+#define VERSION_STRING "2.29 (MUSCLE 4.63)"
 
 #define DEFAULT_LISTEN_PORT 7000
 #define LISTEN_PORT_RANGE   50
