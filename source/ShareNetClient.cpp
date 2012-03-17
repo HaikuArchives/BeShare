@@ -490,13 +490,13 @@ MessageReceived(BMessage * msg)
 }
 
 void
-ShareNetClient ::
-NodeRemoved(const node_ref & node)
+ShareNetClient::NodeRemoved(const node_ref & node)
 {
    BAutolock m(_dirsLock);
 
    // First see if it's a directory
-   if (_watchedDirs.ContainsKey(node)) RemoveWatchedDirectory(node);
+   if (_watchedDirs.ContainsKey(node))
+   	RemoveWatchedDirectory(node);
    else
    {
       entry_ref ref;

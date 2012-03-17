@@ -63,9 +63,9 @@ public:
    virtual void UpdateColors();
    virtual void ReadyToRun();  // called right after ctor
 
-#ifdef B_BEOS_VERSION_DANO
+//#ifdef B_BEOS_VERSION_DANO
    virtual status_t UISettingsChanged(const BMessage* changes, uint32 flags);
-#endif
+//#endif
 
    virtual void UpdateTitleBar() = 0;
 

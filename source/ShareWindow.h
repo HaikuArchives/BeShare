@@ -1,16 +1,16 @@
 #ifndef SHARE_WINDOW_H
 #define SHARE_WINDOW_H
 
-#include <app/Message.h>
-#include <app/MessageFilter.h>
-#include <interface/Bitmap.h>
-#include <interface/Window.h>
-#include <interface/TextControl.h>
-#include <interface/TextView.h>
-#include <interface/Menu.h>
-#include <interface/MenuField.h>
-#include <interface/MenuItem.h>
-#include <storage/Directory.h>
+#include <Message.h>
+#include <MessageFilter.h>
+#include <Bitmap.h>
+#include <Window.h>
+#include <TextControl.h>
+#include <TextView.h>
+#include <Menu.h>
+#include <MenuField.h>
+#include <MenuItem.h>
+#include <Directory.h>
 
 #include "util/Queue.h"
 #include "message/Message.h"
@@ -19,9 +19,11 @@
 #include "PrefilledBitmap.h"
 #include "CLVListItem.h"
 
+#include "TransferListView.h"
 #include "ShareConstants.h"
 #include "ChatWindow.h"
 #include "ShareNetClient.h"
+#include "RemoteFileItem.h"
 
 class ColumnListView;
 class CLVColumn;

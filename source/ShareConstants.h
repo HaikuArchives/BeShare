@@ -72,6 +72,8 @@ enum LogDestinationType {
 #define SYSTEM_SOUND_PRIVATE_MESSAGE_WINDOW               "BeShare-PrivateWndw"
 #define SYSTEM_SOUND_INACTIVE_CHAT_WINDOW_RECEIVED_TEXT   "BeShare-InactivChat"
 
+#define LIMIT_BANDWIDTH_COMMAND 'lbcc'
+
 };  // end namespace beshare
 
 #endif

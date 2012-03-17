@@ -1,12 +1,12 @@
 #ifndef PRIVATE_CHAT_WINDOW_H
 #define PRIVATE_CHAT_WINDOW_H
 
-#include <app/Message.h>
-#include <interface/Window.h>
-#include <interface/CheckBox.h>
-#include <interface/ScrollView.h>
-#include <interface/TextControl.h>
-#include <interface/TextView.h>
+#include <Message.h>
+#include <Window.h>
+#include <CheckBox.h>
+#include <ScrollView.h>
+#include <TextControl.h>
+#include <TextView.h>
 
 #include "ShareConstants.h"
 #include "ShareWindow.h"

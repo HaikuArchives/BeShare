@@ -5,7 +5,7 @@
 
 // The BeShare namespace is a superset of the muscle namespace
 namespace beshare {
-   using namespace muscle;
+	using namespace muscle;
 };
 
 #endif

@@ -1,41 +1,42 @@
-#include <stdio.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <time.h>
-#include <app/Application.h>
-#include <app/MessageRunner.h>
-#include <app/Roster.h>
-#include <stdlib.h>
-#include <unistd.h>
 
-#include <interface/Alert.h>
-#include <interface/Box.h>
-#include <interface/Button.h>
-#include <interface/Font.h>
-#include <interface/Menu.h>
-#include <interface/MenuItem.h>
-#include <interface/MenuBar.h>
-#include <interface/ScrollBar.h>
-#include <interface/Screen.h>
-#include <interface/ScrollBar.h>
-#include <interface/ScrollView.h>
-#include <interface/Input.h>
-#include <interface/PopUpMenu.h>
+//#include <stdio.h>
+//#include <string.h>
+//#include <sys/socket.h>
+//#include <time.h>
+//#include <app/Application.h>
+//#include <app/MessageRunner.h>
+//#include <app/Roster.h>
+//#include <stdlib.h>
+//#include <unistd.h>
 
-#include <storage/File.h>
-#include <storage/Path.h>     
-#include <storage/FindDirectory.h>     
-#include <storage/NodeMonitor.h>     
-#include <storage/Resources.h>     
+#include <Alert.h>
+//#include <Box.h>
+#include <Button.h>
+//#include <interface/Font.h>
+//#include <interface/Menu.h>
+//#include <interface/MenuItem.h>
+//#include <interface/MenuBar.h>
+//#include <interface/ScrollBar.h>
+#include <Screen.h>
+//#include <interface/ScrollBar.h>
+//#include <interface/ScrollView.h>
+//#include <interface/Input.h>
+#include <PopUpMenu.h>
 
-#include <support/Beep.h>
+#include <File.h>
+#include <Path.h>     
+#include <FindDirectory.h>     
+#include <NodeMonitor.h>     
+#include <Resources.h>     
 
-#include <translation/BitmapStream.h>
-#include <translation/TranslationUtils.h>
-#include <translation/TranslatorRoster.h>
-#include <translation/TranslatorFormats.h>
+#include <Beep.h>
 
-#include "ColumnListView.h"
+#include <BitmapStream.h>
+#include <TranslationUtils.h>
+#include <TranslatorRoster.h>
+#include <TranslatorFormats.h>
+
+//#include "ColumnListView.h"
 #include "CLVColumnLabelView.h"
 #include "CLVColumn.h"
 #include "SplitPane.h"
@@ -55,6 +56,8 @@
 #include "iogateway/PlainTextMessageIOGateway.h"
 
 #include "ShareWindow.h"
+#include "UserListView.h"
+#include "ResultsView.h"
 #include "ShareNetClient.h"
 #include "ShareFileTransfer.h"
 #include "ShareColumn.h"
@@ -63,320 +66,9 @@
 #include "RemoteFileItem.h"
 #include "ColorPicker.h"
 
+
+
 namespace beshare {
-
-static String RemoveSpecialQueryChars(const String & localString)
-{
-   String s = localString;
-   s.Replace(' ', '?');
-   s.Replace('@', '?');
-   s.Replace('/', '?');
-   s.Replace(',', '?');
-   return s;
-}
-
-class ResultsView : public ColumnListView
-{
-public:
-   ResultsView(uint32 replyWhat, BRect Frame, CLVContainerView** ContainerView, const char* Name = NULL, uint32 ResizingMode = B_FOLLOW_LEFT | B_FOLLOW_TOP, uint32 flags = B_WILL_DRAW | B_FRAME_EVENTS | B_NAVIGABLE, list_view_type Type = B_SINGLE_SELECTION_LIST, bool hierarchical = false, bool horizontal = true, bool vertical = true, bool scroll_view_corner = true, border_style border = B_NO_BORDER, const BFont* LabelFont = be_plain_font) : ColumnListView(Frame, ContainerView, Name, ResizingMode, flags, Type, hierarchical, horizontal, vertical, scroll_view_corner, border, LabelFont), _replyWhat(replyWhat)
-   {
-#if SAVE_BEOS
-      _sbe = NULL;
-      BResources * rsrc = be_app->AppResources();
-      if (rsrc)
-      {
-         size_t bitSize;
-         const void * bits = rsrc->LoadResource('PNG ', "beshare_320x200.png", &bitSize);
-         if (bits)
-         {
-            BMemoryIO mio(bits, bitSize);
-             _sbe = BTranslationUtils::GetBitmap(&mio);
-         }
-      }
-#endif
-   }
-
-   virtual ~ResultsView()
-   {
-#if SAVE_BEOS
-      delete _sbe;
-#endif
-   }
-
-   virtual void MouseDown(BPoint where)
-   {
-      BPoint pt;
-      ulong buttons;
-
-      GetMouse(&pt, &buttons);
-      if (buttons & B_SECONDARY_MOUSE_BUTTON) 
-      {
-         int numPages = ((ShareWindow*)Window())->GetNumResultsPages();
-         if (numPages > 1)
-         {
-            int currentPage = ((ShareWindow*)Window())->GetCurrentResultsPage();
-            BPopUpMenu * popup = new BPopUpMenu((const char *)NULL);
-            for (int i=0; i<numPages; i++)
-            {
-               char temp[128];
-               sprintf(temp, "%s %i", str(STR_SWITCH_TO_PAGE), i+1);
-               BMessage * msg = new BMessage(_replyWhat);
-               msg->AddInt32("page", i);
-               BMenuItem * mi = new BMenuItem(temp, msg);
-               mi->SetEnabled(i != currentPage);
-               popup->AddItem(mi);
-            }
-            ConvertToScreen(&pt);
-            BMenuItem * result = popup->Go(pt);
-            if (result) Window()->PostMessage(result->Message());
-            delete popup;
-            return;
-         }
-      }
-      else ColumnListView::MouseDown(where);
-   }
-
-   bool InitiateDrag(BPoint /*point*/, int32 /*index*/, bool /*wasSelected*/)
-   {
-      BMessage dragMessage(B_SIMPLE_DATA);
-      BMessage dragData;
-      BRect rect;
-      BRect bounds = Bounds();
-
-      dragMessage.AddInt32("be:actions", B_MOVE_TARGET);
-      dragMessage.AddString("be:types", B_FILE_MIME_TYPE);
-
-      for(int i=0;;i++)
-      {
-         int32 selindex = CurrentSelection(i);
-         if (selindex < 0) break;
-
-         const RemoteFileItem * item = (const RemoteFileItem *)ItemAt(selindex);
-         dragData.AddPointer("item", item);
-         // For each item, we also add a 'URL' that fully describes the file
-         // The URL is of the form:
-         //     beshare://UserIP:UserPort/InstallID@BeShareServer/filename
-         // The idea is that an application that understands this format will
-         // first try UserIP and UserPort to set up a direct connection, and
-         // if that doesn't work (because the remote user is firewalled for
-         // example), can use InstallID and BeShareServer to set up a callback
-         // session.  -- marco
-
-         RemoteUserItem * owner = item->GetOwner();
-         uint64 ID = owner->GetInstallID();
-         char strbuf[17];
-         sprintf(strbuf,"%Lx", ID);
-
-         String URL;
-         URL << "beshare://" 
-             << owner->GetHostName() << ":" << ((owner->GetFirewalled()) ? 0 : owner->GetPort())
-             << "/" << strbuf << "@" << ((ShareWindow*)Window())->GetConnectedTo()
-             << "/" << item->GetFileName();
-         dragMessage.AddString("be:url", URL());
-
-         BRect itemrect = ItemFrame(selindex);
-         if (itemrect.Intersects(bounds))
-         {
-            if (itemrect.IsValid())
-            {
-               if (rect.IsValid()) rect = rect | itemrect;
-                              else rect = itemrect;
-            }
-         }
-      }
-
-      // Let's also put in a BeShare-friendly link-text, in case 
-      // the user drops the Message back into BeShare, again.
-      {
-         String ownerString, fileString, humanReadableString = "[";
-         for(int j=0;;j++)
-         {
-            int32 selindex = CurrentSelection(j);
-            if (selindex < 0) break;
-
-            const RemoteFileItem * item = (const RemoteFileItem *)ItemAt(selindex);
-            if (humanReadableString.Length() > 1) humanReadableString += ", ";
-            humanReadableString += item->GetFileName();
-            fileString += (fileString.Length() == 0) ? "beshare:" : ",";
-
-            String fn(item->GetFileName());
-            EscapeRegexTokens(fn);
-
-            fileString += RemoveSpecialQueryChars(fn);
-            if (ownerString.Length() > 0) ownerString += ',';
-            ownerString += RemoveSpecialQueryChars(item->GetOwner()->GetSessionID());
-         }
-         if (fileString.Length() > 0)
-         {
-            if (ownerString.Length() > 0) fileString += ownerString.Prepend("@");
-            dragMessage.AddString("beshare:link", fileString());
-
-            humanReadableString += ']';
-            dragMessage.AddString("beshare:desc", humanReadableString());
-         }
-      }
-
-      dragMessage.AddMessage("be:originator-data", &dragData);
-      if (rect.IsValid()) DragMessage(&dragMessage, rect, Window());
-
-      return true;
-   }
-
-
-#ifdef SAVE_BEOS
-   virtual void Draw(BRect ur)
-   {
-      if ((_sbe)&&(CountItems() == 0)) DrawBitmapAsync(_sbe, ur, ur);
-      ColumnListView::Draw(ur);
-   }
-
-   virtual bool AddItem(BListItem *item)
-   {
-      bool ret = ColumnListView::AddItem(item);
-      if ((ret)&&(CountItems() == 1)) Invalidate();
-      return ret;
-   }
-
-   virtual bool AddItem(BListItem *item, int32 atIndex)
-   {
-      bool ret = ColumnListView::AddItem(item, atIndex);
-      if ((ret)&&(CountItems() == 1)) Invalidate();
-      return ret;
-   }
-
-   virtual bool AddList(BList *newItems)
-   {
-      bool inv = (CountItems() == 0);
-      bool ret = ColumnListView::AddList(newItems);
-      if ((ret)&&(inv)) Invalidate();
-      return ret;
-   }
-
-   virtual bool AddList(BList *newItems, int32 atIndex)
-   {
-      bool inv = (CountItems() == 0);
-      bool ret = ColumnListView::AddList(newItems, atIndex);
-      if ((ret)&&(inv)) Invalidate();
-      return ret;
-   }
-
-   bool RemoveItem(BListItem *item)
-   {
-      bool ret = ColumnListView::RemoveItem(item);
-      if ((ret)&&(CountItems() == 0)) Invalidate();
-      return ret;
-   }
-
-   BListItem *RemoveItem(int32 index)
-   {
-      BListItem * ret = ColumnListView::RemoveItem(index);
-      if ((ret)&&(CountItems() == 0)) Invalidate();
-      return ret;
-   }
-
-   bool RemoveItems(int32 index, int32 count)
-   {
-      bool ret = ColumnListView::RemoveItems(index, count);
-      if ((ret)&&(CountItems() == 0)) Invalidate();
-      return ret;
-   }
-
-   void MakeEmpty()
-   {
-      bool inv = (CountItems() == 0);
-      ColumnListView::MakeEmpty();
-      if (inv) Invalidate();
-   }
-#endif
-
-private:
-   uint32 _replyWhat;
-
-#if SAVE_BEOS
-   BBitmap * _sbe;
-#endif
-};
-
-class UserListView : public ColumnListView
-{
-public:
-   UserListView(uint32 replyWhat, BRect Frame, CLVContainerView** ContainerView, const char* Name = NULL, uint32 ResizingMode = B_FOLLOW_LEFT | B_FOLLOW_TOP, uint32 flags = B_WILL_DRAW | B_FRAME_EVENTS | B_NAVIGABLE, list_view_type Type = B_SINGLE_SELECTION_LIST, bool hierarchical = false, bool horizontal = true, bool vertical = true, bool scroll_view_corner = true, border_style border = B_NO_BORDER, const BFont* LabelFont = be_plain_font) : ColumnListView(Frame, ContainerView, Name, ResizingMode, flags, Type, hierarchical, horizontal, vertical, scroll_view_corner, border, LabelFont), _replyWhat(replyWhat) {/* empty */}
-
-   virtual void MouseDown(BPoint where)
-   {
-      BPoint pt;
-      ulong buttons;
-
-      GetMouse(&pt, &buttons);
-      if (buttons & B_SECONDARY_MOUSE_BUTTON) 
-      {
-         String handles, sessionIDs;
-         if (CurrentSelection(1) < 0) Select(IndexOf(pt)); // no multiple selection? select what's under the mouse
-         int32 next;
-         bool truncate = false;
-         bool truncated = false;
-         for (int i=0; (next = CurrentSelection(i))>=0; i++)
-         {
-            RemoteUserItem * user = (RemoteUserItem*)ItemAt(next);
-            if (i > 0) 
-            {
-               if (truncate == false) handles += ", ";
-               sessionIDs += ", ";
-            }
-            if (truncate == false) handles += user->GetDisplayHandle();
-            sessionIDs += user->GetSessionID();
-
-            if ((truncate)&&(!truncated))
-            {
-               truncated = true;
-               handles += ", ...";
-            }
-            if (handles.Length() > 25) truncate = true;
-         }
-         if (handles.Length() > 0)
-         {
-            BPopUpMenu * popup = new BPopUpMenu((const char *)NULL);
-
-            String s(str(STR_CHAT_WITH));
-            s += ' ';
-            s += handles;
-            BMenuItem * mi = new BMenuItem(s(), NULL);
-            popup->AddItem(mi);
-
-            popup->AddSeparatorItem();
-
-            String s2(str(STR_WATCH));
-            s2 += ' ';
-            s2 += handles;
-            BMenuItem * mi2 = new BMenuItem(s2(), NULL);
-            popup->AddItem(mi2);
-
-            ConvertToScreen(&pt);
-            BMenuItem * result = popup->Go(pt);
-            if (result == mi)
-            {
-               BMessage msg(_replyWhat);
-               msg.AddString("users", sessionIDs());
-               Window()->PostMessage(&msg);
-            }
-            else if (result == mi2)
-            {
-               String mi2text;
-               mi2text = "/watch ";
-               mi2text += sessionIDs();
-               ((ShareWindow*)Looper())->SendChatText(mi2text, NULL);
-            }
-
-            delete popup;
-            return;
-         }
-      }
-      ColumnListView::MouseDown(where);
-   }
-
-private:
-   uint32 _replyWhat;
-};
 
 // Any servers in this list will *always* be added to the server menu on startup.
 // Most servers need not be listed here, as the auto-server-updater-thingy will
@@ -439,397 +131,6 @@ static uint8 DefaultData[256] =
         0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xB0, 0x00, 0xB0, 0xFF, 0xB0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
 };
 
-#define LIMIT_BANDWIDTH_COMMAND 'lbcc'
-
-/* Subclass of BListView that only clears the background area that doesn't contain items.  This reduces flicker during downloads */
-class TransferListView : public BListView
-{
-public:
-   TransferListView(BRect rect, uint32 banCommand) : BListView(rect, NULL, B_MULTIPLE_SELECTION_LIST, B_FOLLOW_ALL_SIDES, B_WILL_DRAW|B_FRAME_EVENTS|B_NAVIGABLE|B_FULL_UPDATE_ON_RESIZE), _banCommand(banCommand)
-   {
-      SetLowColor(B_TRANSPARENT_32_BIT);   // we'll draw in the background, thanks
-      SetViewColor(B_TRANSPARENT_32_BIT);  // we'll draw in the background, thanks
-   }
-
-   virtual void MessageReceived(BMessage * msg)
-   {
-      BListView::MessageReceived(msg);
-      BMessage downloads;
-      if (msg->FindMessage("be:originator-data", &downloads) == B_NO_ERROR) 
-      {
-         ShareWindow * win = (ShareWindow *) Window();
-         win->RequestDownloads(downloads, win->_downloadsDir, NULL);
-      }
-   }
-
-   virtual void Draw(BRect ur)
-   {
-      BRect backgroundArea = ur;
-
-      int numItems = CountItems();
-      if (numItems > 0) backgroundArea.top = ItemFrame(CountItems()-1).bottom+1.0f;
-
-      if (ur.Intersects(backgroundArea))
-      {
-         SetHighColor(((ShareWindow*)Window())->GetColor(COLOR_BORDERS));
-         FillRect(backgroundArea & ur);
-      }
-      BListView::Draw(ur);
-   }
-
-   virtual void MouseDown(BPoint where)
-   {
-      BPoint pt;
-      ulong buttons;
-
-      GetMouse(&pt, &buttons);
-      if (buttons & B_SECONDARY_MOUSE_BUTTON)
-      {
-         if (CurrentSelection(1) < 0) Select(IndexOf(pt)); // no multiple selection? select what's under the mouse
-         if (CurrentSelection() >= 0)
-         {
-            ShareWindow * win = (ShareWindow *) Window();
-            int idx;
-
-            BPopUpMenu * popup = new BPopUpMenu((const char *)NULL);
-
-            BMenuItem * moveTop = new BMenuItem(str(STR_MOVE_TO_TOP), NULL);
-            popup->AddItem(moveTop);
-   
-            BMenuItem * moveUp = new BMenuItem(str(STR_MOVE_UP), NULL);
-            popup->AddItem(moveUp);
-
-            BMenuItem * moveDown = new BMenuItem(str(STR_MOVE_DOWN), NULL);
-            popup->AddItem(moveDown);
-
-            BMenuItem * moveBottom = new BMenuItem(str(STR_MOVE_TO_BOTTOM), NULL);
-            popup->AddItem(moveBottom);
-
-            popup->AddSeparatorItem();
- 
-            static const type_code OPEN_FILE   = 'OpFi';  // just for our temporary use
-            static const type_code OPEN_FOLDER = 'OpFo';  // just for our temporary use
-
-            Hashtable<uint32, bool> canBans;
-            bool haltEnabled = false, resumeEnabled = false;
-            for (int h=0; (idx = CurrentSelection(h)) >= 0; h++)
-            {
-               ShareFileTransfer * xfr = (ShareFileTransfer*)ItemAt(idx);
-
-               if (xfr->IsUploadSession())
-               {
-                  uint32 rip = xfr->GetRemoteIP();
-                  if (rip > 0) canBans.Put(rip, true);
-
-                  // For uploaders, 'restart download' means 'start upload now'
-                  // and 'halt download' means 'go back to queued mode'
-                  if (xfr->IsWaitingOnLocal()) resumeEnabled = true;
-                                          else haltEnabled = true;
-               }
-               else
-               {
-                  // For downloaders, 'restart download' means 'reconnect' if we
-                  // failed, or 'force start now' if we are waiting for the local
-                  // queues to free up.
-                  resumeEnabled = (xfr->IsFinished()) ? (xfr->GetOriginalFileSet().GetNumItems() > 0) : xfr->IsWaitingOnLocal();
-                  haltEnabled = ((xfr->IsWaitingOnLocal())||(xfr->IsWaitingOnRemote())||(xfr->IsConnected())||(xfr->IsConnecting())||(xfr->IsAccepting()));
-               }
-            }
-
-            BMenuItem * haltDownload = new BMenuItem(str(STR_HALT_DOWNLOAD), NULL);
-            haltDownload->SetEnabled(haltEnabled);
-            popup->AddItem(haltDownload);
-
-            BMenuItem * resumeDownload = new BMenuItem(str(STR_RESTART_DOWNLOAD), NULL);
-            resumeDownload->SetEnabled(resumeEnabled);
-            popup->AddItem(resumeDownload);
-
-            BMenu * limitMenu = new BMenu(str(STR_LIMIT_BANDWIDTH));
-            {
-               ShareFileTransfer * xfr = (ShareFileTransfer *) ItemAt(CurrentSelection(0));
-               uint32 currentLimit = xfr ? xfr->GetBandwidthLimit() : 0;
-               uint32 prevVal = 0;
- 
-               popup->AddItem(limitMenu);
-               AddLimitItem(limitMenu, 0, currentLimit, prevVal);
-               AddLimitItem(limitMenu, 1, currentLimit, prevVal);
-               AddLimitItem(limitMenu, 2, currentLimit, prevVal);
-               AddLimitItem(limitMenu, 3, currentLimit, prevVal);
-               AddLimitItem(limitMenu, 5, currentLimit, prevVal);
-               AddLimitItem(limitMenu, 10, currentLimit, prevVal);
-               AddLimitItem(limitMenu, 20, currentLimit, prevVal);
-               AddLimitItem(limitMenu, 50, currentLimit, prevVal);
-               AddLimitItem(limitMenu, 100, currentLimit, prevVal);
-            }
-            popup->AddSeparatorItem();
-
-            BMenu * filesList   = new BMenu(str(STR_OPEN_FILE));
-            BMenu * foldersList = new BMenu(str(STR_OPEN_FOLDER));
-            {
-               for (int h=0; (idx = CurrentSelection(h)) >= 0; h++)
-               {
-                  if (filesList->CountItems()   > 0) filesList->AddSeparatorItem();
-                  if (foldersList->CountItems() > 0) foldersList->AddSeparatorItem();
-
-                  ShareFileTransfer * xfr = (ShareFileTransfer*)ItemAt(idx);
-                  AddFileItems(filesList,   OPEN_FILE,   xfr);
-                  AddFileItems(foldersList, OPEN_FOLDER, xfr);
-               }
-            }
-            popup->AddItem(filesList);
-            popup->AddItem(foldersList);
-
-            popup->AddSeparatorItem();
-
-            BMenuItem * removeItems = new BMenuItem(str(STR_REMOVE_SELECTED), NULL);
-            popup->AddItem(removeItems);
-
-            if (canBans.GetNumItems() > 0)
-            {
-               popup->AddSeparatorItem();
-               BMenu * banUser = new BMenu(str(STR_BAN_USER_FOR));
-               popup->AddItem(banUser);
-
-               bigtime_t minute = 60 * 1000000;
-               AddBanItem(banUser, canBans, 5,  str(STR_MINUTES), minute);
-               AddBanItem(banUser, canBans, 15, str(STR_MINUTES), minute);
-               AddBanItem(banUser, canBans, 30, str(STR_MINUTES), minute);
-
-               bigtime_t hour = 60 * minute;
-               AddBanItem(banUser, canBans, 1,  str(STR_HOURS), hour);
-               AddBanItem(banUser, canBans, 2,  str(STR_HOURS), hour);
-               AddBanItem(banUser, canBans, 5,  str(STR_HOURS), hour);
-               AddBanItem(banUser, canBans, 12, str(STR_HOURS), hour);
-
-               bigtime_t day = 24 * hour;
-               AddBanItem(banUser, canBans, 1,   str(STR_DAYS), day);
-               AddBanItem(banUser, canBans, 2,   str(STR_DAYS), day);
-               AddBanItem(banUser, canBans, 7,   str(STR_DAYS), day);
-               AddBanItem(banUser, canBans, 30,  str(STR_DAYS), day);
-
-               AddBanItem(banUser, canBans, -1,  str(STR_FOREVER), -1);
-            }
-
-            ConvertToScreen(&pt);
-
-            BMenuItem * result = popup->Go(pt);
-            BMessage * rMsg = result ? result->Message() : NULL;
-            if (rMsg)
-            {
-               entry_ref er;
-               if (rMsg->FindRef("entry", &er) == B_NO_ERROR)
-               {   
-                  switch(rMsg->what)
-                  {
-                     case OPEN_FILE:
-                        be_roster->Launch(&er);
-                     break;
-
-                     case OPEN_FOLDER:
-                     {
-                        node_ref tempRef;
-                        tempRef.device = er.device;
-                        tempRef.node   = er.directory;
-                        BDirectory dir(&tempRef);
-                        win->OpenTrackerFolder(dir);  
-                     }
-                     break;
-                  }
-               }
-            }
-
-                 if (result == moveUp)     MoveSelectedItems(-1);
-            else if (result == moveDown)   MoveSelectedItems(1);
-            else if (result == moveTop)    MoveSelectedToExtreme(-1);
-            else if (result == moveBottom) MoveSelectedToExtreme(1);
-            else if (result == haltDownload)
-            {
-               for (int i=0; (idx = CurrentSelection(i)) >= 0; i++)
-               {
-                  ShareFileTransfer * xfr = (ShareFileTransfer *) ItemAt(idx);
-                  if (xfr->IsUploadSession()) 
-                  {
-                     if (xfr->IsWaitingOnLocal() == false) xfr->RequeueTransfer();
-                     xfr->SetBeginTransferEnabled(false);
-                  }
-                  else xfr->AbortSession(true, true);
-               }
-               win->DequeueTransferSessions();
-            }
-            else if (result == resumeDownload)
-            {
-               for (int i=0; (idx = CurrentSelection(i)) >= 0; i++)
-               {
-                  ShareFileTransfer * xfr = (ShareFileTransfer *) ItemAt(idx);
-                  if (xfr->IsUploadSession())
-                  {
-                     if (xfr->IsWaitingOnLocal()) 
-                     {
-                        if (xfr->GetBeginTransferEnabled()) xfr->BeginTransfer();
-                                                       else xfr->SetBeginTransferEnabled(true);
-                     }
-                  }
-                  else 
-                  {
-                     if (xfr->IsWaitingOnLocal()) xfr->BeginTransfer();
-                                             else xfr->RestartSession();
-                  }
-               }
-               win->DequeueTransferSessions();
-            }
-            else if (result == removeItems) Window()->PostMessage(ShareWindow::SHAREWINDOW_COMMAND_CANCEL_DOWNLOADS);
-            else if (result)
-            {
-               BMessage * m = result->Message();
-               if (m)
-               {               
-                       if (m->what == _banCommand) Window()->PostMessage(m);
-                  else if (m->what == LIMIT_BANDWIDTH_COMMAND)
-                  {
-                     uint32 limit;
-                     if (m->FindInt32("limit", (int32*)&limit) == B_NO_ERROR) for (int i=0; (idx = CurrentSelection(i)) >= 0; i++) ((ShareFileTransfer *) ItemAt(idx))->SetBandwidthLimit(limit);
-                  }
-               }
-            }
-
-            delete popup;
-            Invalidate();
-         }
-      }
-      else BListView::MouseDown(where);
-   }
-
-   void MoveSelectedItems(int delta)
-   {
-      // First, identify our movers by value...
-      BList movers;
-      {
-         int idx;
-         for (int i=0; (idx = CurrentSelection(i)) >= 0; i++) movers.AddItem(ItemAt(idx));
-      }
-
-      DeselectAll();
-
-      // Now move each one...
-      int numItems = CountItems();
-      int numMovers = movers.CountItems();
-      for (int j=(delta<0)?0:(numMovers-1); (delta<0)?(j<numMovers):(j>=0); j-=delta)
-      {
-         int oldIdx = IndexOf((BListItem*)movers.ItemAt(j));
-         int newIdx = oldIdx+delta;
-         if (newIdx >= numItems) newIdx = numItems-1;
-         if (newIdx < 0) newIdx = 0;
-         if ((newIdx != oldIdx)&&(oldIdx >= 0)&&(movers.IndexOf(ItemAt(newIdx))==-1)) SwapItems(oldIdx, newIdx);
-      }
-
-      // And reselect
-      for (int k=0; k<numMovers; k++)
-      {
-         int32 idx = IndexOf((BListItem*)movers.ItemAt(k));
-         if (idx >= 0) Select(idx, true);
-      } 
-   }
-
-   void MoveSelectedToExtreme(int dir)
-   {
-      // First, Make a list of selected items and unselected items
-      BList selected, unselected;
-      {
-         int32 numItems = CountItems();
-         for (int i=0; i<numItems; i++)
-         {
-            BListItem * next = ItemAt(i);
-            if (next->IsSelected()) selected.AddItem(next);
-                               else unselected.AddItem(next);
-         }
-      }
-
-      DeselectAll();
-      MakeEmpty();
-
-      if (dir > 0) 
-      {
-         AddList(&unselected);
-         AddList(&selected);
-         Select(CountItems()-selected.CountItems(), CountItems()-1);
-      }
-      else 
-      {
-         AddList(&selected); 
-         AddList(&unselected);
-         Select(0, selected.CountItems()-1);
-      }
-   }
-
-private:
-   void AddFileItems(BMenu * menu, type_code tc, const ShareFileTransfer * xfr)
-   {
-      ShareWindow * win = (ShareWindow *) Looper();
-      HashtableIterator<String, OffsetAndPath> fiter = xfr->GetDisplayFileSet().GetIterator();
-      const String * next;
-      const OffsetAndPath * oap;
-      while(((next = fiter.GetNextKey()) != NULL)&&((oap = fiter.GetNextValue()) != NULL))
-      {
-         BMenuItem * mi = new BMenuItem(next->Cstr(), new BMessage(tc));
-         bool enableIt = false;
-         if (xfr->IsUploadSession())
-         {
-            entry_ref er = win->FindSharedFile(next->Cstr());
-            if (BEntry(&er).Exists()) enableIt = (mi->Message()->AddRef("entry", &er) == B_NO_ERROR);
-         }
-         else 
-         {
-            String path = oap->_path;
-            if (path.Length() > 0) path += '/';
-            BEntry entry(&win->_downloadsDir, (path+(*next))(), true);
-            entry_ref er;
-            if ((entry.Exists())&&(entry.GetRef(&er) == B_NO_ERROR)) enableIt = (mi->Message()->AddRef("entry", &er) == B_NO_ERROR);
-         }
-         mi->SetEnabled(enableIt);
-         menu->AddItem(mi);
-      }
-   }
-
-   void AddLimitItem(BMenu * addTo, uint32 transferRate, uint32 currentLimit, uint32 & prevVal)
-   {
-      char buf[128]; 
-      if (transferRate > 0) 
-      {
-         sprintf(buf, "%luKB%s", transferRate, str(STR_SEC));
-         char * comma = strchr(buf, ','); if (comma) *comma = '\0';
-      }
-      else strcpy(buf, str(STR_NO_LIMIT));
-
-      transferRate *= 1024;  // convert into bytes
-      BMessage * msg = new BMessage(LIMIT_BANDWIDTH_COMMAND);
-      msg->AddInt32("limit", transferRate);
-
-      BMenuItem * mi = new BMenuItem(buf, msg);
-      if ((currentLimit == transferRate)||((prevVal < currentLimit)&&(transferRate > currentLimit))) mi->SetMarked(true);
-      addTo->AddItem(mi);
-      prevVal = transferRate;
-   }
-
-   void AddBanItem(BMenu * addTo, const Hashtable<uint32,bool> & canBans, int count, const char * unit, bigtime_t microsPerUnit) const
-   {
-      char buf[128];
-      if (count > 0) sprintf(buf, "%i %s", count, unit);
-                else strcpy(buf, unit);
-
-      BMessage * msg = new BMessage(_banCommand);
-      HashtableIterator<uint32,bool> iter = canBans.GetIterator();
-      uint32 nextKey;
-      while(iter.GetNextKey(nextKey) == B_NO_ERROR) msg->AddInt32("ip", nextKey);
-
-      msg->AddString("durstr", buf);
-      if (microsPerUnit > 0) msg->AddInt64("duration", (count >= 0) ? count*microsPerUnit : 0);
-
-      addTo->AddItem(new BMenuItem(buf, msg));
-   }
-
-   uint32 _banCommand;
-};
-
 static const BRect defaultPrivateRect(100,300,500,475);
 
 ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char * connectServer) :
@@ -880,7 +181,7 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
    const float hMargin = 5.0f;
 
    // Add our sounds to the Sounds prefs panel, if they aren't there already
-#ifdef B_BEOS_VERSION_5
+//#ifdef B_BEOS_VERSION_5
    add_system_beep_event(SYSTEM_SOUND_USER_NAME_MENTIONED);
    add_system_beep_event(SYSTEM_SOUND_PRIVATE_MESSAGE_RECEIVED);
    add_system_beep_event(SYSTEM_SOUND_AUTOCOMPLETE_FAILURE);
@@ -890,7 +191,7 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
    add_system_beep_event(SYSTEM_SOUND_WATCHED_USER_SPEAKS);
    add_system_beep_event(SYSTEM_SOUND_PRIVATE_MESSAGE_WINDOW);
    add_system_beep_event(SYSTEM_SOUND_INACTIVE_CHAT_WINDOW_RECEIVED_TEXT);
-#endif
+//#endif
 
    font_height plainFontAttrs;
    be_plain_font->GetHeight(&plainFontAttrs);
@@ -959,23 +260,20 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
 
    // Recall our "active columns" from the settings message
    BMessage columnsSubMessage;
-   if (settingsMsg.FindMessage("columns", &columnsSubMessage) == B_NO_ERROR)
-   {
-#if B_BEOS_VERSION_DANO
-      const char * name;
-#else
-      char * name;
-#endif
+   if (settingsMsg.FindMessage("columns", &columnsSubMessage) == B_NO_ERROR) {
+//#if B_BEOS_VERSION_DANO
+//      const char * name;
+//#else
+      char* name;
+//#endif
       type_code type;
       int32 count;
-      for (int32 i=0; (columnsSubMessage.GetInfo(B_FLOAT_TYPE, i, &name, &type, &count) == B_NO_ERROR); i++)
-      {
+      for (int32 i = 0; (columnsSubMessage.GetInfo(B_FLOAT_TYPE, i, &name, &type, &count) == B_NO_ERROR); i++) {
          float width;
-         if (columnsSubMessage.FindFloat(name, &width) == B_NO_ERROR) _activeAttribs.Put(name, width);
+         if (columnsSubMessage.FindFloat(name, &width) == B_NO_ERROR)
+         	_activeAttribs.Put(name, width);
       }
-   }
-   else
-   {
+   } else {
       // Put default columns here (size, name, owner, ?)
       _activeAttribs.Put(FILE_NAME_COLUMN_NAME, 330.0f);
       _activeAttribs.Put(FILE_OWNER_COLUMN_NAME, 100.0f);
@@ -5215,45 +4513,45 @@ bool ShareWindow :: AreMessagesEqual(const BMessage & m1, const BMessage & m2) c
    return true;
 }
 
-bool ShareWindow :: IsFieldSuperset(const BMessage & m1, const BMessage & m2) const
-{
-#if B_BEOS_VERSION_DANO
-   const char * name;
-#else
-   char * name;
-#endif
-   type_code type1;
-   int32 count1;
-   for (int32 i=0; (m1.GetInfo(B_ANY_TYPE, i, &name, &type1, &count1) == B_NO_ERROR); i++)
-   {
-      type_code type2;
-      int32 count2;
-      if ((m2.GetInfo(name, &type2, &count2) != B_NO_ERROR)||(type2 != type1)||(count2 != count1)) return false;
 
-      for (int32 j=0; j<count1; j++)
-      {
-         if (type1 == B_MESSAGE_TYPE)
-         {
-            BMessage s1, s2;
-            if ((m1.FindMessage(name, j, &s1) != B_NO_ERROR)||
-                (m2.FindMessage(name, j, &s2) != B_NO_ERROR)||
-                (AreMessagesEqual(s1, s2) == false)) return false;
-         }
-         else
-         {
-            const void * data1;
-            const void * data2;
-            ssize_t size1;
-            ssize_t size2;
-            if ((m1.FindData(name, type1, j, &data1, &size1) != B_NO_ERROR)||
-                (m2.FindData(name, type1, j, &data2, &size2) != B_NO_ERROR)||
-                (size1 != size2) ||
-                (memcmp(data1, data2, size1) != 0)) return false;
-         }
-      }
-   }
-   return true;
+bool
+ShareWindow::IsFieldSuperset(const BMessage & m1, const BMessage & m2) const
+{
+	char * name;
+	type_code type1;
+	int32 count1;
+	for (int32 i = 0; (m1.GetInfo(B_ANY_TYPE, i, &name, &type1, &count1) == B_NO_ERROR); i++) {
+		type_code type2;
+		int32 count2;
+		
+		if ((m2.GetInfo(name, &type2, &count2) != B_NO_ERROR)
+			|| (type2 != type1)||(count2 != count1))
+			return false;
+
+		for (int32 j = 0; j < count1; j++) {
+			if (type1 == B_MESSAGE_TYPE) {
+				BMessage s1, s2;
+				if ((m1.FindMessage(name, j, &s1) != B_NO_ERROR)
+					|| (m2.FindMessage(name, j, &s2) != B_NO_ERROR)
+					|| (AreMessagesEqual(s1, s2) == false))
+					return false;
+			} else {
+				const void * data1;
+				const void * data2;
+				ssize_t size1;
+				ssize_t size2;
+				if ((m1.FindData(name, type1, j, &data1, &size1) != B_NO_ERROR)
+					|| (m2.FindData(name, type1, j, &data2, &size2) != B_NO_ERROR)
+					|| (size1 != size2)
+					|| (memcmp(data1, data2, size1) != 0))
+					return false;
+			}
+
+		}
+	}
+	return true;
 }                  
+
 
 void
 ShareWindow :: BeginAutoReconnect()

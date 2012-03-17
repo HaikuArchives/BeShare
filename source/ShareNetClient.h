@@ -14,6 +14,7 @@
 
 #include "BeShareNameSpace.h"
 
+#warning "to be added to muscle?"
 namespace muscle {
 
 template <>

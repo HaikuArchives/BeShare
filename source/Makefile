@@ -1,66 +1,278 @@
-CC  = gcc
-CXX = gcc
-CFLAGS = -I../muscle -Isanta -Isanta/BetterScrollView -Isanta/ColumnListView 
-CFLAGS += -Isanta/Cursors -Isanta/NewStrings -Isanta/PrefilledBitmap 
-CFLAGS += -Isanta/ScrollViewCorner -I../muscle/zlib/zlib 
-CFLAGS += -DMUSCLE_ENABLE_ZLIB_ENCODING 
+# specify the name of the binary
+NAME := BeShare
 
-ODIR = obj
+# specify the type of binary
+#	APP:	Application
+#	SHARED:	Shared library or add-on
+#	STATIC:	Static library archive
+#	DRIVER: Kernel Driver
+#	MODULE: Kernel Module
+#	DECOR:	A window decorator project
+TYPE :=APP
 
-CXXFLAGS = $(CFLAGS)
-LFLAGS = -L/boot/system/lib/
-LIBS = -lbe -lroot -ltranslation -lnetwork -lstdc++
-EXECUTABLES = BeShare md5test filechopper
-REGEXOBJS = 
-SANTAOBJS = BetterScrollView.o CLVColumn.o CLVColumnLabelView.o CLVEasyItem.o 
-SANTAOBJS += CLVListItem.o ColumnListView.o Cursors.o NewStrings.o 
-SANTAOBJS += PrefilledBitmap.o ScrollViewCorner.o 
-ZLIBOBJS = adler32.o deflate.o trees.o zutil.o inflate.o inftrees.o inffast.o
-ZLIBOBJS += crc32.o compress.o
-BESHARE = ReflowingTextView.o ShareNetClient.o ShareFileTransfer.o ChatWindow.o 
-BESHARE += ShareApplication.o ShareWindow.o PrivateChatWindow.o 
-BESHARE += MessageTransceiverThread.o Thread.o AcceptSocketsThread.o Message.o 
-BESHARE += SetupSystem.o String.o main.o SysLog.o AbstractMessageIOGateway.o 
-BESHARE += PulseNode.o MessageIOGateway.o PlainTextMessageIOGateway.o 
-BESHARE += PathMatcher.o QueryFilter.o ConvertMessages.o RemoteFileItem.o 
-BESHARE += RemoteUserItem.o ShareColumn.o ShareMIMEInfo.o 
-BESHARE += NetworkUtilityFunctions.o ShareUtils.o SplitPane.o md5.o 
-BESHARE += StringMatcher.o ShareStrings.o ReflectServer.o 
-BESHARE += AbstractReflectSession.o DumbReflectSession.o 
-BESHARE += StorageReflectSession.o DataNode.o ServerComponent.o PathMatcher.o 
-BESHARE += StringMatcher.o RateLimitSessionIOPolicy.o ColorPicker.o 
-BESHARE += ByteBuffer.o ZLibCodec.o ZLibUtilityFunctions.o 
-BESHARE += MiscUtilityFunctions.o SignalHandlerSession.o SignalMultiplexer.o
+#	specify the source files to use
+#	full paths or paths relative to the makefile can be included
+# 	all files, regardless of directory, will have their object
+#	files created in the common object directory.
+#	Note that this means this makefile will not work correctly
+#	if two source files with the same name (source.c or source.cpp)
+#	are included from different directories.  Also note that spaces
+#	in folder names do not work well with this makefile.
+SRCS := \
+		ChatWindow.cpp \
+		ColorPicker.cpp \
+		main.cpp \
+		md5.cpp \
+		PrivateChatWindow.cpp \
+		ReflowingTextView.cpp \
+		RemoteFileItem.cpp \
+		RemoteUserItem.cpp \
+		ResultsView.cpp \
+		ShareApplication.cpp \
+		ShareColumn.cpp \
+		ShareFileTransfer.cpp \
+		ShareMIMEInfo.cpp \
+		ShareNetClient.cpp \
+		ShareStrings.cpp \
+		ShareUtils.cpp \
+		ShareWindow.cpp \
+		SplitPane.cpp \
+		TransferListView.cpp \
+		UserListView.cpp \
+		santa/BetterScrollView/BetterScrollView.cpp \
+		santa/ColumnListView/CLVColumn.cpp \
+		santa/ColumnListView/CLVColumnLabelView.cpp \
+		santa/ColumnListView/CLVEasyItem.cpp \
+		santa/ColumnListView/CLVListItem.cpp \
+		santa/ColumnListView/ColumnListView.cpp \
+		santa/Cursors/Cursors.cpp \
+		santa/NewStrings/NewStrings.cpp \
+		santa/PrefilledBitmap/PrefilledBitmap.cpp \
+		santa/ScrollViewCorner/ScrollViewCorner.cpp \
+		../muscle/besupport/ConvertMessages.cpp \
+		../muscle/iogateway/AbstractMessageIOGateway.cpp \
+		../muscle/iogateway/MessageIOGateway.cpp \
+		../muscle/iogateway/PlainTextMessageIOGateway.cpp \
+		../muscle/message/Message.cpp \
+		../muscle/reflector/AbstractReflectSession.cpp \
+		../muscle/reflector/DataNode.cpp \
+		../muscle/reflector/DumbReflectSession.cpp \
+		../muscle/reflector/RateLimitSessionIOPolicy.cpp \
+		../muscle/reflector/ReflectServer.cpp \
+		../muscle/reflector/ServerComponent.cpp \
+		../muscle/reflector/SignalHandlerSession.cpp \
+		../muscle/reflector/StorageReflectSession.cpp \
+		../muscle/regex/PathMatcher.cpp \
+		../muscle/regex/QueryFilter.cpp \
+		../muscle/regex/StringMatcher.cpp \
+		../muscle/syslog/SysLog.cpp \
+		../muscle/system/AcceptSocketsThread.cpp \
+		../muscle/system/MessageTransceiverThread.cpp \
+		../muscle/system/SetupSystem.cpp \
+		../muscle/system/SignalMultiplexer.cpp \
+		../muscle/system/Thread.cpp \
+		../muscle/util/ByteBuffer.cpp \
+		../muscle/util/MiscUtilityFunctions.cpp \
+		../muscle/util/NetworkUtilityFunctions.cpp \
+		../muscle/util/PulseNode.cpp \
+		../muscle/util/String.cpp \
+		../muscle/zlib/ZLibCodec.cpp \
+		../muscle/zlib/ZLibUtilityFunctions.cpp \
+		../muscle/zlib/zlib/adler32.c \
+		../muscle/zlib/zlib/compress.c \
+		../muscle/zlib/zlib/crc32.c \
+		../muscle/zlib/zlib/deflate.c \
+		../muscle/zlib/zlib/trees.c \
+		../muscle/zlib/zlib/zutil.c \
+		../muscle/zlib/zlib/inflate.c \
+		../muscle/zlib/zlib/inftrees.c \
+		../muscle/zlib/zlib/inffast.c
+		
+#	specify the resource files to use
+#	full path or a relative path to the resource file can be used.
+RSRCS := BeShare.rsrc
 
-RESOURCE = BeShare.rsrc
+#	Specify your RDEF files, if any.
+RDEFS :=
 
-CFLAGS += -Wall -W -Wno-multichar -fno-exceptions -O3
+#	specify additional libraries to link against
+#	there are two acceptable forms of library specifications
+#	-	if your library follows the naming pattern of:
+#		libXXX.so or libXXX.a you can simply specify XXX
+#		library: libbe.so entry: be
+#		
+#	- 	if your library does not follow the standard library
+#		naming scheme you need to specify the path to the library
+#		and it's name
+#		library: my_lib.a entry: my_lib.a or path/my_lib.a
+LIBS := be root translation network stdc++
 
-VPATH += ../muscle/message ../muscle/besupport ../muscle/iogateway 
-VPATH += ../muscle/reflector ../muscle/regex ../muscle/system ../muscle/util 
-VPATH += ../muscle/syslog ../muscle/zlib ../muscle/zlib/zlib santa 
-VPATH += santa/BetterScrollView santa/ColumnListView santa/Cursors santa/NewStrings
-VPATH += santa/PrefilledBitmap santa/ScrollViewCorner
+#	specify additional paths to directories following the standard
+#	libXXX.so or libXXX.a naming scheme.  You can specify full paths
+#	or paths relative to the makefile.  The paths included may not
+#	be recursive, so include all of the paths where libraries can
+#	be found.  Directories where source files are found are
+#	automatically included.
+LIBPATHS := 
 
-# Makes all the programs that can be made using just cross-platform code
-all : $(EXECUTABLES)
+#	additional paths to look for system headers
+#	thes use the form: #include <header>
+#	source file directories are NOT auto-included here
+SYSTEM_INCLUDE_PATHS := 
 
-savebeos : CFLAGS += -DSAVE_BEOS
-savebeos : RESOURCE = BeShare-sbe.rsrc
-savebeos : all
+#	additional paths to look for local headers
+#	thes use the form: #include "header"
+#	source file directories are automatically included
+LOCAL_INCLUDE_PATHS := \
+	../muscle \
+	../muscle/zlib/zlib \
+	santa santa/BetterScrollView \
+	santa/ColumnListView \
+	santa/Cursors \
+	santa/NewStrings \
+	santa/PrefilledBitmap \
+	santa/ScrollViewCorner 
 
-#$(ODIR)/%.o:
+#	specify the level of optimization that you desire
+#	NONE, SOME, FULL
+OPTIMIZE	:=
 
-BeShare : $(BESHARE) $(SANTAOBJS) $(REGEXOBJS) $(ZLIBOBJS)
-	$(CXX) $(LFLAGS) -o $@ $^ $(LIBS)
-	xres -o $@ $(RESOURCE)
-	mimeset -F $@	
+#	specify any preprocessor symbols to be defined.  The symbols will not
+#	have their values set automatically; you must supply the value (if any)
+#	to use.  For example, setting DEFINES to "DEBUG=1" will cause the
+#	compiler option "-DDEBUG=1" to be used.  Setting DEFINES to "DEBUG"
+#	would pass "-DDEBUG" on the compiler's command line.
+DEFINES		:= MUSCLE_ENABLE_ZLIB_ENCODING 
 
-md5test : md5.o md5test.o
-	$(CXX) $(LFLAGS) -o $@ $^ $(LIBS)
+#	specify special warning levels
+#	if unspecified default warnings will be used
+#	NONE = supress all warnings
+#	ALL = enable all warnings
+WARNINGS	:= 
 
-filechopper : filechopper.o
-	$(CXX) $(LFLAGS) -o $@ $^ $(LIBS)
+#	specify whether image symbols will be created
+#	so that stack crawls in the debugger are meaningful
+#	if TRUE symbols will be created
+SYMBOLS		:= TRUE
 
-clean :
-	rm -f *.o *.xSYM $(EXECUTABLES)
+#	specify debug settings
+#	if TRUE will allow application to be run from a source-level
+#	debugger.  Note that this will disable all optimzation.
+DEBUGGER	:= TRUE
+
+#	specify additional compiler flags for all files
+COMPILER_FLAGS	:=
+
+#	specify additional linker flags
+LINKER_FLAGS	:=
+
+#	specify the version of this particular item
+#	(for example, -app 3 4 0 d 0 -short 340 -long "340 "`echo -n -e '\302\251'`"1999 GNU GPL") 
+#E	This may also be specified in a resource.
+APP_VERSION	:= 
+
+#	(for TYPE == DRIVER only) Specify desired location of driver in the /dev
+#	hierarchy. Used by the driverinstall rule. E.g., DRIVER_PATH = video/usb will
+#	instruct the driverinstall rule to place a symlink to your driver's binary in
+#	~/add-ons/kernel/drivers/dev/video/usb, so that your driver will appear at
+#	/dev/video/usb when loaded. Default is "misc".
+DRIVER_PATH	:= 
+
+#	Specify if you want the object files to be somewhere besides the default location.
+OBJ_DIR		:=
+
+#	Specify a non default placement for the target
+TARGET_DIR	:=
+
+#       Special Zeta build system var 
+BOOTREL_INSTALL_DIR     := 
+
+#       Specify a directory for the 'install' target. 
+INSTALL_DIR     := 
+ 
+#	Specify the name of this makefile.
+#	If you leave this blank, the makefile will not be considered as part of the
+#	dependenies for the project, and the project will not be rebuilt when the makefile
+#	is changed
+MAKEFILE	:= 
+
+#	Specify TRUE if you want the install target to create links in the BeMenu
+MENU_LINKS	:= FALSE
+
+#	Related to MENU_LINKS, specify the name of the direcotry in the BeMenu
+#	you wish the link to go in. If the directory does not exist, it will be
+#	created.
+APP_MENU	:= 
+
+#       If, for some reason, you don't want to use the dependencies (flex and yacc seem to choke 
+#       on them), set this to false 
+DODEPS		:= 
+
+#	If you have some fancy custom build steps to do, specify them here
+EXTRA_BUILD_STEPS	=
+
+#	If you have some other files that should trigger a re-link, such as libs in the same
+#	project that may get rebuilt, specify the full path to them here.
+EXTRA_DEPS := 
+###########################################################################################
+# The following variables are commented out here because the can be very useful to just 
+# set at the command line or in the env at time of compiling, allowing you to leave your 
+# makefile the same, but change the build types easily.
+
+
+#	If you wish to have the program output a profiling session file which can be read by bprof,
+#	set this to 'true'
+#BUILD_PROFILE	:=
+
+#	If you wish to have a debug build,
+#	set this to 'true'
+#BUILD_DEBUG	:=
+
+#	If you wish to have a build which can do memory checking when MALLOC_DEBUG=15 is set,
+#	set this to 'true'
+#CHECK_MEM		:=
+
+#	If you want to see the complete build line for every file, then set this to 'true',
+#	otherwise it will tell you at the end what the build flags were.
+#CHATTY			:=
+
+################################################################################################## 
+# 
+##                                  Z E T A  S p e c i f i c 
+# 
+################################################################################################## 
+
+#       Specify the path to the Screenshot file. If this is not specified, then the SCREENSHOT default 
+#       will be $(PWD)/$(NAME).png 
+#       If this application is not to have a screenshot, use NONE 
+SCREENSHOT      := #whisper_main.png
+
+#       Specify the category that this zeta component belongs in 
+ZETA_CATEGORY   :=Internet
+
+#       The .zip package that this file will be included in. If this is left blank, then 
+#       $(NAME).zip will be used. 
+#       This feature is meant for having multiple items included in the a single .zip package 
+PACKAGE         :=BeShare
+
+#       If this target is a component of another target. That is, if this is part of a package 
+#       but not the 'main' part. Typically the main app will have the screenshot, and set 
+#       the relevant attributes. If this is set to 'true' then this makefile will not attempt to set 
+#       attributes or a screenshot or a description. 
+IS_COMPONENT    :=
+
+#       If this is a mandatory component, set this to 'false'. The default is true. 
+#       Optional components will be zipped up with thier attribs and everything. 
+#       Non-Optional (mandatory) components will just be copied to the directory structure and 
+#       added to the manifest for copying during install 
+OPTIONAL		:=
+
+#       Specify the names of the Language files here. (ie: AboutWindow.de AboutWindow.en) 
+LANG_FILES		:= $(wildcard Language/Dictionaries/$(NAME).*)
+
+#       If your language files are in a different directory, specify the relative directory here. 
+#       ie: Language/Dictionaries 
+LANG_FILES_DIR  := Language/Dictionaries
+
+include /boot/develop/etc/makefile-engine
+

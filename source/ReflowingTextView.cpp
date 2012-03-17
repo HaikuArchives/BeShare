@@ -40,11 +40,11 @@ void ReflowingTextView :: MouseMoved(BPoint where, uint32 code, const BMessage *
    if (code == B_INSIDE_VIEW) 
    {
       link = GetURLAt(where);
-#ifdef B_BEOS_VERSION_5
+//#ifdef B_BEOS_VERSION_5
       SetViewCursor((link != NULL) ? B_CURSOR_SYSTEM_DEFAULT : B_CURSOR_I_BEAM);
-#else
-      be_app->SetCursor((link != NULL) ? B_HAND_CURSOR : B_I_BEAM_CURSOR);
-#endif
+//#else
+//      be_app->SetCursor((link != NULL) ? B_HAND_CURSOR : B_I_BEAM_CURSOR);
+//#endif
    }
 
    String scratch;

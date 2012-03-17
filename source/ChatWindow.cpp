@@ -59,12 +59,12 @@ ChatWindow :: ChatWindow(BRect defRect, const char * title, window_look look, wi
 {
    // Patch up the default colors to match the system defaults
    _defaultColors[COLOR_BORDERS]      = ui_color(B_PANEL_BACKGROUND_COLOR);
-#ifdef B_BEOS_VERSION_DANO
+//#ifdef B_BEOS_VERSION_DANO
    _defaultColors[COLOR_BG]           = ui_color(B_DOCUMENT_BACKGROUND_COLOR);
    _defaultColors[COLOR_TEXT]         = ui_color(B_DOCUMENT_TEXT_COLOR);
    _defaultColors[COLOR_SCROLLBG]     = ui_color(B_DOCUMENT_BACKGROUND_COLOR);
    _defaultColors[COLOR_SCROLLBG].red = (tint_color(ui_color(B_DOCUMENT_BACKGROUND_COLOR), 1.07F)).red;
-#endif
+//#endif
 
    (void) GetAppSubdir("logs", _logsDir, true);
 
@@ -963,11 +963,11 @@ void
 ChatWindow ::
 DoBeep(const char * which) const
 {
-#ifdef B_BEOS_VERSION_5
+//#ifdef B_BEOS_VERSION_5
    (void) system_beep(which);
-#else
-   beep();
-#endif
+//#else
+//   beep();
+//#endif
 }
 
 void
@@ -1206,7 +1206,7 @@ void ChatWindow :: ReadyToRun()
    _isInitialized = true;
 }
 
-#ifdef B_BEOS_VERSION_DANO
+//#ifdef B_BEOS_VERSION_DANO
 status_t ChatWindow::UISettingsChanged(const BMessage* /*changes*/, uint32 /*flags*/)
 {
    // Patch up the default colors to match the system defaults
@@ -1219,6 +1219,6 @@ status_t ChatWindow::UISettingsChanged(const BMessage* /*changes*/, uint32 /*fla
    UpdateColors();
    return B_NO_ERROR;
 }
-#endif
+//#endif
 
 };  // end namespace beshare

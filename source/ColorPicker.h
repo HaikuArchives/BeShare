@@ -10,10 +10,10 @@
 #ifndef COLOR_PICKER_H
 #define COLOR_PICKER_H
 
-#include <interface/Window.h>
-#include <interface/ColorControl.h>
-#include <interface/Button.h>
-#include <interface/View.h>
+#include <Window.h>
+#include <ColorControl.h>
+#include <Button.h>
+#include <View.h>
 
 namespace beshare {
 
