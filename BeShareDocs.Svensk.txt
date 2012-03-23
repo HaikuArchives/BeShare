@@ -1,6 +1,5 @@
-BeShare v2.29
-by Jeremy Friesner
-jaf@lcsaudio.com
+BeShare v2.30
+http://dev.osdrawer.net/projects/beshare
 ===================
 
 BeShare är ett fildelningsprogram. Det fungerar precis som alla andra 

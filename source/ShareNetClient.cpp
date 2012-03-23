@@ -26,42 +26,40 @@
 namespace beshare {
 
 
-ShareNetClient ::
-ShareNetClient(const BDirectory & shareDir, int32 localPort) :
-   _mtt(NULL), 
-   _shareDir(shareDir),
-   _queryActive(false),
-   _localSharePort(localPort),
-   _firewalled(false),
-   _bandwidthLabel("?"),
-   _bandwidth(0),
-   _pingCount(0),
-   _lastSentFileCount((uint32)-1L),
-   _fileCountRunner(NULL),
-   _lastSentUploadCount((uint32)-1L),
-   _lastSentUploadMax((uint32)-1L),
-   _scanSharesThreadID(-1),
-   _scanSharesBatchCount(0),
-   _lastTrafficAt(0),
-   _sendOnLogins(false),
-   _watchingVolumeMounts(false),
-   _rescanRequestsPending(0),
-   _nodeRemoveBatchCount(0),
-   _sendingLowPriorityMessages(false)
+ShareNetClient::ShareNetClient(const BDirectory & shareDir, int32 localPort) :
+	_mtt(NULL), 
+	_shareDir(shareDir),
+	_queryActive(false),
+	_localSharePort(localPort),
+	_firewalled(false),
+	_bandwidthLabel("?"),
+	_bandwidth(0),
+	_pingCount(0),
+	_lastSentFileCount((uint32)-1L),
+	_fileCountRunner(NULL),
+	_lastSentUploadCount((uint32)-1L),
+	_lastSentUploadMax((uint32)-1L),
+	_scanSharesThreadID(-1),
+	_scanSharesBatchCount(0),
+	_lastTrafficAt(0),
+	_sendOnLogins(false),
+	_watchingVolumeMounts(false),
+	_rescanRequestsPending(0),
+	_nodeRemoveBatchCount(0),
+	_sendingLowPriorityMessages(false)
 {
-   BPath ucPath;
-   if (find_directory(B_USER_SETTINGS_DIRECTORY, &ucPath) == B_NO_ERROR)
-   {
-      BEntry entry(ucPath.Path(), true);
-      (void) entry.GetRef(&_settingsDir);
-   }
+	BSTRACE(("ShareNetClient::ShareNetClient begin\n"));
+	BPath ucPath;
+	if (find_directory(B_USER_SETTINGS_DIRECTORY, &ucPath) == B_NO_ERROR) {
+		BEntry entry(ucPath.Path(), true);
+		(void) entry.GetRef(&_settingsDir);
+	}
 }
 
 
-ShareNetClient ::
-~ShareNetClient()
+ShareNetClient::~ShareNetClient()
 {
-   DisconnectFromServer();
+	DisconnectFromServer();
 }
 
 void
@@ -93,26 +91,30 @@ UpdateEncoding()
    }
 }
 
-void
-ShareNetClient ::
-ConnectToServer(const char * serverName, uint16 port)
-{
-   DisconnectFromServer();  // clean out any old connection, as we don't want two at once.
 
-   BMessenger toMe(this);
-   _mtt = new BMessageTransceiverThread(toMe);
-   if ((_mtt->StartInternalThread() == B_NO_ERROR)&&(_mtt->AddNewConnectSession(serverName, port) == B_NO_ERROR)) 
-   {
-      UpdateEncoding();
-      ((ShareWindow*)Looper())->SetConnectStatus(true, false);
-   }
-   else
-   {
-      _mtt->ShutdownInternalThread();
-      ((ShareWindow*)Looper())->LogMessage(LOG_ERROR_MESSAGE, str(STR_ERROR_COULDNT_CREATE_CONNECT_THREAD));
-      delete _mtt;
-      _mtt = NULL;
-   }
+void
+ShareNetClient::ConnectToServer(const char* serverName, uint16 port)
+{
+	printf("ConnectToServer begin\n");
+	DisconnectFromServer();  // clean out any old connection, as we don't want two at once.
+
+	BMessenger toMe(this);
+	_mtt = new BMessageTransceiverThread(toMe);
+	if ((_mtt->StartInternalThread() == B_NO_ERROR)
+		&& (_mtt->AddNewConnectSession(serverName, port) == B_NO_ERROR)) {
+			printf("ConnectToServer true\n");
+		UpdateEncoding();
+			printf("ConnectToServer true next\n");
+		((ShareWindow*)Looper())->SetConnectStatus(true, false);
+		printf("ConnectToServer true last\n");
+	} else {
+		printf("ConnectToServer else\n");
+		_mtt->ShutdownInternalThread();
+		((ShareWindow*)Looper())->LogMessage(LOG_ERROR_MESSAGE, str(STR_ERROR_COULDNT_CREATE_CONNECT_THREAD));
+		delete _mtt;
+		_mtt = NULL;
+	}
+	printf("ConnectToServer end\n");
 }
 
 
@@ -148,23 +150,23 @@ DisconnectFromServer()
    _sendingLowPriorityMessages = false;
 }
 
+
 /* Should only be called when the share scan thread is known not to be running */
 void
-ShareNetClient ::
-UnwatchAllDirs()
+ShareNetClient::UnwatchAllDirs()
 {
-   HashtableIterator<node_ref, WatchedDirData> iter = _watchedDirs.GetIterator();
-   const node_ref * next;
-   while((next = iter.GetNextKey()) != NULL) (void) watch_node(next, B_STOP_WATCHING, this);
-   _watchedDirs.Clear();
-   _nodeToEntry.Clear();
-   _nameToEntry.Clear();
+	for (HashtableIterator<node_ref, WatchedDirData> iter(_watchedDirs.GetIterator()); iter.HasData(); iter++) {
+		(void) watch_node(&iter.GetKey(), B_STOP_WATCHING, this);
+	}
+
+	_watchedDirs.Clear();
+	_nodeToEntry.Clear();
+	_nameToEntry.Clear();
 }
 
 
 void
-ShareNetClient ::
-StartQuery(const char * sessionIDRegExp, const char * fileNameRegExp)
+ShareNetClient::StartQuery(const char* sessionIDRegExp, const char* fileNameRegExp)
 {
    if (_mtt)
    {
@@ -195,6 +197,7 @@ StartQuery(const char * sessionIDRegExp, const char * fileNameRegExp)
       _fileNameRegExp.SetPattern(fileNameRegExp);
    }
 }
+
 
 void
 ShareNetClient ::
@@ -580,12 +583,12 @@ void
 ShareNetClient ::
 MessageReceived(const MessageRef & msgRef)
 {
-   _lastTrafficAt = system_time();
+	_lastTrafficAt = system_time();
 
-   Message * msg = msgRef();
-   switch(msg->what)
-   {
-      case ShareFileTransfer::TRANSFER_COMMAND_REJECTED:  // sigh
+	Message * msg = msgRef();
+//   msg->PrintToStream();
+	switch(msg->what) {
+		case ShareFileTransfer::TRANSFER_COMMAND_REJECTED:  // sigh
       {
          const char * from;
          if (msg->FindString(PR_NAME_SESSION, &from) == B_NO_ERROR)
@@ -707,123 +710,113 @@ MessageReceived(const MessageRef & msgRef)
       }
       break;
 
-      case PR_RESULT_DATAITEMS:
-      {
-         // Part of the server-side database that we subscribed to has changed
-         ((ShareWindow*)Looper())->BeginBatchFileResultUpdate();
+		case PR_RESULT_DATAITEMS:
+		{
+			BSTRACE(("ShareNetClient::MessageReceived PR_RESULT_DATAITEMS\n"));
+			// Part of the server-side database that we subscribed to has changed
+			((ShareWindow*)Looper())->BeginBatchFileResultUpdate();
 
-         // Look for sub-messages that indicate that nodes were removed from the tree
-         String nodepath;
-         for (int i=0; (msg->FindString(PR_NAME_REMOVED_DATAITEMS, i, nodepath) == B_NO_ERROR); i++) 
-         {
-            int pathDepth = GetPathDepth(nodepath());
-            if (pathDepth >= SESSION_ID_DEPTH)
-            {
-               String sessionID = GetPathClause(SESSION_ID_DEPTH, nodepath());
-               sessionID = sessionID.Substring(0, sessionID.IndexOf('/'));
+			// Look for sub-messages that indicate that nodes were removed from the tree
+			String nodepath;
+			for (int i = 0; (msg->FindString(PR_NAME_REMOVED_DATAITEMS, i, nodepath) == B_NO_ERROR); i++) {
+				int pathDepth = GetPathDepth(nodepath());
+            
+				if (pathDepth >= SESSION_ID_DEPTH) {
+					String sessionID = GetPathClause(SESSION_ID_DEPTH, nodepath());
+					sessionID = sessionID.Substring(0, sessionID.IndexOf('/'));
 
-               switch(GetPathDepth(nodepath()))
-               {
-                  case SESSION_ID_DEPTH: 
-                     ((ShareWindow*)Looper())->RemoveUser(sessionID());
-                  break;
+					switch(GetPathDepth(nodepath()))
+					{
+						case SESSION_ID_DEPTH: 
+							((ShareWindow*)Looper())->RemoveUser(sessionID());
+						break;
 
-                  case FILE_INFO_DEPTH: 
-                     ((ShareWindow*)Looper())->RemoveResult(sessionID(), GetPathClause(FILE_INFO_DEPTH, nodepath())); 
-                  break;
-               }
-            }
-         }
+ 						case FILE_INFO_DEPTH: 
+							((ShareWindow*)Looper())->RemoveResult(sessionID(), GetPathClause(FILE_INFO_DEPTH, nodepath())); 
+						break;
+					}
+				}
+			}
 
-         // Look for sub-messages that indicate that nodes were added to the tree
-         MessageFieldNameIterator iter = msg->GetFieldNameIterator(B_MESSAGE_TYPE);
-         while(iter.GetNextFieldName(nodepath) == B_NO_ERROR)
-         {
-            int pathDepth = GetPathDepth(nodepath());
-            if (pathDepth >= USER_NAME_DEPTH)
-            {
-               MessageRef tempRef;
-               if (msg->FindMessage(nodepath(), tempRef) == B_NO_ERROR)
-               {
-                  const Message * pmsg = tempRef();
-                  String sessionID = GetPathClause(SESSION_ID_DEPTH, nodepath());
-                  sessionID = sessionID.Substring(0, sessionID.IndexOf('/'));
-                  switch(pathDepth)
-                  {
-                     case USER_NAME_DEPTH: 
-                     {
-                        String hostName = GetPathClause(HOST_NAME_DEPTH, nodepath());
-                        hostName = hostName.Substring(0, hostName.IndexOf('/'));
+			// Look for sub-messages that indicate that nodes were added to the tree
+			for (MessageFieldNameIterator iter(msg->GetFieldNameIterator(B_MESSAGE_TYPE)); iter.HasData(); iter++) {
+				nodepath = iter.GetFieldName();
+				int pathDepth = GetPathDepth(iter.GetFieldName().Cstr());
 
-                        const char * nodeName = GetPathClause(USER_NAME_DEPTH, nodepath());
-                        if (strncmp(nodeName, "name", 4) == 0)
-                        {
-                           const char * name;
-                           bool isBot;
-                           if (pmsg->FindBool("bot", &isBot) != B_NO_ERROR) isBot = false;
+				if (pathDepth >= USER_NAME_DEPTH) {
+					MessageRef tempRef;
 
-                           uint64 installID;
-                           if (pmsg->FindInt64("installid", (int64*)&installID) != B_NO_ERROR) installID = 0;
+					if (msg->FindMessage(nodepath(), tempRef) == B_NO_ERROR) {
+						const Message * pmsg = tempRef();
+						String sessionID = GetPathClause(SESSION_ID_DEPTH, nodepath());
+						sessionID = sessionID.Substring(0, sessionID.IndexOf('/'));
+						switch(pathDepth)
+						{
+							case USER_NAME_DEPTH: 
+							{
+								String hostName = GetPathClause(HOST_NAME_DEPTH, nodepath());
+								hostName = hostName.Substring(0, hostName.IndexOf('/'));
 
-                           int32 port;
-                           if (pmsg->FindInt32("port", &port) != B_NO_ERROR) port = 0;
+								const char * nodeName = GetPathClause(USER_NAME_DEPTH, nodepath());
+								if (strncmp(nodeName, "name", 4) == 0) {
 
-                           if (pmsg->FindString("name", &name) == B_NO_ERROR)
-                           {
-                              String clientStr;
+									bool isBot;
+									if (pmsg->FindBool("bot", &isBot) != B_NO_ERROR)
+										isBot = false;
 
-                              // See if VitViper's version info is available
-                              const char * vname;
-                              const char * vnum;
-                              if ((pmsg->FindString("version_num", &vnum) == B_NO_ERROR)&&(pmsg->FindString("version_name", &vname) == B_NO_ERROR))
-                              {
-                                 clientStr = vname;
-                                 clientStr += " v";
-                                 clientStr += vnum;
-                              }
+									uint64 installID;
+									if (pmsg->FindInt64("installid", (int64*)&installID) != B_NO_ERROR)
+										installID = 0;
 
-                              // See if this client is advertising that he can to the partial-md5-hash trick
-                              bool sph = false;
-                              (void) pmsg->FindBool("supports_partial_hashing", &sph);
+									int32 port;
+									if (pmsg->FindInt32("port", &port) != B_NO_ERROR)
+										port = 0;
 
-                              ((ShareWindow *)Looper())->PutUser(sessionID(), name, hostName(), port, &isBot, installID, (clientStr.Length()>0)?clientStr():NULL,&sph);
-                           }
-                        }
-                        else if (strncmp(nodeName, "userstatus", 9) == 0)
-                        {
-                           const char * status;
-                           if (pmsg->FindString("userstatus", &status) == B_NO_ERROR) ((ShareWindow *)Looper())->SetUserStatus(sessionID(), status);
-                        }
-                        else if (strncmp(nodeName, "uploadstats", 11) == 0)
-                        {
-                           uint32 cur, max;
-                           if ((pmsg->FindInt32("cur", (int32*)&cur) == B_NO_ERROR)&&
-                               (pmsg->FindInt32("max", (int32*)&max) == B_NO_ERROR)) ((ShareWindow *)Looper())->SetUserUploadStats(sessionID(), cur, max);
-                        }
-                        else if (strncmp(nodeName, "bandwidth", 9) == 0)
-                        {
-                           uint32 bps;
-                           const char * label;
-                           if ((pmsg->FindString("label", &label) == B_NO_ERROR)&& 
-                               (pmsg->FindInt32("bps", (int32*)&bps) == B_NO_ERROR))
-                              ((ShareWindow *)Looper())->SetUserBandwidth(sessionID(), label, bps);
-                        }
-                        else if (strncmp(nodeName, "filecount", 9) == 0)
-                        {
-                           int32 fc;
-                           if (pmsg->FindInt32("filecount", &fc) == B_NO_ERROR)
-                              ((ShareWindow *)Looper())->SetUserFileCount(sessionID(), fc);
-                        }
-                        else if (strncmp(nodeName, "fires", 5) == 0)
-                        {
-                           ((ShareWindow *)Looper())->SetUserIsFirewalled(sessionID(), true);
-                        }
-                        else if (strncmp(nodeName, "files", 5) == 0)
-                        {
-                           ((ShareWindow *)Looper())->SetUserIsFirewalled(sessionID(), false);
-                        }
-                     }
-                     break;
+									const char* name;
+									if (pmsg->FindString("name", &name) == B_NO_ERROR) {
+										String clientStr;
+
+										// See if VitViper's version info is available
+										const char * vname;
+										const char * vnum;
+										if ((pmsg->FindString("version_num", &vnum) == B_NO_ERROR)
+											&& (pmsg->FindString("version_name", &vname) == B_NO_ERROR)) {
+											clientStr = vname;
+											clientStr += " v";
+											clientStr += vnum;
+										}
+
+										// See if this client is advertising that he can to the partial-md5-hash trick
+										bool sph = false;
+										BSTRACE(("Hittade %s\n", name));
+										(void) pmsg->FindBool("supports_partial_hashing", &sph);
+										((ShareWindow *)Looper())->PutUser(sessionID(), name, hostName(), port, &isBot, installID, (clientStr.Length()>0)?clientStr():NULL,&sph);
+									}
+								} else if (strncmp(nodeName, "userstatus", 9) == 0) {
+									const char * status;
+									if (pmsg->FindString("userstatus", &status) == B_NO_ERROR)
+										((ShareWindow *)Looper())->SetUserStatus(sessionID(), status);
+								} else if (strncmp(nodeName, "uploadstats", 11) == 0) {
+									uint32 cur, max;
+									if ((pmsg->FindInt32("cur", (int32*)&cur) == B_NO_ERROR)
+										&& (pmsg->FindInt32("max", (int32*)&max) == B_NO_ERROR))
+										((ShareWindow *)Looper())->SetUserUploadStats(sessionID(), cur, max);
+								} else if (strncmp(nodeName, "bandwidth", 9) == 0) {
+									uint32 bps;
+									const char * label;
+									if ((pmsg->FindString("label", &label) == B_NO_ERROR)
+										&& (pmsg->FindInt32("bps", (int32*)&bps) == B_NO_ERROR))
+										((ShareWindow *)Looper())->SetUserBandwidth(sessionID(), label, bps);
+								} else if (strncmp(nodeName, "filecount", 9) == 0) {
+									int32 fc;
+									if (pmsg->FindInt32("filecount", &fc) == B_NO_ERROR)
+										((ShareWindow *)Looper())->SetUserFileCount(sessionID(), fc);
+								} else if (strncmp(nodeName, "fires", 5) == 0) {
+									((ShareWindow *)Looper())->SetUserIsFirewalled(sessionID(), true);
+								} else if (strncmp(nodeName, "files", 5) == 0) {
+									((ShareWindow *)Looper())->SetUserIsFirewalled(sessionID(), false);
+								}
+							} break;
 
                      case FILE_INFO_DEPTH: 
                      {
@@ -1332,37 +1325,41 @@ ReuploadFiles(uint32 code)
 }
 
 
-void ShareNetClient :: ScanSharesThread(bool checkRemoves, bool checkAdds)
+void
+ShareNetClient::ScanSharesThread(bool checkRemoves, bool checkAdds)
 {
-   // If requested, first go through and see what records we have that no longer are accessible
-   if (checkRemoves)
-   {
-      NodeRemoveBatch(true);
-      BAutolock a(_dirsLock);
-      HashtableIterator<node_ref, entry_ref> iter = _nodeToEntry.GetIterator();
-      const node_ref * nextNode;
-      entry_ref * nextEntry;
-      while(((nextNode = iter.GetNextKey()) != NULL)&&((nextEntry = iter.GetNextValue()) != NULL))
-      {
-         if (BEntry(nextEntry, true).Exists() == false) NodeRemoved(*nextNode);
-         if (_scanSharesThreadID < 0) break;   // oops, we're being aborted!
-      }
-      NodeRemoveBatch(false);
-   }
+	// If requested, first go through and see what records we have that no longer are accessible
+	if (checkRemoves) {
+		NodeRemoveBatch(true);
+		BAutolock a(_dirsLock);
+		
+		for (HashtableIterator<node_ref, entry_ref> iter(_nodeToEntry.GetIterator()); iter.HasData(); iter++) {
+			if (BEntry(&iter.GetValue(), true).Exists() == false)
+				NodeRemoved(iter.GetKey());
+         
+			if (_scanSharesThreadID < 0)
+				break;   // oops, we're being aborted!
+		}
+		NodeRemoveBatch(false);
+	}
 
-   BMessage report(NET_CLIENT_SCAN_THREAD_REPORT);
-   if ((checkRemoves == false)||(checkAdds))
-   {
-      node_ref shareNodeRef;
-      BEntry shareEntry;
-      if ((_shareDir.GetNodeRef(&shareNodeRef) == B_NO_ERROR)&&(_shareDir.GetEntry(&shareEntry) == B_NO_ERROR)) 
-      {
-         bool success = (AddWatchedDirectory(shareNodeRef, shareEntry, (thread_id *) &_scanSharesThreadID, "", checkAdds) == B_NO_ERROR);
-         if (checkAdds == false) report.AddBool("success", success);
-      }
-   }
-   Looper()->PostMessage(&report, this);
+	BMessage report(NET_CLIENT_SCAN_THREAD_REPORT);
+	
+	if ((checkRemoves == false) || (checkAdds)) {
+		node_ref shareNodeRef;
+		BEntry shareEntry;
+		
+		if ((_shareDir.GetNodeRef(&shareNodeRef) == B_NO_ERROR)
+			&& (_shareDir.GetEntry(&shareEntry) == B_NO_ERROR)) {
+			bool success = (AddWatchedDirectory(shareNodeRef, shareEntry, (thread_id *) &_scanSharesThreadID, "", checkAdds) == B_NO_ERROR);
+			
+			if (checkAdds == false)
+				report.AddBool("success", success);
+		}
+	}
+	Looper()->PostMessage(&report, this);
 }
+
 
 void
 ShareNetClient ::
@@ -1379,25 +1376,32 @@ AbortScanSharesThread()
    EndScanSharesBatch();
 }
 
-entry_ref 
-ShareNetClient :: 
-FindSharedFile(const char * fileName) const
+
+entry_ref
+ShareNetClient::FindSharedFile(const char* fileName) const
 {
-   BAutolock m((BLocker &) _dirsLock);
-   entry_ref ret;
-   CountedEntryRef * ref = _nameToEntry.Get(fileName);
-   if (ref) ret = ref->_ref;
-   return ret;
+	BAutolock m((BLocker &) _dirsLock);
+	entry_ref ret;
+	const CountedEntryRef* ref = _nameToEntry.Get(fileName);
+	
+	if (ref)
+		ret = ref->_ref;
+	
+	return ret;
 }
 
+
 void 
-ShareNetClient ::
-RefFilename(const char * fileName, const entry_ref & ref, off_t fileSize)
+ShareNetClient::RefFilename(const char * fileName, const entry_ref & ref, off_t fileSize)
 {
-   CountedEntryRef * r = _nameToEntry.Get(fileName);
-   if (r) r->_count++;
-     else _nameToEntry.Put(fileName, CountedEntryRef(ref, fileSize));
+	CountedEntryRef * r = _nameToEntry.Get(fileName);
+	
+	if (r)
+		r->_count++;
+	else
+		_nameToEntry.Put(fileName, CountedEntryRef(ref, fileSize));
 }
+
 
 void 
 ShareNetClient ::

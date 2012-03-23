@@ -102,4 +102,5 @@ UserListView::MouseDown(BPoint where)
       }
 	ColumnListView::MouseDown(where);
 }
+
 };  // end namespace beshare

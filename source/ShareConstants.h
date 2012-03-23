@@ -5,7 +5,7 @@
 
 namespace beshare {
 
-#define VERSION_STRING "2.29 (MUSCLE 4.63)"
+#define VERSION_STRING "2.30"
 
 #define DEFAULT_LISTEN_PORT 7000
 #define LISTEN_PORT_RANGE   50
@@ -19,12 +19,21 @@ namespace beshare {
 #define AUTO_UPDATER_SERVER "beshare.tycomsystems.com"
 #define AUTO_UPDATER_URL    "http://" AUTO_UPDATER_SERVER "/servers.txt"
 
-#define BESHARE_BEBITS_URL   "http://www.bebits.com/app/1330/"
-#define BESHARE_HOMEPAGE_URL "http://www.lcscanada.com/beshare/"
+#define BESHARE_BEBITS_URL		"http://www.bebits.com/app/1330/"
+#define BESHARE_HOMEPAGE_URL	"http://www.lcscanada.com/beshare/"
+#define BESHARE_SOURCE_URL		"http://dev.osdrawer.net/projects/beshare"
 
 #define NO_FILE_LIMIT 999999
 
 #define NUM_PARTIAL_HASH_BYTES (64*1024) // 64k seems like a good tradeoff between surety and speed
+
+//#define DEBUG_BESHARE
+
+#ifdef DEBUG_BESHARE
+#define BSTRACE(x) printf x
+#else
+#define BSTRACE(x) /* nothing */
+#endif
 
 // types of message that are printed to the text view.
 // Formatting and filtering are keyed to this type

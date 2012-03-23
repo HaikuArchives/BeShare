@@ -66,10 +66,10 @@ ShareMIMEInfo :: FindIcon(const BMimeType & mt, BBitmap & icon)
 
 
 const char * 
-ShareMIMEInfo :: GetAttributeDescription(const char * attributeName) const
+ShareMIMEInfo::GetAttributeDescription(const char* attributeName) const
 {
-   String * ret = _attrToDesc.Get(attributeName);
-   return ret ? ret->Cstr() : NULL;
+	const String* ret = _attrToDesc.Get(attributeName);
+	return ret ? ret->Cstr() : NULL;
 }
 
 

@@ -102,60 +102,66 @@ protected:
 class MD5SendLooper : public MD5Looper
 {
 public:
-   MD5SendLooper(const Hashtable<String, OffsetAndPath> & fileSet, const BDirectory & dir, off_t bytesFromBack) : _fileSet(fileSet), _dir(dir), _bytesFromBack(bytesFromBack) {/* empty */}
+	MD5SendLooper(const Hashtable<String, OffsetAndPath>& fileSet, const BDirectory& dir, off_t bytesFromBack)
+		: 
+		_fileSet(fileSet),
+		_dir(dir),
+		_bytesFromBack(bytesFromBack) 
+	{/* empty */}
 
-   virtual void MessageReceived(BMessage *)
-   {
-      Message & msg = *_msgRef();
+	virtual void MessageReceived(BMessage*)
+	{
+		Message & msg = *_msgRef();
+		for (HashtableIterator<String, OffsetAndPath> iter(_fileSet.GetIterator()); iter.HasData(); iter++) {
+			if ((_shutdownFlag != NULL) || ((*_shutdownFlag) != false))
+				break;
 
-      HashtableIterator<String, OffsetAndPath> iter = _fileSet.GetIterator();
-      const String * next;
-      while(((_shutdownFlag == NULL)||((*_shutdownFlag) == false))&&((next = iter.GetNextKey()) != NULL))
-      {
-         const OffsetAndPath * nextValue = iter.GetNextValue();
+			const OffsetAndPath & nextValue = iter.GetValue();
+			msg.AddString("files", iter.GetKey());
 
-         msg.AddString("files", next->Cstr());
+			BDirectory dir(_dir);
+			StringTokenizer tok(nextValue._path(), "/");
+			const char * nextDir;
+			
+			while ((nextDir = tok.GetNextToken()) != NULL) {
+				BDirectory subDir(&dir, nextDir);
+				if (subDir.InitCheck() == B_NO_ERROR) 
+					dir = subDir;
+				else {
+					dir.Unset();  // oops, nevermind;  file doesn't exist
+					break;
+				}
+			}
 
-         BDirectory dir(_dir);
-         StringTokenizer tok(nextValue->_path(), "/");
-         const char * nextDir;
-         while((nextDir = tok.GetNextToken()) != NULL)
-         {
-            BDirectory subDir(&dir, nextDir);
-            if (subDir.InitCheck() == B_NO_ERROR) dir = subDir;
-            else
-            {
-               dir.Unset();  // oops, nevermind;  file doesn't exist
-               break;
-            }
-         }
+			BEntry ent(&dir, iter.GetKey().Cstr(), true);
+			entry_ref er;
+			(void) ent.GetRef(&er);
+			AddEntryRef(er, nextValue._path());
+		}
 
-         BEntry ent(&dir, next->Cstr(), true);
-         entry_ref er;
-         (void) ent.GetRef(&er);
-         AddEntryRef(er, nextValue->_path());
-      }
 
-      int numRefs = _entryRefs.GetNumItems();
-      for (int i=0; i<numRefs; i++)
-      {
-         // Add current file length and md5, if any
-         off_t fileOffset = 0;  // i.e. autodetect file size for offset
-         uint8 digest[MD5_DIGEST_SIZE];
-         off_t retBytesHashed = 0;
-         (void) HashFileMD5(BEntry(&_entryRefs[i], true), fileOffset, _bytesFromBack, retBytesHashed, digest, _shutdownFlag);
-         msg.AddInt64("offsets", fileOffset);
-         msg.AddString("beshare:Path", _entryPaths[i]);
-         if (_bytesFromBack > 0) msg.AddInt64("numbytes", retBytesHashed);
-         msg.AddData("md5", B_RAW_TYPE, digest, (fileOffset > 0) ? sizeof(digest) : 1);
-      }
-      Reply();
-   }
+		int numRefs = _entryRefs.GetNumItems();
+		for (int i = 0; i < numRefs; i++) {
+			// Add current file length and md5, if any
+			off_t fileOffset = 0;  // i.e. autodetect file size for offset
+			uint8 digest[MD5_DIGEST_SIZE];
+			off_t retBytesHashed = 0;
+			(void) HashFileMD5(BEntry(&_entryRefs[i], true), fileOffset, _bytesFromBack, retBytesHashed, digest, _shutdownFlag);
+			msg.AddInt64("offsets", fileOffset);
+			msg.AddString("beshare:Path", _entryPaths[i]);
+			
+			if (_bytesFromBack > 0)
+				msg.AddInt64("numbytes", retBytesHashed);
+			
+			msg.AddData("md5", B_RAW_TYPE, digest, (fileOffset > 0) ? sizeof(digest) : 1);
+		}
+		Reply();
+	}
 
 private:
-   Hashtable<String, OffsetAndPath> _fileSet;
-   BDirectory _dir;
-   off_t _bytesFromBack;
+	Hashtable<String, OffsetAndPath> _fileSet;
+	BDirectory _dir;
+	off_t _bytesFromBack;
 };
 
 
@@ -253,47 +259,51 @@ ShareFileTransfer(const BDirectory & fileDir, const char * localSessionID, uint6
    // empty
 }
 
-ShareFileTransfer ::
-~ShareFileTransfer()
+
+ShareFileTransfer::~ShareFileTransfer()
 {
-   _shutdownFlag = true;  // get all child loopers to stop immediately
+	_shutdownFlag = true;  // get all child loopers to stop immediately
 
    // Clean up any MD5 loopers still in progress
-   HashtableIterator<MD5Looper *, bool> iter = _md5Loopers.GetIterator();
-   MD5Looper * next;
-   while(iter.GetNextKey(next) == B_NO_ERROR) if (next->Lock()) next->Quit();
-
-   if (_mtt) 
-   {
-      _mtt->ShutdownInternalThread();
-      delete _mtt;
-   }
+	MD5Looper* next;
+	for (HashtableIterator<MD5Looper*, bool> iter(_md5Loopers.GetIterator()); iter.HasData(); iter++) {
+		next = iter.GetKey();
+		
+		if (next->Lock())
+			next->Quit();
+	}
+	
+	if (_mtt) {
+		_mtt->ShutdownInternalThread();
+		delete _mtt;
+	}
 }
 
-void ShareFileTransfer :: SaveToArchive(BMessage & archive) const
+
+void
+ShareFileTransfer::SaveToArchive(BMessage& archive) const
 {
-   archive.AddInt64("lastfilesize", _saveLastFileSize);
-   archive.AddInt64("lastfilebytesdone", _saveLastFileBytesDone);
+	archive.AddInt64("lastfilesize", _saveLastFileSize);
+	archive.AddInt64("lastfilebytesdone", _saveLastFileBytesDone);
 
-   archive.AddInt32("bandwidthlimit", _bandwidthLimit);
-   archive.AddInt64("remoteinstallid", (int64)_remoteInstallID);
-   archive.AddInt64("partialhashsize", (int64)_partialHashSize);
-   archive.AddString("remoteusername", _remoteUserName());
-   archive.AddBool("acceptsession", _isAcceptSession);
+	archive.AddInt32("bandwidthlimit", _bandwidthLimit);
+	archive.AddInt64("remoteinstallid", (int64)_remoteInstallID);
+	archive.AddInt64("partialhashsize", (int64)_partialHashSize);
+	archive.AddString("remoteusername", _remoteUserName());
+	archive.AddBool("acceptsession", _isAcceptSession);
 
-   HashtableIterator<String, OffsetAndPath> iter = _origFileSet.GetIterator();
-   const String * nextKey;
-   const OffsetAndPath * nextValue;
-   while((nextKey = iter.GetNextKey())&&(nextValue = iter.GetNextValue()))
-   {
-      archive.AddString("file", nextKey->Cstr());
-      BMessage oapMsg;
-      nextValue->SaveToArchive(oapMsg);
-      archive.AddMessage("oap", &oapMsg);
-   }
+	// Make sure all our files refresh too, in case the "owner name" column is visible
+	for (HashtableIterator<String, OffsetAndPath> iter(_origFileSet.GetIterator()); iter.HasData(); iter++) {
+		archive.AddString("file", iter.GetKey().Cstr());
+		BMessage oapMsg;
+		iter.GetValue().SaveToArchive(oapMsg);
+		archive.AddMessage("oap", &oapMsg);
+	}
 }
 
-void ShareFileTransfer :: SetFromArchive(const BMessage & archive)
+
+void
+ShareFileTransfer::SetFromArchive(const BMessage & archive)
 {
    _origFileSet.Clear();
    _errorOccurred = true;
@@ -693,8 +703,7 @@ ShareFileTransfer :: DoUpload()
 }
 
 bool
-ShareFileTransfer ::
-DoUploadAux()
+ShareFileTransfer::DoUploadAux()
 {
    if (_isWaitingOnLocal) return false;   // not yet!
 
@@ -785,10 +794,10 @@ DoUploadAux()
          }
 
          // Get the next file from our send list
-         if (_fileSetIter.GetNextKey(_currentFileName) == B_NO_ERROR)
+         if ((_currentFileName = _fileSetIter.GetKey()) == B_NO_ERROR)
          {
-            const OffsetAndPath * value = _fileSetIter.GetNextValue();
-            _saveLastFileBytesDone = _currentFileBytesDone = value->_offset;  // get the starting byte to read from...
+            const OffsetAndPath& value = _fileSetIter.GetValue();
+            _saveLastFileBytesDone = _currentFileBytesDone = value._offset;  // get the starting byte to read from...
             _currentFileEntry = ((ShareWindow*)Looper())->FindSharedFile(_currentFileName());
             if (_currentFile.SetTo(&_currentFileEntry, B_READ_ONLY) == B_NO_ERROR)
             {
@@ -808,7 +817,7 @@ DoUploadAux()
                   header()->AddString("beshare:File Name", _currentFileName());
                   header()->AddInt64("beshare:File Size", _currentFileSize);
                   header()->AddString("beshare:FromSession", _localSessionID);
-                  header()->AddString("beshare:Path", value->_path);
+                  header()->AddString("beshare:Path", value._path);
                   if (_currentFileBytesDone > 0LL) header()->AddInt64("beshare:StartOffset", _currentFileBytesDone);  // resume-download mode!
 
                   char attrName[B_ATTR_NAME_LENGTH];
@@ -1009,23 +1018,22 @@ MessageReceived(const MessageRef & msgRef)
                UpdateRemoteUserName();
                _currentFileIndex++;
                _saveLastFileBytesDone = _currentFileBytesDone = startByte;
-               MessageFieldNameIterator iter = msg->GetFieldNameIterator();
-               String fieldName;
-               while(iter.GetNextFieldName(fieldName) == B_NO_ERROR)
-               {
-                  if (strncmp(fieldName(), "beshare:", 8))  // don't save our attributes, they aren't necessary
-                  {
-                     const void * attrData;
-                     size_t attrSize;
-                     uint32 c;
-                     type_code type;
-                     if ((msg->GetInfo(fieldName(), &type, &c)                   == B_NO_ERROR)&&
-                         (msg->FindData(fieldName(), type, &attrData, &attrSize) == B_NO_ERROR))
-                     {
-                        (void)_currentFile.WriteAttr(fieldName(), type, 0, attrData, attrSize);
-                     }
-                  }
-               }
+
+				String fieldName;
+				for (MessageFieldNameIterator iter(msg->GetFieldNameIterator()); iter.HasData(); iter++) {
+					fieldName = iter.GetFieldName();
+					if (strncmp(fieldName(), "beshare:", 8)) {  // don't save our attributes, they aren't necessary
+						const void * attrData;
+						size_t attrSize;
+						uint32 c;
+						type_code type;
+						
+						if ((msg->GetInfo(fieldName(), &type, &c) == B_NO_ERROR) 
+							&& (msg->FindData(fieldName(), type, &attrData, &attrSize) == B_NO_ERROR)) {
+							(void)_currentFile.WriteAttr(fieldName(), type, 0, attrData, attrSize);
+						}
+					}
+				}
 
                BNodeInfo ni(&_currentFile);
                const char * mimeString;
@@ -1454,17 +1462,20 @@ DrawItem(BView * lv, BRect itemRect, bool /*complete*/)
       line2Str += ")";
 
       const char * cfn = _currentFileName();
-      if (cfn[0] == '\0')
-      {
+      if (cfn[0] == '\0') {
          // Get the first name from the set then, if possible
-         const String * first = _fileSet.GetIterator().GetNextKey();
-         if (first) cfn = first->Cstr();
+         const String& first = _fileSet.GetIterator().GetKey();
+         
+         if (first != NULL) 
+         	cfn = first.Cstr();
       }
-      if (cfn[0] == '\0')
-      {
+      
+      if (cfn[0] == '\0') {
          // Still nothing?  Get the first name from the orig set then, if possible
-         const String * first = _origFileSet.GetIterator().GetNextKey();
-         if (first) cfn = first->Cstr();
+         const String& first = _origFileSet.GetIterator().GetKey();
+         
+         if (first != NULL)
+         	cfn = first.Cstr();
       }
 
       float vNudge = 2.0f;
@@ -1585,24 +1596,23 @@ ShareFileTransfer ::
 LaunchCurrentItem()
 {
    const char * cfn = _currentFileName();
-   if (cfn[0] != '\0') return be_roster->Launch(&_currentFileEntry);
+   if (cfn[0] != '\0')
+   	return be_roster->Launch(&_currentFileEntry);
 
    // No current file name?  Get the first name from the set then, if possible
    {
-      const String * first = _fileSet.GetIterator().GetNextKey();
-      if (first) 
-      {
-         entry_ref er = ((ShareWindow*)Looper())->FindSharedFile(first->Cstr());
+      const String& first = _fileSet.GetIterator().GetKey();
+      if (first != NULL) {
+         entry_ref er = ((ShareWindow*)Looper())->FindSharedFile(first.Cstr());
          return be_roster->Launch(&er);
       }
    }
 
    // Still nothing?  Get the first name from the orig set then, if possible
    {
-      const String * first = _origFileSet.GetIterator().GetNextKey();
-      if (first) 
-      {
-         entry_ref er = ((ShareWindow*)Looper())->FindSharedFile(first->Cstr());
+      const String& first = _origFileSet.GetIterator().GetKey();
+      if (first != NULL) {
+         entry_ref er = ((ShareWindow*)Looper())->FindSharedFile(first.Cstr());
          return be_roster->Launch(&er);
       }
    }
@@ -1648,38 +1658,38 @@ RestartSession()
                                 else InitAcceptSession(_remoteSessionID());
 }
 
+
 void
-ShareFileTransfer ::
-RequeueTransfer()
+ShareFileTransfer::RequeueTransfer()
 {
-   _isWaitingOnLocal = true;
-   SendNotifyQueuedMessage();
+	_isWaitingOnLocal = true;
+	SendNotifyQueuedMessage();
 }
+
 
 void 
-ShareFileTransfer :: TransferCallbackRejected(uint64 banTimeLeft)
+ShareFileTransfer::TransferCallbackRejected(uint64 banTimeLeft)
 {
-   _banEndTime = (banTimeLeft >= BESHARE_UNKNOWN_BAN_TIME_LEFT) ? banTimeLeft : GetCurrentTime64()+banTimeLeft;
-   AbortSession(true, true);
+	_banEndTime = (banTimeLeft >= BESHARE_UNKNOWN_BAN_TIME_LEFT) ? banTimeLeft : GetCurrentTime64()+banTimeLeft;
+	AbortSession(true, true);
 }
 
-uint64 
-ShareFileTransfer :: GetNumBytesLeftToUpload(const ShareNetClient * snc) const
-{
-   off_t count = 0;
-   if (IsUploadSession())
-   {
-      if (_currentFileBytesDone < _currentFileSize) count += (_currentFileSize - _currentFileBytesDone);
 
-      HashtableIterator<String, OffsetAndPath> iter = _fileSetIter;  // keeps track of where we are in our fileset for uploading
-      const String * nextName;
-      while((nextName = iter.GetNextKey()) != NULL) 
-      {
-         off_t fs = snc->GetSharedFileSize(*nextName);
-         if (fs > 0) count += fs;
-      }
-   }
-   return count;
+uint64 
+ShareFileTransfer::GetNumBytesLeftToUpload(const ShareNetClient * snc) const
+{
+	off_t count = 0;
+	if (IsUploadSession()) {
+		if (_currentFileBytesDone < _currentFileSize)
+			count += (_currentFileSize - _currentFileBytesDone);
+
+		for (HashtableIterator<String, OffsetAndPath> iter(_fileSetIter); iter.HasData(); iter++) {
+			off_t fs = snc->GetSharedFileSize(iter.GetKey());
+			if (fs > 0)
+				count += fs;
+		}
+	}
+	return count;
 }
 
 };  // end namespace beshare

@@ -6,84 +6,89 @@
 namespace beshare {
 
 enum {
-   REMOTE_USER_COLUMN_HANDLE = 0,
-   REMOTE_USER_COLUMN_STATUS,
-   REMOTE_USER_COLUMN_ID,
-   REMOTE_USER_COLUMN_FILES,
-   REMOTE_USER_COLUMN_BANDWIDTH,
-   REMOTE_USER_COLUMN_LOAD,
-   REMOTE_USER_COLUMN_CLIENT,
-   NUM_REMOTE_USER_COLUMNS
+	REMOTE_USER_COLUMN_HANDLE = 0,
+	REMOTE_USER_COLUMN_STATUS,
+	REMOTE_USER_COLUMN_ID,
+	REMOTE_USER_COLUMN_FILES,
+	REMOTE_USER_COLUMN_BANDWIDTH,
+	REMOTE_USER_COLUMN_LOAD,
+	REMOTE_USER_COLUMN_CLIENT,
+	NUM_REMOTE_USER_COLUMNS
 };
 
-RemoteUserItem ::
-RemoteUserItem(ShareWindow * owner, const char * sessionID)
-   : _owner(owner), _sessionID(sessionID), _handle(str(STR_ANONYMOUS)), _displayHandle(str(STR_ANONYMOUS)), _port(0), _firewalled(false), _isBot(false), _supportsPartialHash(false), _bandwidthLabel(str(STR_UNKNOWN)), _bandwidth(0), _installID(0)
-{
-   _files.SetKeyCompareFunction(CStringCompareFunc);
- 
-   String text = GetUserString();
-   text += str(STR_IS_NOW_CONNECTED); 
-   _owner->LogMessage(LOG_USER_EVENT_MESSAGE, text());
 
-   SetColumnContent(REMOTE_USER_COLUMN_HANDLE, _displayHandle(), false, false);
-   SetColumnContent(REMOTE_USER_COLUMN_STATUS, _displayStatus(), false, false);
-   SetColumnContent(REMOTE_USER_COLUMN_ID,     _sessionID(), false, true);
-   SetNumSharedFiles(-1);
-   SetUploadStats(NO_FILE_LIMIT, NO_FILE_LIMIT);
+RemoteUserItem::RemoteUserItem(ShareWindow* owner, const char* sessionID)
+	:
+	_owner(owner), 
+	_sessionID(sessionID), 
+	_handle(str(STR_ANONYMOUS)), 
+	_displayHandle(str(STR_ANONYMOUS)), 
+	_port(0), _firewalled(false), 
+	_isBot(false), 
+	_supportsPartialHash(false), 
+	_bandwidthLabel(str(STR_UNKNOWN)), 
+	_bandwidth(0), 
+	_installID(0)
+{
+	String text = GetUserString();
+	text += str(STR_IS_NOW_CONNECTED); 
+	_owner->LogMessage(LOG_USER_EVENT_MESSAGE, text());
+
+	SetColumnContent(REMOTE_USER_COLUMN_HANDLE, _displayHandle(), false, false);
+	SetColumnContent(REMOTE_USER_COLUMN_STATUS, _displayStatus(), false, false);
+	SetColumnContent(REMOTE_USER_COLUMN_ID,     _sessionID(), false, true);
+	SetNumSharedFiles(-1);
+	SetUploadStats(NO_FILE_LIMIT, NO_FILE_LIMIT);
 }
 
-RemoteUserItem ::
-~RemoteUserItem()
+
+RemoteUserItem::~RemoteUserItem()
 {
-   String text = GetUserString();
-   text += str(STR_HAS_DISCONNECTED);
-   _owner->LogMessage(LOG_USER_EVENT_MESSAGE, text());
-   ClearFiles();
+	String text = GetUserString();
+	text += str(STR_HAS_DISCONNECTED);
+	_owner->LogMessage(LOG_USER_EVENT_MESSAGE, text());
+	ClearFiles();
 }
+
 
 String
-RemoteUserItem ::
-GetUserString() const
+RemoteUserItem::GetUserString() const
 {
-   String text(str(STR_USER_NUMBER));
-   text += _sessionID;
+	String text(str(STR_USER_NUMBER));
+	text += _sessionID;
 
-   if (!_handle.Equals(str(STR_ANONYMOUS)))
-   {
-      text += str(STR_AKA);
-      text += _handle();
-      text += ")";
-   }
-   return text;
+	if (!_handle.Equals(str(STR_ANONYMOUS))) {
+		text += str(STR_AKA);
+		text += _handle();
+		text += ")";
+	}
+	return text;
 }
+
 
 void
-RemoteUserItem ::
-SetHandle(const char * handle, const char * displayHandle)
+RemoteUserItem::SetHandle(const char* handle, const char* displayHandle)
 {
-   if ((strcmp(handle, _handle()))||(strcmp(displayHandle, _displayHandle())))
-   {
-      String text = GetUserString();
-      text += str(STR_IS_NOW_KNOWN_AS);
-      text += handle;
-      _owner->LogMessage(LOG_USER_EVENT_MESSAGE, text());
+	if ((strcmp(handle, _handle())) || (strcmp(displayHandle, _displayHandle()))) {
+		String text = GetUserString();
+		text += str(STR_IS_NOW_KNOWN_AS);
+		text += handle;
+		_owner->LogMessage(LOG_USER_EVENT_MESSAGE, text());
+		
+		_handle = handle;
+		_displayHandle = displayHandle;
 
-      _handle = handle;
-      _displayHandle = displayHandle;
+		SetColumnContent(REMOTE_USER_COLUMN_HANDLE, _displayHandle(), false, false);
+		_owner->RefreshUserItem(this);
+		_owner->RefreshTransfersFor(this);
 
-      SetColumnContent(REMOTE_USER_COLUMN_HANDLE, _displayHandle(), false, false);
-      _owner->RefreshUserItem(this);
-      _owner->RefreshTransfersFor(this);
-
-      // Make sure all our files refresh too, in case the "owner name" column is visible
-      RemoteFileItem * next;
-      HashtableIterator<const char *, RemoteFileItem *> iter = _files.GetIterator();
-      while(iter.GetNextValue(next) == B_NO_ERROR) _owner->RefreshFileItem(next);
-   }
-
-   
+		// Make sure all our files refresh too, in case the "owner name" column is visible
+		for (HashtableIterator<const char*, RemoteFileItem*> iter(_files.GetIterator()); iter.HasData(); iter++) {
+			_owner->RefreshFileItem(iter.GetValue());
+		}
+	}
 }
+
 
 void
 RemoteUserItem ::
@@ -136,19 +141,18 @@ SetUploadStats(uint32 cu, uint32 mu)
 }
 
 void
-RemoteUserItem ::
-SetBandwidth(const char * bandwidthLabel, uint32 bps)
+RemoteUserItem::SetBandwidth(const char * bandwidthLabel, uint32 bps)
 {
-   _bandwidthLabel = bandwidthLabel;
-   _bandwidth = bps;
+	_bandwidthLabel = bandwidthLabel;
+	_bandwidth = bps;
 
-   // Make sure all our files refresh too, in case the "owner bps" column is visible
-   RemoteFileItem * next;
-   HashtableIterator<const char *, RemoteFileItem *> iter = _files.GetIterator();
-   while(iter.GetNextValue(next) == B_NO_ERROR) _owner->RefreshFileItem(next);
+	// Make sure all our files refresh too, in case the "owner name" column is visible
+	for (HashtableIterator<const char*, RemoteFileItem*> iter(_files.GetIterator()); iter.HasData(); iter++) {
+		_owner->RefreshFileItem(iter.GetValue());
+	}
 
-   SetColumnContent(REMOTE_USER_COLUMN_BANDWIDTH, _bandwidthLabel(), false, false);
-   _owner->RefreshUserItem(this);
+	SetColumnContent(REMOTE_USER_COLUMN_BANDWIDTH, _bandwidthLabel(), false, false);
+	_owner->RefreshUserItem(this);
 }
 
 void
@@ -161,17 +165,13 @@ SetClient(const char * client, const char * displayClient)
 }
 
 void
-RemoteUserItem ::
-ClearFiles()
+RemoteUserItem::ClearFiles()
 {
-   HashtableIterator<const char *, RemoteFileItem *> iter = _files.GetIterator();
-   RemoteFileItem * next;
-   while(iter.GetNextValue(next) == B_NO_ERROR) 
-   {
-      _owner->RemoveFileItem(next);
-      delete next;
-   }
-   _files.Clear();
+	// Make sure all our files refresh too, in case the "owner name" column is visible
+	for (HashtableIterator<const char*, RemoteFileItem*> iter(_files.GetIterator()); iter.HasData(); iter++) {
+		_owner->RemoveFileItem(iter.GetValue());
+	}
+	_files.Clear();
 }
 
 void

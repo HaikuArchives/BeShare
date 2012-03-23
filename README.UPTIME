@@ -1,0 +1,15 @@
+Added the spiffy new /uptime command so you can brag to all your friends!
+
+example:
+/uptime
+(20109) Zaranthos/Dual_P3: BeOS System Uptime: 50 days, 12 hours, 47 minutes, 4 seconds
+
+Now isn't that cool?  Sure it is!  :^)
+
+Thanks to YNOP for the actual time code and yuktar for the help putting it in BeShare and making it work.  Thanks to Agni(TM) for fixing the code so it would compile with BeShare 2.14 (Jeremy tried to kill BeShare + uptime and failed.  No more M$ tactics Jeremy :PPP)
+
+Delete the BeShare*.x86 you don't use.  If you use the BONE version delete the other one.  If you run BeShare from a script by running the prefs file for BeShare like I do it will run BeShare using the mime type and run the first one it finds on your hard drive.  So it could run the net_server one when you wanted to run the BONE binary.  This only happens if you run BeShare by launching its prefs file instead of the actual app or symlink.  For example if you connect using my multi-server script.
+
+Why is there no PPC binary?  I don't have a PPC.  If that darn Jeremy would just add the uptime code to the main source tree you wouldn't be asking this question.   ;-)
+
+BeShare_multi-server connection script.sh explains how to quickly connect to multiple servers and keep your settings for each server.  Open it with StyledEdit to make changes.

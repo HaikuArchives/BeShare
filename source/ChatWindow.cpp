@@ -223,7 +223,7 @@ void ChatWindow :: MessageReceived(BMessage * msg)
 
          if (text.Length() > 0)
          {
-            if ((_chatHistory.GetNumItems() == 0)||(_chatHistory.GetItemPointer(_chatHistory.GetNumItems()-1)->Equals(text) == false))
+            if ((_chatHistory.GetNumItems() == 0)||(_chatHistory.GetItemAt(_chatHistory.GetNumItems()-1)->Equals(text) == false))
             {
                _chatHistory.AddTail(text);
                if (_chatHistory.GetNumItems() > CHAT_HISTORY_LENGTH) _chatHistory.RemoveHead();
@@ -814,7 +814,7 @@ DispatchMessage(BMessage * msg, BHandler * target)
                         }
                         else
                         {
-                           const String * s = _chatHistory.GetItemPointer(_chatHistoryPosition);
+                           const String * s = _chatHistory.GetItemAt(_chatHistoryPosition);
                            _textEntry->SetText(s->Cstr());
                            _textEntry->TextView()->Select(s->Length(), s->Length());
                         }

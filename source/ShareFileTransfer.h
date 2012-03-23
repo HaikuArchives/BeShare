@@ -212,7 +212,7 @@ public:
    void SharesScanComplete();
 
    /** Called if our request for a callback was rejected */
-   void TransferCallbackRejected(uint64 banTimeLeft);
+   void TransferCallbackRejected(uint64 banTimeLeft);   
 
    enum 
    {
@@ -329,6 +329,35 @@ private:
    MessageRef _saveFileListMessage;
    uint64 _banEndTime;
 };
+
+//class ShareFileTransfer;
+
+/** A custom compare functor for case-insensitive comparisons of Strings. */
+class ShareFileTransferCompareFunctor
+{
+public:
+	/** Compares the two ShareFileTransfer, returning zero if they are equal, a negative value if (item1) comes first, or a positive value if (item2) comes first. */
+	int Compare(const ShareFileTransfer & s1, const ShareFileTransfer & s2, void * cookie) const {
+   		//return s1.CompareToIgnoreCase(s2);
+		const ShareNetClient * nc = (const ShareNetClient *) cookie;
+		uint64 nb1 = s1.GetNumBytesLeftToUpload(nc);
+		uint64 nb2 = s2.GetNumBytesLeftToUpload(nc);
+		return muscleCompare(
+			(nb1>0) ? nb1 : ((uint64)-1), 
+			(nb2>0) ? nb2 : ((uint64)-1)
+		);  // empty gets prioritized last!
+	}
+};
+
+/*
+this code was used.
+static int SortShareFileTransfersBySize(ShareFileTransfer * const & s1, ShareFileTransfer * const & s2, void * cookie)
+{
+  const ShareNetClient * nc = (const ShareNetClient *) cookie;
+  uint64 nb1 = s1->GetNumBytesLeftToUpload(nc);
+  uint64 nb2 = s2->GetNumBytesLeftToUpload(nc);
+  return muscleCompare((nb1>0)?nb1:((uint64)-1), (nb2>0)?nb2:((uint64)-1));  // empty gets prioritized last!
+}*/
 
 };  // end namespace beshare
 

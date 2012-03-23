@@ -72,16 +72,20 @@ SRCS := \
 		../muscle/system/SignalMultiplexer.cpp \
 		../muscle/system/Thread.cpp \
 		../muscle/util/ByteBuffer.cpp \
+		../muscle/util/Directory.cpp \
+		../muscle/util/FilePathInfo.cpp \
 		../muscle/util/MiscUtilityFunctions.cpp \
 		../muscle/util/NetworkUtilityFunctions.cpp \
 		../muscle/util/PulseNode.cpp \
 		../muscle/util/String.cpp \
+		../muscle/util/SocketMultiplexer \
 		../muscle/zlib/ZLibCodec.cpp \
 		../muscle/zlib/ZLibUtilityFunctions.cpp \
 		../muscle/zlib/zlib/adler32.c \
 		../muscle/zlib/zlib/compress.c \
 		../muscle/zlib/zlib/crc32.c \
 		../muscle/zlib/zlib/deflate.c \
+		../muscle/zlib/zlib/gzio.c \
 		../muscle/zlib/zlib/trees.c \
 		../muscle/zlib/zlib/zutil.c \
 		../muscle/zlib/zlib/inflate.c \
@@ -135,20 +139,20 @@ LOCAL_INCLUDE_PATHS := \
 
 #	specify the level of optimization that you desire
 #	NONE, SOME, FULL
-OPTIMIZE	:=
+OPTIMIZE := -03
 
 #	specify any preprocessor symbols to be defined.  The symbols will not
 #	have their values set automatically; you must supply the value (if any)
 #	to use.  For example, setting DEFINES to "DEBUG=1" will cause the
 #	compiler option "-DDEBUG=1" to be used.  Setting DEFINES to "DEBUG"
 #	would pass "-DDEBUG" on the compiler's command line.
-DEFINES		:= MUSCLE_ENABLE_ZLIB_ENCODING 
+DEFINES := MUSCLE_ENABLE_ZLIB_ENCODING MUSCLE_AVOID_IPV6 MUSCLE_NO_EXCEPTIONS DEBUG_BESHARE #MUSCLE_SINGLE_THREAD_ONLY
 
 #	specify special warning levels
 #	if unspecified default warnings will be used
 #	NONE = supress all warnings
 #	ALL = enable all warnings
-WARNINGS	:= 
+WARNINGS := ALL
 
 #	specify whether image symbols will be created
 #	so that stack crawls in the debugger are meaningful
@@ -158,10 +162,10 @@ SYMBOLS		:= TRUE
 #	specify debug settings
 #	if TRUE will allow application to be run from a source-level
 #	debugger.  Note that this will disable all optimzation.
-DEBUGGER	:= TRUE
+DEBUGGER	:= FALSE
 
 #	specify additional compiler flags for all files
-COMPILER_FLAGS	:=
+COMPILER_FLAGS	:= -fno-exceptions -W -Wall -Wno-multichar 
 
 #	specify additional linker flags
 LINKER_FLAGS	:=
@@ -188,7 +192,7 @@ TARGET_DIR	:=
 BOOTREL_INSTALL_DIR     := 
 
 #       Specify a directory for the 'install' target. 
-INSTALL_DIR     := 
+INSTALL_DIR := ../
  
 #	Specify the name of this makefile.
 #	If you leave this blank, the makefile will not be considered as part of the
@@ -245,34 +249,34 @@ EXTRA_DEPS :=
 #       Specify the path to the Screenshot file. If this is not specified, then the SCREENSHOT default 
 #       will be $(PWD)/$(NAME).png 
 #       If this application is not to have a screenshot, use NONE 
-SCREENSHOT      := #whisper_main.png
+#SCREENSHOT      := #whisper_main.png
 
 #       Specify the category that this zeta component belongs in 
-ZETA_CATEGORY   :=Internet
+#ZETA_CATEGORY   :=Internet
 
 #       The .zip package that this file will be included in. If this is left blank, then 
 #       $(NAME).zip will be used. 
 #       This feature is meant for having multiple items included in the a single .zip package 
-PACKAGE         :=BeShare
+#PACKAGE :=BeShare
 
 #       If this target is a component of another target. That is, if this is part of a package 
 #       but not the 'main' part. Typically the main app will have the screenshot, and set 
 #       the relevant attributes. If this is set to 'true' then this makefile will not attempt to set 
 #       attributes or a screenshot or a description. 
-IS_COMPONENT    :=
+#IS_COMPONENT :=
 
 #       If this is a mandatory component, set this to 'false'. The default is true. 
 #       Optional components will be zipped up with thier attribs and everything. 
 #       Non-Optional (mandatory) components will just be copied to the directory structure and 
 #       added to the manifest for copying during install 
-OPTIONAL		:=
+#OPTIONAL		:=
 
 #       Specify the names of the Language files here. (ie: AboutWindow.de AboutWindow.en) 
-LANG_FILES		:= $(wildcard Language/Dictionaries/$(NAME).*)
+#LANG_FILES		:= $(wildcard Language/Dictionaries/$(NAME).*)
 
 #       If your language files are in a different directory, specify the relative directory here. 
 #       ie: Language/Dictionaries 
-LANG_FILES_DIR  := Language/Dictionaries
+#LANG_FILES_DIR  := Language/Dictionaries
 
 include /boot/develop/etc/makefile-engine
 

@@ -1,39 +1,13 @@
-//#include "ResultsView.h"
 
 #include "TransferListView.h"
 
 #include <PopUpMenu.h>
 #include <MenuItem.h>
 #include <Window.h>
-
-#include "ShareStrings.h"
-#include "ShareConstants.h"
-#include "ShareWindow.h"
-#include "ShareFileTransfer.h"
-//------------
-//#include <string.h>
-//#include <sys/socket.h>
-//#include <time.h>
-//#include <app/Application.h>
-//#include <app/MessageRunner.h>
-//#include <app/Roster.h>
-//#include <stdlib.h>
-//#include <unistd.h>
-
 #include <Alert.h>
-//#include <Box.h>
 #include <Button.h>
-//#include <interface/Font.h>
-//#include <interface/Menu.h>
-//#include <interface/MenuItem.h>
-//#include <interface/MenuBar.h>
-//#include <interface/ScrollBar.h>
 #include <Screen.h>
-//#include <interface/ScrollBar.h>
-//#include <interface/ScrollView.h>
-//#include <interface/Input.h>
 #include <PopUpMenu.h>
-
 #include <File.h>
 #include <Path.h>     
 #include <FindDirectory.h>     
@@ -46,6 +20,11 @@
 #include <TranslationUtils.h>
 #include <TranslatorRoster.h>
 #include <TranslatorFormats.h>
+#include "ShareStrings.h"
+#include "ShareConstants.h"
+#include "ShareWindow.h"
+#include "ShareFileTransfer.h"
+
 
 //#include "ColumnListView.h"
 #include "CLVColumnLabelView.h"
@@ -429,26 +408,26 @@ void
 TransferListView::_AddFileItems(BMenu * menu, type_code tc, const ShareFileTransfer * xfr)
 {
 	ShareWindow * win = (ShareWindow *) Looper();
-	HashtableIterator<String, OffsetAndPath> fiter = xfr->GetDisplayFileSet().GetIterator();
-	const String * next;
-	const OffsetAndPath * oap;
-	
-	while(((next = fiter.GetNextKey()) != NULL)&&((oap = fiter.GetNextValue()) != NULL)) {
-		BMenuItem * mi = new BMenuItem(next->Cstr(), new BMessage(tc));
+	String next;
+
+	for (HashtableIterator<String, OffsetAndPath> iter(xfr->GetDisplayFileSet().GetIterator()); iter.HasData(); iter++) {
+		next = iter.GetKey(); 
+		
+		BMenuItem * mi = new BMenuItem(next.Cstr(), new BMessage(tc));
 		bool enableIt = false;
 		
 		if (xfr->IsUploadSession()) {
-			entry_ref er = win->FindSharedFile(next->Cstr());
+			entry_ref er = win->FindSharedFile(next.Cstr());
 		
 			if (BEntry(&er).Exists())
 				enableIt = (mi->Message()->AddRef("entry", &er) == B_NO_ERROR);
 		} else {
-			String path = oap->_path;
+			String path = iter.GetValue()._path;
 			
 			if (path.Length() > 0)
 				path += '/';
 			
-			BEntry entry(&win->_downloadsDir, (path+(*next))(), true);
+			BEntry entry(&win->_downloadsDir, (path+(next))(), true);
 			entry_ref er;
 			
 			if ((entry.Exists()) && (entry.GetRef(&er) == B_NO_ERROR))
@@ -499,7 +478,7 @@ TransferListView::_AddBanItem(BMenu* addTo,
 	HashtableIterator<uint32,bool> iter = canBans.GetIterator();
 	uint32 nextKey;
 	
-	while(iter.GetNextKey(nextKey) == B_NO_ERROR)
+	while((nextKey = iter.GetKey()) == B_NO_ERROR)
 		msg->AddInt32("ip", nextKey);
 
 	msg->AddString("durstr", buf);

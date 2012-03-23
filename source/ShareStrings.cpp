@@ -41,11 +41,14 @@ int GetDefaultLanguageForLocale()
    }; 
 
    String posixLocale(getenv("LC_ALL")); 
-   if (posixLocale.Length() == 0) posixLocale = getenv("LC_MESSAGES"); 
-   if (posixLocale.Length() > 0) 
-   {
+   if (posixLocale.Length() == 0)
+   	posixLocale = getenv("LC_MESSAGES"); 
+   
+   if (posixLocale.Length() > 0) {
       posixLocale = posixLocale.Substring(0, "_");  // remove everything at/after 1st underbar
-      for (uint32 i=0; i<ARRAYITEMS(posixLocaleMapping); i++) if (posixLocale == posixLocaleMapping[i].posix) return posixLocaleMapping[i].language; 
+      for (uint32 i = 0; i < ARRAYITEMS(posixLocaleMapping); i++)
+      	if (posixLocale == posixLocaleMapping[i].posix)
+      		return posixLocaleMapping[i].language; 
    }
    return LANGUAGE_ENGLISH;  // the default
 }

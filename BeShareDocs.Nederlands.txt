@@ -1,6 +1,5 @@
-BeShare v2.29
-by Jeremy Friesner
-jaf@lcsaudio.com
+BeShare v2.30
+http://dev.osdrawer.net/projects/beshare
 ============
 
 Beshare is een BeOS georienteerd bestands deel programma. Het werkt als gelijkwaardige andere programma's om bestanden te delen(bijv. Napster, Hotline, etc) maar met enige voordelen aan meerwaarde.

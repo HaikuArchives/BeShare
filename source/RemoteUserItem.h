@@ -88,7 +88,7 @@ private:
    uint32 _maxUploads;
    bool _supportsPartialHash;
 
-   Hashtable<const char *, RemoteFileItem *> _files;
+   OrderedKeysHashtable<const char *, RemoteFileItem *> _files;
 
    String _bandwidthLabel;
    uint32 _bandwidth;

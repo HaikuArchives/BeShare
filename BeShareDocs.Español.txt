@@ -1,6 +1,5 @@
-BeShare v2.29
-por Jeremy Friesner
-jaf@lcsaudio.com
+BeShare v2.30
+http://dev.osdrawer.net/projects/beshare
 ==================
 
 Traducción Española: Osvaldo "Phantom" Gonzalez 
