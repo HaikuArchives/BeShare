@@ -868,7 +868,7 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 
 
 BMenuItem *
-ShareWindow :: CreatePresetItem(int32 what, int32 which, bool enabled, bool shiftShortcut) const
+ShareWindow::CreatePresetItem(int32 what, int32 which, bool enabled, bool shiftShortcut) const
 {
   BMessage * msg = new BMessage(what);
   msg->AddInt32("which", which);
@@ -957,7 +957,7 @@ SaveSplitPane(BMessage & settingsMsg, const SplitPane * sp, const char * name) c
   settingsMsg.AddMessage(name, &state);
 }
 
-ShareWindow :: ~ShareWindow()
+ShareWindow::~ShareWindow()
 {
   if (_colorPicker->Lock()) _colorPicker->Quit();
 
@@ -1181,7 +1181,7 @@ ShareWindow::GenerateSettingsMessage(BMessage & settingsMsg)
 
 
 void 
-ShareWindow :: 
+ShareWindow::
 SavePrivateWindowInfo(const BMessage & msg)
 {
   uint32 index;
@@ -1197,26 +1197,26 @@ SavePrivateWindowInfo(const BMessage & msg)
 void
 ShareWindow::ClearUsers()
 {
-	BSTRACE(("ShareWindow::ClearUsers begin\n"));
+	TRACE_BESHAREWINDOW(("ShareWindow::ClearUsers begin\n"));
 	ClearResults();         // no users means no files available
-	BSTRACE(("ShareWindow::ClearUsers 1\n"));
+	TRACE_BESHAREWINDOW(("ShareWindow::ClearUsers 1\n"));
 	_usersView->MakeEmpty();   // for efficiency
 
 	RemoteUserItem* next;
-	BSTRACE(("ShareWindow::ClearUsers before loop\n"));
+	TRACE_BESHAREWINDOW(("ShareWindow::ClearUsers before loop\n"));
 	for (HashtableIterator<const char*, RemoteUserItem*> iter(_users.GetIterator()); iter.HasData(); iter++) {
 		next = iter.GetValue();
-		BSTRACE(("Remove user %s\n", next->GetUserString().Cstr()));
+		TRACE_BESHAREWINDOW(("Remove user %s\n", next->GetUserString().Cstr()));
 		delete next;
 	}	
 	
-	BSTRACE(("ShareWindow::ClearUsers after loop\n"));
+	TRACE_BESHAREWINDOW(("ShareWindow::ClearUsers after loop\n"));
 	_users.Clear();
 	
 	BMessage msg(PrivateChatWindow::PRIVATE_WINDOW_REMOVE_USER);
-	BSTRACE(("ShareWindow::ClearUsers before send message to priv\n"));
+	TRACE_BESHAREWINDOW(("ShareWindow::ClearUsers before send message to priv\n"));
 	SendToPrivateChatWindows(msg, NULL);
-	BSTRACE(("ShareWindow::ClearUsers end\n"));
+	TRACE_BESHAREWINDOW(("ShareWindow::ClearUsers end\n"));
 }
 /*
 #if NOT_NEEDED_I_THINK
@@ -1406,7 +1406,7 @@ RequestDownloads(const BMessage & filelistMsg, const BDirectory & downloadDir, B
 	DequeueTransferSessions();
 }
 
-status_t ShareWindow :: SetupNewDownload(const RemoteUserItem * user, ShareFileTransfer * xfer, bool forceRemoteIsFirewalled)
+status_t ShareWindow::SetupNewDownload(const RemoteUserItem * user, ShareFileTransfer * xfer, bool forceRemoteIsFirewalled)
 {
   if ((user->GetFirewalled())||(forceRemoteIsFirewalled))
   {
@@ -1583,7 +1583,7 @@ SharesScanComplete()
 }
 
 
-void ShareWindow :: OpenTrackerFolder(const BDirectory & dir)
+void ShareWindow::OpenTrackerFolder(const BDirectory & dir)
 {
   BEntry entry(&dir, ".", true);
   entry_ref ref;
@@ -1596,7 +1596,7 @@ void ShareWindow :: OpenTrackerFolder(const BDirectory & dir)
 }
 
 
-void ShareWindow :: SaveAttributesPreset(BMessage & saveMsg)
+void ShareWindow::SaveAttributesPreset(BMessage & saveMsg)
 {
   saveMsg.MakeEmpty();
 
@@ -1631,7 +1631,7 @@ void ShareWindow :: SaveAttributesPreset(BMessage & saveMsg)
   }
 }
 
-void ShareWindow :: RestoreAttributesPreset(const BMessage & restoreMsg)
+void ShareWindow::RestoreAttributesPreset(const BMessage & restoreMsg)
 {
   // Clear all existing columns....
   for (int32 i=_resultsView->CountColumns()-1; i>=1; i--)
@@ -1660,7 +1660,7 @@ void ShareWindow :: RestoreAttributesPreset(const BMessage & restoreMsg)
   PostMessage(&sortMsg);
 }
 
-MessageRef ShareWindow :: MakeBannedMessage(uint64 time, const MessageRef & optBase) const
+MessageRef ShareWindow::MakeBannedMessage(uint64 time, const MessageRef & optBase) const
 {
   MessageRef ret = optBase;
   if (ret()) ret()->what = ShareFileTransfer::TRANSFER_COMMAND_REJECTED;
@@ -1945,7 +1945,7 @@ ShareWindow::MessageReceived(BMessage* msg)
 
 	case SHAREWINDOW_COMMAND_OPEN_PRIVATE_CHAT_WINDOW:
 	{
-		BSTRACE(("ShareWindow::MessageReceived SHAREWINDOW_COMMAND_OPEN_PRIVATE_CHAT_WINDOW begin\n"));
+		TRACE_BESHAREWINDOW(("ShareWindow::MessageReceived SHAREWINDOW_COMMAND_OPEN_PRIVATE_CHAT_WINDOW begin\n"));
 		const char * target;
 		if (msg->FindString("users", &target) != B_NO_ERROR)
 			target = _lastPrivateMessageTarget();
@@ -1954,26 +1954,26 @@ ShareWindow::MessageReceived(BMessage* msg)
 		const BMessage * archive = (idx < _privateChatInfos.GetNumItems()) ? _privateChatInfos.GetItemAt(idx) : NULL;
 		const BMessage blank;
 		
-		BSTRACE(("ShareWindow::MessageReceived SHAREWINDOW_COMMAND_OPEN_PRIVATE_CHAT_WINDOW 1\n"));
+		TRACE_BESHAREWINDOW(("ShareWindow::MessageReceived SHAREWINDOW_COMMAND_OPEN_PRIVATE_CHAT_WINDOW 1\n"));
 		
 		PrivateChatWindow * pcw = new PrivateChatWindow(_toggleFileLogging->IsMarked(), archive?*archive:blank, idx, this, (strlen(target) > 0) ? target : NULL);
-		BSTRACE(("ShareWindow::MessageReceived SHAREWINDOW_COMMAND_OPEN_PRIVATE_CHAT_WINDOW 2\n"));
+		TRACE_BESHAREWINDOW(("ShareWindow::MessageReceived SHAREWINDOW_COMMAND_OPEN_PRIVATE_CHAT_WINDOW 2\n"));
 		pcw->ReadyToRun();
-		BSTRACE(("ShareWindow::MessageReceived SHAREWINDOW_COMMAND_OPEN_PRIVATE_CHAT_WINDOW 3\n"));
+		TRACE_BESHAREWINDOW(("ShareWindow::MessageReceived SHAREWINDOW_COMMAND_OPEN_PRIVATE_CHAT_WINDOW 3\n"));
 		_privateChatWindows.Put(pcw, target);
-		BSTRACE(("ShareWindow::MessageReceived SHAREWINDOW_COMMAND_OPEN_PRIVATE_CHAT_WINDOW 4\n"));
+		TRACE_BESHAREWINDOW(("ShareWindow::MessageReceived SHAREWINDOW_COMMAND_OPEN_PRIVATE_CHAT_WINDOW 4\n"));
 		UpdatePrivateWindowUserList(pcw, target);
 
-		BSTRACE(("ShareWindow::MessageReceived SHAREWINDOW_COMMAND_OPEN_PRIVATE_CHAT_WINDOW 5\n"));
+		TRACE_BESHAREWINDOW(("ShareWindow::MessageReceived SHAREWINDOW_COMMAND_OPEN_PRIVATE_CHAT_WINDOW 5\n"));
 		// tell the ReflowingTextView how to send us querychange messages when "beshare://" is clicked
 		BMessage qMsg(SHAREWINDOW_COMMAND_CHANGE_FILE_NAME_QUERY);
 		qMsg.AddBool("activate", true);
 		pcw->SetCommandURLTarget(BMessenger(this), qMsg, BMessage(SHAREWINDOW_COMMAND_OPEN_PRIVATE_CHAT_WINDOW));
-		BSTRACE(("ShareWindow::MessageReceived SHAREWINDOW_COMMAND_OPEN_PRIVATE_CHAT_WINDOW 6\n"));
+		TRACE_BESHAREWINDOW(("ShareWindow::MessageReceived SHAREWINDOW_COMMAND_OPEN_PRIVATE_CHAT_WINDOW 6\n"));
 		UpdatePrivateChatWindowsColors();
-		BSTRACE(("ShareWindow::MessageReceived SHAREWINDOW_COMMAND_OPEN_PRIVATE_CHAT_WINDOW 7\n"));
+		TRACE_BESHAREWINDOW(("ShareWindow::MessageReceived SHAREWINDOW_COMMAND_OPEN_PRIVATE_CHAT_WINDOW 7\n"));
 		pcw->Show();
-		BSTRACE(("ShareWindow::MessageReceived SHAREWINDOW_COMMAND_OPEN_PRIVATE_CHAT_WINDOW end\n"));
+		TRACE_BESHAREWINDOW(("ShareWindow::MessageReceived SHAREWINDOW_COMMAND_OPEN_PRIVATE_CHAT_WINDOW end\n"));
 	}
 	break;     
 
@@ -2379,7 +2379,7 @@ ShareWindow::MessageReceived(BMessage* msg)
     break;
 
 	case SHAREWINDOW_COMMAND_RECONNECT_TO_SERVER:
-		BSTRACE(("Here\n"));
+		TRACE_BESHAREWINDOW(("Here\n"));
 		ResetAutoReconnectState(true);  // user intervened, so reset count
 		ReconnectToServer();
 	break;
@@ -2487,12 +2487,12 @@ ShareWindow::MessageReceived(BMessage* msg)
     break;
     
     default:
-      ChatWindow :: MessageReceived(msg);
+      ChatWindow::MessageReceived(msg);
     break;
   }
 }
 
-void ShareWindow :: UpdateColors()
+void ShareWindow::UpdateColors()
 {
   ChatWindow::UpdateColors();
 
@@ -2512,7 +2512,7 @@ void ShareWindow :: UpdateColors()
 void
 ShareWindow::UpdatePrivateChatWindowsColors()
 {
-	BSTRACE(("ShareWindow::UpdatePrivateChatWindowsColors begin\n"));
+	TRACE_BESHAREWINDOW(("ShareWindow::UpdatePrivateChatWindowsColors begin\n"));
 	BMessage updateAllColors(CHATWINDOW_COMMAND_COLOR_CHANGED);
 	for (int i=0; i<NUM_COLORS; i++) {
 		const rgb_color & col = GetColor(i);
@@ -2526,11 +2526,11 @@ ShareWindow::UpdatePrivateChatWindowsColors()
 		priv = iter.GetKey();
 		priv->PostMessage(&updateAllColors);
 	}
-	BSTRACE(("ShareWindow::UpdatePrivateChatWindowsColors begin\n"));
+	TRACE_BESHAREWINDOW(("ShareWindow::UpdatePrivateChatWindowsColors begin\n"));
 }
 
 
-void ShareWindow :: UpdaterCommandReceived(const char * key, const char * value)
+void ShareWindow::UpdaterCommandReceived(const char * key, const char * value)
 {
   if (value[0])
   {
@@ -2560,7 +2560,7 @@ void ShareWindow :: UpdaterCommandReceived(const char * key, const char * value)
 }
 
 
-void ShareWindow :: MakeAway()
+void ShareWindow::MakeAway()
 {
   _idle = true;
   String away = (_oneTimeAwayStatus.Length() > 0) ? _oneTimeAwayStatus : _awayStatus;
@@ -2628,7 +2628,7 @@ ShareWindow::LogMessage(LogMessageType type, const char * text, const char * opt
 
 
 bool
-ShareWindow :: OkayToLog(LogMessageType type, LogDestinationType dest, bool isPrivate) const
+ShareWindow::OkayToLog(LogMessageType type, LogDestinationType dest, bool isPrivate) const
 {
   if (((dest == DESTINATION_LOG_FILE)&&(_toggleFileLogging->IsMarked() == false)) ||
      ((dest == DESTINATION_DISPLAY)&&(_messageWasSentToPrivateChatWindow))) return false;
@@ -2683,10 +2683,12 @@ UpdateLRUMenu(BMenu * menu, const char * lookfor, uint32 what, const char * fiel
 void
 ShareWindow::SetQueryEnabled(bool e, bool putInQueryMenu)
 {
+	TRACE_BESHAREWINDOW(("ShareWindow::SetQueryEnabled begin\n"));
 	if (e != _queryEnabled) {
 		_queryEnabled = e;
 	
 		if (_queryEnabled) {
+			TRACE_BESHAREWINDOW(("ShareWindow::SetQueryEnabled _queryEnabled = true\n"));
 			// If there is an '@' sign, split the string into separate filename and username queries
 			String fileExp(_fileNameQueryEntry->Text());
 			String userExp;  // default == empty == "*"
@@ -2699,6 +2701,7 @@ ShareWindow::SetQueryEnabled(bool e, bool putInQueryMenu)
 			int32 atIndex = fileExp.IndexOf('@');
 
 			if (atIndex >= 0) {
+				TRACE_BESHAREWINDOW(("ShareWindow::SetQueryEnabled atIndex >= 0\n"));
 				if ((uint32) atIndex < fileExp.Length()) {
 					userExp = fileExp.Substring(atIndex+1);  // in case they entered a session ID
 
@@ -2758,6 +2761,7 @@ ShareWindow::SetQueryEnabled(bool e, bool putInQueryMenu)
 
 		UpdateQueryEnabledStatus();
 	}
+	TRACE_BESHAREWINDOW(("ShareWindow::SetQueryEnabled end\n"));
 }
 
 
@@ -2950,9 +2954,9 @@ RemoveServerItem(const char * serverName, bool quiet)
 void 
 ShareWindow::SetConnectStatus(bool isConnecting, bool isConnected)
 {
-	BSTRACE(("ShareWindow::SetConnectStatus begin\n"));
+	TRACE_BESHAREWINDOW(("ShareWindow::SetConnectStatus begin\n"));
 	if ((!_isConnected) && (isConnected)) {
-		BSTRACE(("ShareWindow::SetConnectStatus if first\n"));
+		TRACE_BESHAREWINDOW(("ShareWindow::SetConnectStatus if first\n"));
 		LogMessage(LOG_INFORMATION_MESSAGE, str(STR_CONNECTION_ESTABLISHED));
 
 		AddServerItem(_connectedTo(), false, 0);
@@ -2972,30 +2976,30 @@ ShareWindow::SetConnectStatus(bool isConnecting, bool isConnected)
 			LogMessage(LOG_ERROR_MESSAGE, str(STR_CONNECTION_TO_SERVER_FAILED));
 	}
 	
-	BSTRACE(("ShareWindow::SetConnectStatus if middle\n"));
+	TRACE_BESHAREWINDOW(("ShareWindow::SetConnectStatus if middle\n"));
 	
 	_isConnecting = isConnecting;
 	_isConnected  = isConnected;
 
 	// If we're not connected anymore, make sure the display is clear
 	if (_isConnected == false) {
-		BSTRACE(("ShareWindow::SetConnectStatus if middle 1\n"));
+		TRACE_BESHAREWINDOW(("ShareWindow::SetConnectStatus if middle 1\n"));
 		ClearUsers();
-		BSTRACE(("ShareWindow::SetConnectStatus if middle 2\n"));
+		TRACE_BESHAREWINDOW(("ShareWindow::SetConnectStatus if middle 2\n"));
 		SetQueryEnabled(false);
 	}
-	BSTRACE(("ShareWindow::SetConnectStatus if last\n"));
+	TRACE_BESHAREWINDOW(("ShareWindow::SetConnectStatus if last\n"));
 	UpdateConnectStatus(true);
 	UpdateQueryEnabledStatus();
-	BSTRACE(("ShareWindow::SetConnectStatus end\n"));
+	TRACE_BESHAREWINDOW(("ShareWindow::SetConnectStatus end\n"));
 }
 
 
 void 
 ShareWindow::PutUser(const char * sessionID, const char * userName, const char * hostName, int port, bool * isBot, uint64 installID, const char * client, bool * supportsPartialHash)
 {
-	BSTRACE(("ShareWindow::PutUser begin\n"));
-	BSTRACE(("ShareWindow::PutUser user %s\n", userName));
+	TRACE_BESHAREWINDOW(("ShareWindow::PutUser begin\n"));
+	TRACE_BESHAREWINDOW(("ShareWindow::PutUser user %s\n", userName));
 	bool addName = true;
 	RemoteUserItem * user;
 	if (_users.Get(sessionID, user) == B_NO_ERROR) {
@@ -3009,7 +3013,7 @@ ShareWindow::PutUser(const char * sessionID, const char * userName, const char *
 		}
 	} else {
 		user = new RemoteUserItem(this, sessionID);
-		BSTRACE(("ShareWindow::PutUser Users %s\n", user->GetSessionID()));
+		TRACE_BESHAREWINDOW(("ShareWindow::PutUser Users %s\n", user->GetSessionID()));
 		_users.Put(user->GetSessionID(), user);
 		_usersView->AddItem(user);
 		_usersView->SortItems();
@@ -3048,7 +3052,7 @@ ShareWindow::PutUser(const char * sessionID, const char * userName, const char *
 		msg.AddString("name", user->GetDisplayHandle());
 		SendToPrivateChatWindows(msg, user);
 	}
-	BSTRACE(("ShareWindow::PutUser end\n"));
+	TRACE_BESHAREWINDOW(("ShareWindow::PutUser end\n"));
 }
 
 
@@ -3147,7 +3151,7 @@ RemoveUser(const char * sessionID)
 void
 ShareWindow::SendToPrivateChatWindows(BMessage & msg, const RemoteUserItem * matchesItem) 
 {
-	BSTRACE(("ShareWindow::SendToPrivateChatWindows begin\n"));
+	TRACE_BESHAREWINDOW(("ShareWindow::SendToPrivateChatWindows begin\n"));
 	PrivateChatWindow * next;
 	for (HashtableIterator<PrivateChatWindow*, String> iter(_privateChatWindows.GetIterator()); iter.HasData(); iter++) {
 		next = iter.GetKey();
@@ -3157,7 +3161,7 @@ ShareWindow::SendToPrivateChatWindows(BMessage & msg, const RemoteUserItem * mat
 			|| (MatchesUserFilter(matchesItem, filter.Cstr())))
 			next->PostMessage(&msg);
 	}	
-  BSTRACE(("ShareWindow::SendToPrivateChatWindows end\n"));
+  TRACE_BESHAREWINDOW(("ShareWindow::SendToPrivateChatWindows end\n"));
 }
 
 
@@ -3185,17 +3189,17 @@ RemoveResult(const char * sessionID, const char * fileName)
 void 
 ShareWindow::ClearResults()
 {
-	BSTRACE(("ShareWindow::ClearResults begin\n"));
+	TRACE_BESHAREWINDOW(("ShareWindow::ClearResults begin\n"));
 	_resultsView->MakeEmpty();  // for efficiency
 	
-	BSTRACE(("ShareWindow::ClearResults before loop\n"));
+	TRACE_BESHAREWINDOW(("ShareWindow::ClearResults before loop\n"));
 	for (int i = _resultsPages.GetNumItems()-1; i >= 0; i--)
 		delete _resultsPages[i];
 	
 	_resultsPages.Clear();
 	SwitchToPage(0);
     
-	BSTRACE(("ShareWindow::ClearResults before loop 2\n"));
+	TRACE_BESHAREWINDOW(("ShareWindow::ClearResults before loop 2\n"));
 
 	RemoteUserItem * next;
 	for (HashtableIterator<const char *, RemoteUserItem *> iter(_users.GetIterator()); iter.HasData(); iter++) {
@@ -3204,10 +3208,10 @@ ShareWindow::ClearResults()
 		if (next != NULL)
 			next->ClearFiles();
 	}
-	BSTRACE(("ShareWindow::ClearResults after loop 2\n"));	
+	TRACE_BESHAREWINDOW(("ShareWindow::ClearResults after loop 2\n"));	
 	_bytesShown = 0LL;
 	UpdateTitleBar();
-	BSTRACE(("ShareWindow::ClearResults end\n"));
+	TRACE_BESHAREWINDOW(("ShareWindow::ClearResults end\n"));
 }
 
 void
@@ -3357,7 +3361,7 @@ CacheMIMETypeInfo(const char * mimeString)
 }
 
 void
-ShareWindow :: 
+ShareWindow::
 AddFileItem(RemoteFileItem * item)
 {
   MASSERT(item, "AddFileItem:  no item!?");
@@ -3445,7 +3449,7 @@ CreateColumn(ShareMIMEInfo * optMimeInfo, const char * attrName, bool remote)
 
 
 void
-ShareWindow :: RemoveFileItem(RemoteFileItem * item)
+ShareWindow::RemoveFileItem(RemoteFileItem * item)
 {
   int64 s;
   if (item->GetAttributes().FindInt64("beshare:File Size", &s) == B_NO_ERROR) _bytesShown -= s;
@@ -3857,7 +3861,7 @@ LogRateLimit(const char * preamble, uint32 limit, ChatWindow * optEchoTo)
 }
 
 String 
-ShareWindow :: 
+ShareWindow::
 GetQualifiedSharedFileName(const String & name) const
 {
   if (_netClient->GetLocalSessionID()[0])
@@ -3875,7 +3879,7 @@ GetQualifiedSharedFileName(const String & name) const
 }
 
 status_t
-ShareWindow :: 
+ShareWindow::
 ExpandAlias(const String & text, String & retStr) const
 {
   return _aliases.Get(text, retStr);
@@ -4244,7 +4248,7 @@ SendChatText(const String & t, ChatWindow * optEchoTo)
   }
 }
 
-void ShareWindow :: SetBandwidthLimit(bool upload, const String & lowerText, ChatWindow * optEchoTo)
+void ShareWindow::SetBandwidthLimit(bool upload, const String & lowerText, ChatWindow * optEchoTo)
 {
   StringTokenizer tok(lowerText());
   (void) tok();  // throw away the keyword
@@ -4266,7 +4270,7 @@ void ShareWindow :: SetBandwidthLimit(bool upload, const String & lowerText, Cha
 // Returns true iff (user) matches the user filter string(filter)
 // Not used in SendChatText() for security/privacy reasons (we need an _ordered_ grep there!)
 bool
-ShareWindow :: MatchesUserFilter(const RemoteUserItem * user, const char * filter) const
+ShareWindow::MatchesUserFilter(const RemoteUserItem * user, const char * filter) const
 {
   StringTokenizer idTok(filter, ","); // identifiers may be separated by commas (but not spaces, as those may be parts of the users' names!)
   const char * n;
@@ -4297,19 +4301,19 @@ GetUserNameBySessionID(const char * sessionID) const
   return (_users.Get(sessionID, user) == B_NO_ERROR) ? user->GetVerbatimHandle() : NULL;
 }      
 
-void ShareWindow :: GetUserNameForSession(const char * sessionID, String & retUserName) const
+void ShareWindow::GetUserNameForSession(const char * sessionID, String & retUserName) const
 {
   const char * ret = GetUserNameBySessionID(sessionID);
   retUserName = ret ? ret : str(STR_UNKNOWN);
 }
 
-void ShareWindow :: GetLocalUserName(String & retLocalUserName) const
+void ShareWindow::GetLocalUserName(String & retLocalUserName) const
 {
   String ret(_netClient->GetLocalUserName());
   retLocalUserName = ret;
 }
 
-void ShareWindow :: GetLocalSessionID(String & retLocalSessionID) const
+void ShareWindow::GetLocalSessionID(String & retLocalSessionID) const
 {
   String ret(_netClient->GetLocalSessionID());
   retLocalSessionID = ret;
@@ -4319,7 +4323,7 @@ void ShareWindow :: GetLocalSessionID(String & retLocalSessionID) const
 void
 ShareWindow::UpdatePrivateWindowUserList(PrivateChatWindow * w, const char * target)
 {
-	BSTRACE(("ShareWindow::UpdatePrivateWindowUserList begin\n"));
+	TRACE_BESHAREWINDOW(("ShareWindow::UpdatePrivateWindowUserList begin\n"));
 	// Resend the user list to the window, so it can update its user list
 	w->PostMessage(PrivateChatWindow::PRIVATE_WINDOW_REMOVE_USER);  // clear old users
 	RemoteUserItem * user;
@@ -4333,7 +4337,7 @@ ShareWindow::UpdatePrivateWindowUserList(PrivateChatWindow * w, const char * tar
 			w->PostMessage(&msg);
 		}
 	}
-	BSTRACE(("ShareWindow::UpdatePrivateWindowUserList end\n"));
+	TRACE_BESHAREWINDOW(("ShareWindow::UpdatePrivateWindowUserList end\n"));
 }
 
 void
@@ -4410,7 +4414,7 @@ DrawQueryInProgress(bool inProgress)
 
 
 void 
-ShareWindow :: UpdatePagingButtons()
+ShareWindow::UpdatePagingButtons()
 {
   uint32 numPages = _resultsPages.GetNumItems();
   _prevPageButton->SetEnabled((numPages > 1)&&(_currentPage > 0));
@@ -4418,7 +4422,7 @@ ShareWindow :: UpdatePagingButtons()
 }
 
 void
-ShareWindow :: DispatchMessage(BMessage * msg, BHandler * handler)
+ShareWindow::DispatchMessage(BMessage * msg, BHandler * handler)
 {
   switch(msg->what)
   {
@@ -4458,7 +4462,7 @@ ShareWindow :: DispatchMessage(BMessage * msg, BHandler * handler)
 }
 
 void
-ShareWindow :: UserChatted()
+ShareWindow::UserChatted()
 {
   // Watch for selected UI events to see when the user is back
   _lastInteractionAt = system_time();
@@ -4472,7 +4476,7 @@ ShareWindow :: UserChatted()
 
 
 void
-ShareWindow :: LogStat(int statName, const char * statValue)
+ShareWindow::LogStat(int statName, const char * statValue)
 {
   String temp(str(statName));
   temp += ":   ";
@@ -4482,7 +4486,7 @@ ShareWindow :: LogStat(int statName, const char * statValue)
   
 
 String
-ShareWindow :: MakeTimeElapsedString(int64 t) const
+ShareWindow::MakeTimeElapsedString(int64 t) const
 {
   int64 seconds = t / 1000000;
   int64 minutes = seconds / 60;  seconds = seconds % 60;
@@ -4512,7 +4516,7 @@ ShareWindow :: MakeTimeElapsedString(int64 t) const
 }
 
 void
-ShareWindow :: ServerParametersReceived(const Message & params)
+ShareWindow::ServerParametersReceived(const Message & params)
 {
   if (_showServerStatus)
   {
@@ -4543,7 +4547,7 @@ ShareWindow :: ServerParametersReceived(const Message & params)
   UpdateTitleBar();
 }
 
-bool ShareWindow :: AreMessagesEqual(const BMessage & m1, const BMessage & m2) const
+bool ShareWindow::AreMessagesEqual(const BMessage & m1, const BMessage & m2) const
 {
   if (m1.what != m2.what) return false;
   if (m1.CountNames(B_ANY_TYPE) != m2.CountNames(B_ANY_TYPE)) return false;
@@ -4593,7 +4597,7 @@ ShareWindow::IsFieldSuperset(const BMessage & m1, const BMessage & m2) const
 
 
 void
-ShareWindow :: BeginAutoReconnect()
+ShareWindow::BeginAutoReconnect()
 {
   if (_autoReconnectAttemptCount++ > 0)
   {
@@ -4610,7 +4614,7 @@ ShareWindow :: BeginAutoReconnect()
 }
 
 void 
-ShareWindow :: DoAutoReconnect()
+ShareWindow::DoAutoReconnect()
 {
   ResetAutoReconnectState(false);  // once the connection is started, the runner is unnecessary
   LogMessage(LOG_INFORMATION_MESSAGE, str(STR_ATTEMPTING_AUTO_RECONNECT));
@@ -4621,48 +4625,48 @@ ShareWindow :: DoAutoReconnect()
 void
 ShareWindow::ReconnectToServer()
 {
-	BSTRACE(("ShareWindow::ReconnectToServer begin\n"));
+	TRACE_BESHAREWINDOW(("ShareWindow::ReconnectToServer begin\n"));
 	const char * server = _serverEntry->Text();
 
 	if (server) {
-		BSTRACE(("ShareWindow::ReconnectToServer has server\n"));
+		TRACE_BESHAREWINDOW(("ShareWindow::ReconnectToServer has server\n"));
 		_connectedTo = server;  // save this for later, when we're connected
 		StringTokenizer tok(server, " :");
 		const char * host = tok.GetNextToken();
 
 		if (host) {
-			BSTRACE(("ShareWindow::ReconnectToServer has host\n"));
+			TRACE_BESHAREWINDOW(("ShareWindow::ReconnectToServer has host\n"));
 			const char * portStr = tok.GetNextToken();
 			int port = portStr ? atoi(portStr) : 0;
 			
 			if (port <= 0)
 				port = 2960;
 				
-			BSTRACE(("ShareWindow::ReconnectToServer Connect to host\n"));
+			TRACE_BESHAREWINDOW(("ShareWindow::ReconnectToServer Connect to host\n"));
 			_netClient->ConnectToServer(host, (uint16) (port ? port : 2960));
 		}
 	}
-	BSTRACE(("ShareWindow::ReconnectToServer Update status\n"));
+	TRACE_BESHAREWINDOW(("ShareWindow::ReconnectToServer Update status\n"));
 	UpdateConnectStatus(true);
-	BSTRACE(("ShareWindow::ReconnectToServer end\n"));
+	TRACE_BESHAREWINDOW(("ShareWindow::ReconnectToServer end\n"));
 }
 
 
 void 
 ShareWindow::ResetAutoReconnectState(bool resetCountToo)
 {
-	BSTRACE(("ShareWindow::ResetAutoReconnectState start\n"));
+	TRACE_BESHAREWINDOW(("ShareWindow::ResetAutoReconnectState start\n"));
 	
 	delete _autoReconnectRunner;
 	_autoReconnectRunner = NULL;
 	
 	if (resetCountToo)
 		_autoReconnectAttemptCount = 0;
-	BSTRACE(("ShareWindow::ResetAutoReconnectState end\n"));
+	TRACE_BESHAREWINDOW(("ShareWindow::ResetAutoReconnectState end\n"));
 }
 
 void 
-ShareWindow :: 
+ShareWindow::
 PauseAllUploads()
 {
   for (int32 i=_transferList->CountItems()-1; i>=0; i--)
@@ -4679,7 +4683,7 @@ PauseAllUploads()
 }
 
 void 
-ShareWindow :: 
+ShareWindow::
 ResumeAllUploads()
 {
   uint32 num = _transferList->CountItems();
@@ -4697,7 +4701,7 @@ ResumeAllUploads()
 }
 
 void 
-ShareWindow :: SetLocalUserName(const char * name)
+ShareWindow::SetLocalUserName(const char * name)
 {    
   _userNameEntry->SetText(name);
       
@@ -4712,7 +4716,7 @@ ShareWindow :: SetLocalUserName(const char * name)
 }
 
 void 
-ShareWindow :: SetLocalUserStatus(const char * status)
+ShareWindow::SetLocalUserStatus(const char * status)
 {
   _userStatusEntry->SetText(status);
 
@@ -4726,26 +4730,26 @@ ShareWindow :: SetLocalUserStatus(const char * status)
   _resultsView->MakeFocus();  // so that when the user presses a key, it drops to the _textEntry
 }
 
-void ShareWindow :: SetServer(const char * server)
+void ShareWindow::SetServer(const char * server)
 {
   bool reconnect = ((_isConnected == false)||(strcasecmp(server, _serverEntry->Text())));
   _serverEntry->SetText(server);
   if (reconnect) PostMessage(SHAREWINDOW_COMMAND_RECONNECT_TO_SERVER);
 }
 
-void ShareWindow :: SetQuery(const char * query)
+void ShareWindow::SetQuery(const char * query)
 {
   _fileNameQueryEntry->SetText(query);
   SetQueryEnabled(false);  // force query resend
   if (strlen(query) > 0) SetQueryEnabled(true);
 }
 
-void ShareWindow :: SendMessageToServer(const MessageRef & msg)
+void ShareWindow::SendMessageToServer(const MessageRef & msg)
 {
   _netClient->SendMessageToSessions(msg, true);
 }
 
-BBitmap * ShareWindow :: GetDoubleBufferBitmap(uint32 width, uint32 height)
+BBitmap * ShareWindow::GetDoubleBufferBitmap(uint32 width, uint32 height)
 {
   // First make sure our background bitmap is large enough for this request...
   if ((_doubleBufferBitmap == NULL)||(_doubleBufferBitmap->Bounds().Width() < width)||(_doubleBufferBitmap->Bounds().Height() < height)||(_doubleBufferBitmap->ColorSpace() != BScreen(this).ColorSpace()))
@@ -4765,7 +4769,7 @@ BBitmap * ShareWindow :: GetDoubleBufferBitmap(uint32 width, uint32 height)
   return _doubleBufferBitmap;
 }
 
-status_t ShareWindow :: ShareScreenshot(const String & fileName)
+status_t ShareWindow::ShareScreenshot(const String & fileName)
 {
   status_t ret = B_ERROR;
   BTranslatorRoster * roster = BTranslatorRoster::Default();
@@ -4824,7 +4828,7 @@ status_t ShareWindow :: ShareScreenshot(const String & fileName)
   return ret;
 }
 
-void ShareWindow :: DoScreenShot(const String & fn, ChatWindow * optEchoTo)
+void ShareWindow::DoScreenShot(const String & fn, ChatWindow * optEchoTo)
 {
   String fileName = fn;
 

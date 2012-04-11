@@ -48,7 +48,7 @@ ShareNetClient::ShareNetClient(const BDirectory & shareDir, int32 localPort) :
 	_nodeRemoveBatchCount(0),
 	_sendingLowPriorityMessages(false)
 {
-	BSTRACE(("ShareNetClient::ShareNetClient begin\n"));
+	TRACE_BESHARENETCLIENT(("ShareNetClient::ShareNetClient begin\n"));
 	BPath ucPath;
 	if (find_directory(B_USER_SETTINGS_DIRECTORY, &ucPath) == B_NO_ERROR) {
 		BEntry entry(ucPath.Path(), true);
@@ -712,7 +712,7 @@ MessageReceived(const MessageRef & msgRef)
 
 		case PR_RESULT_DATAITEMS:
 		{
-			BSTRACE(("ShareNetClient::MessageReceived PR_RESULT_DATAITEMS\n"));
+			TRACE_BESHARENETCLIENT(("ShareNetClient::MessageReceived PR_RESULT_DATAITEMS\n"));
 			// Part of the server-side database that we subscribed to has changed
 			((ShareWindow*)Looper())->BeginBatchFileResultUpdate();
 
@@ -788,7 +788,7 @@ MessageReceived(const MessageRef & msgRef)
 
 										// See if this client is advertising that he can to the partial-md5-hash trick
 										bool sph = false;
-										BSTRACE(("Hittade %s\n", name));
+										TRACE_BESHARENETCLIENT(("Hittade %s\n", name));
 										(void) pmsg->FindBool("supports_partial_hashing", &sph);
 										((ShareWindow *)Looper())->PutUser(sessionID(), name, hostName(), port, &isBot, installID, (clientStr.Length()>0)?clientStr():NULL,&sph);
 									}

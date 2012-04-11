@@ -27,12 +27,19 @@ namespace beshare {
 
 #define NUM_PARTIAL_HASH_BYTES (64*1024) // 64k seems like a good tradeoff between surety and speed
 
-//#define DEBUG_BESHARE
+#define DEBUG_BESHAREWINDOW
 
-#ifdef DEBUG_BESHARE
-#define BSTRACE(x) printf x
+#ifdef DEBUG_BESHAREWINDOW
+#define TRACE_BESHAREWINDOW(x) printf x
 #else
-#define BSTRACE(x) /* nothing */
+#define TRACE_BESHAREWINDOW(x) /* nothing */
+#endif
+
+// The ShareNetClient.cpp file
+#ifdef DEBUG_BESHARENETCLIENT
+#define TRACE_BESHARENETCLIENT(x) printf x
+#else
+#define TRACE_BESHARENETCLIENT(x) /* nothing */
 #endif
 
 // types of message that are printed to the text view.

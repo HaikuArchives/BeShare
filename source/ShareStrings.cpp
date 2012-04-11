@@ -4,6 +4,8 @@
 
 namespace beshare {
 
+# define ARRAYITEMS(x) (sizeof(x)/sizeof(x[0]))  /* returns # of items in array */
+
 static int _language = LANGUAGE_ENGLISH;   // Everybody's favorite language!
 
 // Returns the best LANGUAGE_* value based on our environment variables, or LANGUAGE_ENGLISH 
