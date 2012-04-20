@@ -1,9 +1,12 @@
 #include "ResultsView.h"
 
+#include <Application.h>
 #include <PopUpMenu.h>
 #include <MenuItem.h>
 #include <Window.h>
 #include <MimeType.h>
+#include <Resources.h>
+#include <TranslationUtils.h>
 
 #include "util/String.h"
 
@@ -15,12 +18,12 @@ namespace beshare {
 	
 static String RemoveSpecialQueryChars(const String & localString)
 {
-   String s = localString;
-   s.Replace(' ', '?');
-   s.Replace('@', '?');
-   s.Replace('/', '?');
-   s.Replace(',', '?');
-   return s;
+	String s = localString;
+	s.Replace(' ', '?');
+	s.Replace('@', '?');
+	s.Replace('/', '?');
+	s.Replace(',', '?');
+	return s;
 }
 
 
@@ -42,7 +45,7 @@ ResultsView::ResultsView(uint32 replyWhat, BRect frame,
 		size_t bitSize;
 		const void * bits = rsrc->LoadResource('PNG ', "beshare_320x200.png", 
 			&bitSize);
-         
+			
 		if (bits) {
 			BMemoryIO mio(bits, bitSize);
 			fSbe = BTranslationUtils::GetBitmap(&mio);
@@ -72,27 +75,27 @@ ResultsView::MouseDown(BPoint where)
 		int numPages = ((ShareWindow*)Window())->GetNumResultsPages();
 		if (numPages > 1) {
 			int currentPage = ((ShareWindow*)Window())->GetCurrentResultsPage();
-            BPopUpMenu * popup = new BPopUpMenu((const char *)NULL);
-            for (int i = 0; i < numPages; i++) {
-               char temp[128];
-               sprintf(temp, "%s %i", str(STR_SWITCH_TO_PAGE), i+1);
-               BMessage * msg = new BMessage(fReplyWhat);
-               msg->AddInt32("page", i);
-               BMenuItem * mi = new BMenuItem(temp, msg);
-               mi->SetEnabled(i != currentPage);
-               popup->AddItem(mi);
+				BPopUpMenu * popup = new BPopUpMenu((const char *)NULL);
+				for (int i = 0; i < numPages; i++) {
+					char temp[128];
+					sprintf(temp, "%s %i", str(STR_SWITCH_TO_PAGE), i+1);
+					BMessage * msg = new BMessage(fReplyWhat);
+					msg->AddInt32("page", i);
+					BMenuItem * mi = new BMenuItem(temp, msg);
+					mi->SetEnabled(i != currentPage);
+					popup->AddItem(mi);
 			}
-            ConvertToScreen(&pt);
-            BMenuItem * result = popup->Go(pt);
-            
-            if (result) 
-            	Window()->PostMessage(result->Message());
-            
-            delete popup;
+				ConvertToScreen(&pt);
+				BMenuItem * result = popup->Go(pt);
+				
+				if (result) 
+					Window()->PostMessage(result->Message());
+				
+				delete popup;
 			return;
 		}
 	} else 
-      	ColumnListView::MouseDown(where);
+			ColumnListView::MouseDown(where);
 }
 
 
@@ -115,93 +118,93 @@ ResultsView::InitiateDrag(BPoint /*point*/, int32 /*index*/, bool /*wasSelected*
 
 		const RemoteFileItem * item = (const RemoteFileItem *)ItemAt(selindex);
 		dragData.AddPointer("item", item);
-        // For each item, we also add a 'URL' that fully describes the file
-        // The URL is of the form:
-        //     beshare://UserIP:UserPort/InstallID@BeShareServer/filename
+		  // For each item, we also add a 'URL' that fully describes the file
+		  // The URL is of the form:
+		  //	  beshare://UserIP:UserPort/InstallID@BeShareServer/filename
 
-        // The idea is that an application that understands this format will
-        // first try UserIP and UserPort to set up a direct connection, and
-        // if that doesn't work (because the remote user is firewalled for
-        // example), can use InstallID and BeShareServer to set up a callback
-        // session.  -- marco
+		  // The idea is that an application that understands this format will
+		  // first try UserIP and UserPort to set up a direct connection, and
+		  // if that doesn't work (because the remote user is firewalled for
+		  // example), can use InstallID and BeShareServer to set up a callback
+		  // session.  -- marco
 
-        RemoteUserItem * owner = item->GetOwner();
-        uint64 ID = owner->GetInstallID();
-        char strbuf[17];
-        sprintf(strbuf,"%Lx", ID);
+		  RemoteUserItem * owner = item->GetOwner();
+		  uint64 ID = owner->GetInstallID();
+		  char strbuf[17];
+		  sprintf(strbuf,"%Lx", ID);
 
-        String URL;
-        URL << "beshare://" 
+		  String URL;
+		  URL << "beshare://" 
 			<< owner->GetHostName() << ":" << ((owner->GetFirewalled()) ? 0 : owner->GetPort())
-            << "/" << strbuf << "@" << ((ShareWindow*)Window())->GetConnectedTo()
-            << "/" << item->GetFileName();
-        dragMessage.AddString("be:url", URL());
+				<< "/" << strbuf << "@" << ((ShareWindow*)Window())->GetConnectedTo()
+				<< "/" << item->GetFileName();
+		  dragMessage.AddString("be:url", URL());
 
-        BRect itemrect = ItemFrame(selindex);
-        
-        if (itemrect.Intersects(bounds)) {
-            if (itemrect.IsValid()) {
+		  BRect itemrect = ItemFrame(selindex);
+		  
+		  if (itemrect.Intersects(bounds)) {
+				if (itemrect.IsValid()) {
 				if (rect.IsValid()) 
 					rect = rect | itemrect;
 				else
 					rect = itemrect;
-            }
+				}
 		}
 	}
 
-    // Let's also put in a BeShare-friendly link-text, in case 
-    // the user drops the Message back into BeShare, again.
-    {
-    	String ownerString, fileString, humanReadableString = "[";
-        
+	 // Let's also put in a BeShare-friendly link-text, in case 
+	 // the user drops the Message back into BeShare, again.
+	 {
+	 	String ownerString, fileString, humanReadableString = "[";
+		  
 		for(int j = 0; ;j++) {
 			int32 selindex = CurrentSelection(j);
-            
-            if (selindex < 0)
-            	break;
+				
+				if (selindex < 0)
+					break;
 
-            const RemoteFileItem * item = (const RemoteFileItem *)ItemAt(selindex);
-            
-            if (humanReadableString.Length() > 1)
-            	humanReadableString += ", ";
-            
-            humanReadableString += item->GetFileName();
-            fileString += (fileString.Length() == 0) ? "beshare:" : ",";
+				const RemoteFileItem * item = (const RemoteFileItem *)ItemAt(selindex);
+				
+				if (humanReadableString.Length() > 1)
+					humanReadableString += ", ";
+				
+				humanReadableString += item->GetFileName();
+				fileString += (fileString.Length() == 0) ? "beshare:" : ",";
 
-            String fn(item->GetFileName());
-            EscapeRegexTokens(fn);
+				String fn(item->GetFileName());
+				EscapeRegexTokens(fn);
 
-            fileString += RemoveSpecialQueryChars(fn);
-            
-            if (ownerString.Length() > 0)
-            	ownerString += ',';
-            
-            ownerString += RemoveSpecialQueryChars(item->GetOwner()->GetSessionID());
-         }
-         
-         if (fileString.Length() > 0) {
-            
-            if (ownerString.Length() > 0)
-            	fileString += ownerString.Prepend("@");
-            
-            dragMessage.AddString("beshare:link", fileString());
+				fileString += RemoveSpecialQueryChars(fn);
+				
+				if (ownerString.Length() > 0)
+					ownerString += ',';
+				
+				ownerString += RemoveSpecialQueryChars(item->GetOwner()->GetSessionID());
+			}
+			
+			if (fileString.Length() > 0) {
+				
+				if (ownerString.Length() > 0)
+					fileString += ownerString.Prepend("@");
+				
+				dragMessage.AddString("beshare:link", fileString());
 
-            humanReadableString += ']';
-            dragMessage.AddString("beshare:desc", humanReadableString());
-         }
-      }
+				humanReadableString += ']';
+				dragMessage.AddString("beshare:desc", humanReadableString());
+			}
+		}
 
-      dragMessage.AddMessage("be:originator-data", &dragData);
-      
-      if (rect.IsValid())
-      	DragMessage(&dragMessage, rect, Window());
+		dragMessage.AddMessage("be:originator-data", &dragData);
+		
+		if (rect.IsValid())
+			DragMessage(&dragMessage, rect, Window());
 
-      return true;
-   }
+		return true;
+	}
 
 
 #ifdef SAVE_BEOS
-virtual void 
+void 
 ResultsView::Draw(BRect ur)
 {
 	if ((fSbe) && (CountItems() == 0))
@@ -211,7 +214,7 @@ ResultsView::Draw(BRect ur)
 }
 
 
-virtual bool
+bool
 ResultsView::AddItem(BListItem *item)
 {
 	bool ret = ColumnListView::AddItem(item);
@@ -223,7 +226,7 @@ ResultsView::AddItem(BListItem *item)
 }
 
 
-virtual bool
+bool
 ResultsView::AddItem(BListItem *item, int32 atIndex)
 {
 	bool ret = ColumnListView::AddItem(item, atIndex);
@@ -235,7 +238,7 @@ ResultsView::AddItem(BListItem *item, int32 atIndex)
 }
 
 
-virtual bool
+bool
 ResultsView::AddList(BList *newItems)
 {
 	bool inv = (CountItems() == 0);
@@ -248,7 +251,7 @@ ResultsView::AddList(BList *newItems)
 }
 
 
-virtual bool
+bool
 ResultsView::AddList(BList *newItems, int32 atIndex)
 {
 	bool inv = (CountItems() == 0);

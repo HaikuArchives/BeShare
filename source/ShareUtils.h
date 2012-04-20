@@ -4,8 +4,10 @@
 #include <time.h>
 #include <support/SupportDefs.h>
 #include <interface/GraphicsDefs.h>
-#include "BeShareNameSpace.h"
+
 #include "util/String.h"
+
+using namespace muscle;
 
 namespace beshare {
 

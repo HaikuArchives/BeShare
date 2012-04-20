@@ -1,0 +1,158 @@
+TODO / feature list
+
+What I'm working on.
+ - When quiting befor disconnect an crach happends.
+ - File download error. It now work as mutch that you can download from a 2.28 but not from another 2.30
+
+ - Check username when connect..
+ - Use one button for search and de search. they should co exist. When search are finniched..
+
+Bugs
+ - Have you fixed the "bug" in BeShare when it itself disconnects and reconnects and doesn't update the session id on 
+   failed transfers. If the other party is Unizone the transfer fails, because the session id doesn't match any of the current
+   session ids on the server, despite the fact that the user is on the right server.
+ - Files go away when user disconnects, even if query isn't active?
+ - Upload animations stop sometimes (uploads continue though)? --Garjala
+ - drag-and-drop file result to another volume, then quit and restart BeShare - file is saved to root folder instead???
+ - Can't "/ping User Name" where User Name has spaces in it... fix that
+ - Fix the "users list doesn't scroll down to the last few users sometimes" bug... scroll to top, 
+    change column width, then scroll down
+ - toggling "I'm Firewalled" doesn't updated the files column?
+ - Make sure private chat windows can't get left off-screen
+ - fix bug:  remove symlink dir, then create nodes = leaked server nodes?
+ - fix bug: symlinks to Windows partitions?
+
+What is this?
+ - Rename download-in-progress-files as part_of_{filename} ?
+ - Allow BeShare window to be resized smaller
+ - Fix ghost-uploads bug
+ - fix the type-one-char-while-auto-away bug
+ - Fix http://www.blah.com\thttp://www.blah.com not linking
+
+New features
+ - Use Haiku Language files.
+ - /status <username prints the users status
+ - Add an optional argument to /unban so that Garjala can /unban just a single IP rather than all of them.
+ - list the current /bans (IP address and duration?)
+ - Dragging a file from the results pane to the transfer pane should start a dowlnoad of that file.
+ - Drag a user from the users list into a private chat window to add him to the chat 
+ - Right-click on username in chat log opens popup menu for that user? (same as clicking on the user in the users list)
+ - Add checkboxes to selected item in name/server/status popup menus
+ - max-per-user and limit-upload-rate should be per IP, not per session ID
+ - Check "File Copy 2", etc, for possible resume, instead of always created a new file with the generated file name
+ - Give a special icon to incomplete download files
+ - figure out logging when /priv * and /priv 908 are both present??
+ - delete from d/l list using delete, delete from disk using shift-delete
+ - /quit gotta go eat  <-- message in your /quit command
+ - Tell user where he is in line while queued
+ - include user and file count in /serverinfo
+ - Warn if username clashes with another session?
+ - handle multiple like-named files by munging file name?
+ - Make tab completion work even when you aren't at EOL
+ - Preserve sorting preferences for user table/attributes
+ - retain selection on list-modification or sort
+ - down arrow goes back to text you were typing
+
+Gregor's suggested TODOs
+ - define custom shortcuts that are expanded/TAB-able in the textview (like Jabber's "quips")  (jaf -- /alias does this, kinda?)
+ - expand commands  (jaf--what does this mean exactly?)
+ - report proper usage of commands when used wrongly (currently a wrong error-message "command xx unknown" is shown)
+
+Eventually
+ - /url http://www.lcscanada.com/jaf -- UserName in list and chat is linked
+ - Right-click column header brings up attribute popup-menu, similar to in a Tracker window
+ - Drag a column out of the window to remove that column
+ - Make name change update downloads/uploads boxes
+ - Stop that annoying shrink-window - no-scroll-mode behaviour
+ - Allow user to choose download and shared directories.
+ - Make down arrow on scroll bar flash when new unseen text is added
+ - Show column for dir file is in
+
+Maybe
+ - Make private chat windows always-on-top of BeShare window?
+ - Allow selection of which app to launch a file with (a la tracker) (Open With)
+ - Deskbar icon, flashes when your name is mentioned (or whatnot)
+ - "Show myself" option (REFLECT_TO_SELF)
+ - Add current uploads/max uploads columns to user list
+ - custom icon for user?
+ - Show upload/download file list by right-clicking on transfer box
+ - server<-server federation?
+ - make it a replicant 
+ - allow full BFS style attribute-based searches
+
+----------------------------------------------
+
+From: Jace Cavacini <diogenes@enter.net
+List of suggestions:
+
+On 2002-02-01 at 15:40:12 [-0500], diogenes@enter.net wrote:
+ 
+ Hey there, Technix,  here are my UI suggestions about BeShare.  I 
+ LOVE BeShare but the UI gives me shivers (bad ones).  Heh heh.
+ 
+ Big things:
+ 
+1.  Overloaded menus: Take everything on the settings menu and make  it all into a proper Preferences window, 
+	accessed via a File menu 
+ item called "Settings..." or "Preferences..."    I would suggest 
+ modeling the design of the Preferences window off of what 
+ OpenTracker uses for its settings window.  Then remove the Settings 
+ menu entirely.  Also, move "File - Clear Chat Log" and "File - 
+ Reset Layout" to the Preferences/Settings interface.
+ 
+2.  All context menus should be sticky (right-click on a person's 
+ name in the user list or on a download and the context menu should 
+ stay open without holding the button. Just like Tracker, Desktop, 
+ many apps... etc).
+ 3.  A way to edit the lists for Server, Status, User Name and 
+ Query, in case we want to keep certain items or eliminate typos.
+ 
+ Little (but nice to have) things:
+ 
+ 1.  Proper resize corner on the window's resize corner (the grip 
+ corner I mean).
+ 2.  When the cursor does mouse_over where the "view resize" divider 
+ is, the cursor ought reflect that state, so that users don't have 
+ to accidentally find it like I did when I said "maybe I can click 
+ and drag these views... oh, yeah I can, how about that."
+ 3.  Add Double-click on column dividers to auto-size to the length 
+ of the longest item (see the list view in Tracker).
+ 4.  BeShare seems to suffer from the "cursor shape forgetting" 
+ problem of some older apps.  Supposedly something changed in the 
+ API that allowed this to work better.  Postmaster has the same 
+ problem.  Example: cursor changes to the column size cursor and 
+ stays that way once you're done sizing.  Not all the time, but 
+ sometimes.  A bug in the mouse_over code I guess...
+ 5.  Some way to resize the text fields for name and status.  Maybe 
+ simply size proportionally with the window size change.
+ 6.  Kill the redraw flicker when changing sizes of the views ;)  (a 
+ minor issue, yes)
+ 7.  Allow me to delete items from my drive via the download list's 
+ context menu, instead of having to go to the download folder - this 
+ also should remove that item from the list, too.
+ 8.  Change "Open Folder" to "Show in Tracker" on the context menu 
+ for the files downloaded.
+ 9.  Use node monitoring(?) like Net+ does: when a file is deleted 
+ from the download folder (or moved out of it) the download ought to 
+ dissappear from the downloads list - user should only have to do 
+ ONE thing to eliminate a download, not two.
+ 10.  Why is the "move to top" and other "move" items in the 
+ download context menu?  Wouldn't it be easier to just use drag and 
+ drop and a highlighted line showing the user where it would go on 
+ drop?  I've never wanted to arrange items in here, personally, 
+ either...
+ 11.  Proper highlight for selected items in the download list.  
+ These are not buttons, afterall.  Instead of "pushing in" as they 
+ do when they are selected, can they not simply highlight in a 
+ slight light-yellow or light-blue or something?  Like the download 
+ window in Net+.  In fact, making the download UI match the Net+ 
+ download UI would be really cool.  The Net+ download manager is the 
+ best download manager I've seen on any OS with any browser.  Too 
+ bad we can't just drop it into BeShare :)  Net+ as open source 
+ would have been a great addition to the open components of BeOS ;)
+ 12.  Can't the Query results show up in a status bar instead of the 
+ title bar?
+ 13.  Would be cool if you could right-click on a person's name or 
+ ID in the chat text and select "insert" to plunk it down into your 
+ Chat text wherever the cursor is.
+ 14. Naming of Attribute listing presets.

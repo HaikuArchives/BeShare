@@ -24,22 +24,22 @@ public:
 	bool InitiateDrag(BPoint /*point*/, int32 /*index*/, bool /*wasSelected*/);
 
 #ifdef SAVE_BEOS
-   virtual void Draw(BRect ur);
-   virtual bool AddItem(BListItem *item);
-   virtual bool AddItem(BListItem *item, int32 atIndex);
-   virtual bool AddList(BList *newItems);
-   virtual bool AddList(BList *newItems, int32 atIndex);
-   bool RemoveItem(BListItem *item);
-   BListItem *RemoveItem(int32 index)
-   bool RemoveItems(int32 index, int32 count);
-   void MakeEmpty();
+	virtual void Draw(BRect ur);
+	virtual bool AddItem(BListItem *item);
+	virtual bool AddItem(BListItem *item, int32 atIndex);
+	virtual bool AddList(BList *newItems);
+	virtual bool AddList(BList *newItems, int32 atIndex);
+	bool RemoveItem(BListItem *item);
+	BListItem *RemoveItem(int32 index);
+	bool RemoveItems(int32 index, int32 count);
+	void MakeEmpty();
 #endif
 
 private:
-   uint32 fReplyWhat;
+	uint32 fReplyWhat;
 
 #if SAVE_BEOS
-   BBitmap * fSbe;
+	BBitmap * fSbe;
 #endif
 };
 };  // end namespace beshare

@@ -9,10 +9,11 @@
 #include <Screen.h>
 #include <PopUpMenu.h>
 #include <File.h>
-#include <Path.h>     
-#include <FindDirectory.h>     
-#include <NodeMonitor.h>     
-#include <Resources.h>     
+#include <Path.h>	  
+#include <FindDirectory.h>	  
+#include <NodeMonitor.h>	  
+#include <Resources.h>
+#include <Roster.h>
 
 #include <Beep.h>
 
@@ -20,20 +21,6 @@
 #include <TranslationUtils.h>
 #include <TranslatorRoster.h>
 #include <TranslatorFormats.h>
-#include "ShareStrings.h"
-#include "ShareConstants.h"
-#include "ShareWindow.h"
-#include "ShareFileTransfer.h"
-
-
-//#include "ColumnListView.h"
-#include "CLVColumnLabelView.h"
-#include "CLVColumn.h"
-#include "SplitPane.h"
-#include "ShareApplication.h"
-#include "ShareStrings.h"
-#include "ShareUtils.h"
-#include "PrivateChatWindow.h"
 
 #include "util/StringTokenizer.h"
 #include "util/Socket.h"
@@ -45,18 +32,13 @@
 #include "util/NetworkUtilityFunctions.h"
 #include "iogateway/PlainTextMessageIOGateway.h"
 
+#include "ShareConstants.h"
+#include "CLVColumnLabelView.h"
+#include "CLVColumn.h"
+#include "ShareStrings.h"
+#include "ShareUtils.h"
 #include "ShareWindow.h"
-#include "UserListView.h"
-#include "ResultsView.h"
-#include "TransferListView.h"
-#include "ShareNetClient.h"
 #include "ShareFileTransfer.h"
-#include "ShareColumn.h"
-#include "ShareMIMEInfo.h"
-#include "RemoteUserItem.h"
-#include "RemoteFileItem.h"
-#include "ColorPicker.h"
-//--------------
 
 namespace beshare {
 

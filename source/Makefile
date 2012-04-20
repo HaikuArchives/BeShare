@@ -94,10 +94,10 @@ SRCS := \
 		
 #	specify the resource files to use
 #	full path or a relative path to the resource file can be used.
-RSRCS := BeShare.rsrc
+#RSRCS := BeShare.rsrc
 
 #	Specify your RDEF files, if any.
-RDEFS :=
+RDEFS := BeShare.rdef
 
 #	specify additional libraries to link against
 #	there are two acceptable forms of library specifications
@@ -146,7 +146,8 @@ OPTIMIZE := -03
 #	to use.  For example, setting DEFINES to "DEBUG=1" will cause the
 #	compiler option "-DDEBUG=1" to be used.  Setting DEFINES to "DEBUG"
 #	would pass "-DDEBUG" on the compiler's command line.
-DEFINES := MUSCLE_ENABLE_ZLIB_ENCODING MUSCLE_AVOID_IPV6 MUSCLE_NO_EXCEPTIONS DEBUG_BESHARE #MUSCLE_SINGLE_THREAD_ONLY
+DEFINES = MUSCLE_ENABLE_ZLIB_ENCODING MUSCLE_AVOID_IPV6 MUSCLE_NO_EXCEPTIONS 
+DEFINES += DEBUG_BESHARE #SAVE_BEOS #MUSCLE_SINGLE_THREAD_ONLY
 
 #	specify special warning levels
 #	if unspecified default warnings will be used
@@ -239,44 +240,6 @@ EXTRA_DEPS :=
 #	If you want to see the complete build line for every file, then set this to 'true',
 #	otherwise it will tell you at the end what the build flags were.
 #CHATTY			:=
-
-################################################################################################## 
-# 
-##                                  Z E T A  S p e c i f i c 
-# 
-################################################################################################## 
-
-#       Specify the path to the Screenshot file. If this is not specified, then the SCREENSHOT default 
-#       will be $(PWD)/$(NAME).png 
-#       If this application is not to have a screenshot, use NONE 
-#SCREENSHOT      := #whisper_main.png
-
-#       Specify the category that this zeta component belongs in 
-#ZETA_CATEGORY   :=Internet
-
-#       The .zip package that this file will be included in. If this is left blank, then 
-#       $(NAME).zip will be used. 
-#       This feature is meant for having multiple items included in the a single .zip package 
-#PACKAGE :=BeShare
-
-#       If this target is a component of another target. That is, if this is part of a package 
-#       but not the 'main' part. Typically the main app will have the screenshot, and set 
-#       the relevant attributes. If this is set to 'true' then this makefile will not attempt to set 
-#       attributes or a screenshot or a description. 
-#IS_COMPONENT :=
-
-#       If this is a mandatory component, set this to 'false'. The default is true. 
-#       Optional components will be zipped up with thier attribs and everything. 
-#       Non-Optional (mandatory) components will just be copied to the directory structure and 
-#       added to the manifest for copying during install 
-#OPTIONAL		:=
-
-#       Specify the names of the Language files here. (ie: AboutWindow.de AboutWindow.en) 
-#LANG_FILES		:= $(wildcard Language/Dictionaries/$(NAME).*)
-
-#       If your language files are in a different directory, specify the relative directory here. 
-#       ie: Language/Dictionaries 
-#LANG_FILES_DIR  := Language/Dictionaries
 
 include /boot/develop/etc/makefile-engine
 

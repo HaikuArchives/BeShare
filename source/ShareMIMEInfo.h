@@ -7,7 +7,8 @@
 
 #include "util/String.h"
 #include "util/Hashtable.h"
-#include "BeShareNameSpace.h"
+
+using namespace muscle;
 
 namespace beshare {
 
@@ -16,20 +17,20 @@ class ShareWindow;
 class ShareMIMEInfo : public BMenu
 {
 public:
-   ShareMIMEInfo(const char * label, const char * mimeString);
+	ShareMIMEInfo(const char * label, const char * mimeString);
 
-   const char * GetAttributeDescription(const char * attributeName) const;
-   const char * GetMIMEString() const {return _mimeString();} 
+	const char * GetAttributeDescription(const char * attributeName) const;
+	const char * GetMIMEString() const {return _mimeString();} 
 
-   const BBitmap * GetIcon() const {return _iconValid ? &_icon : NULL;}
+	const BBitmap * GetIcon() const {return _iconValid ? &_icon : NULL;}
 
 private:
-   static status_t FindIcon(const BMimeType & mimeType, BBitmap & returnIcon);
+	static status_t FindIcon(const BMimeType & mimeType, BBitmap & returnIcon);
 
-   String _mimeString;
-   Hashtable<String, String> _attrToDesc;
-   BBitmap _icon;
-   bool _iconValid;
+	String _mimeString;
+	Hashtable<String, String> _attrToDesc;
+	BBitmap _icon;
+	bool _iconValid;
 };
 
 };  // end namespace beshare

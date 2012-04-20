@@ -1,15 +1,19 @@
+
+#include "ShareApplication.h"
+
 #include <AppFileInfo.h>
 #include <Path.h>
 #include <File.h>
 #include <FindDirectory.h>
 
+#include <Roster.h>
+
 #include "besupport/ConvertMessages.h"
-#include "ShareApplication.h"
 
 namespace beshare {
 
-#define BESHARE_SETTINGS_FILE_NAME "beshare_settings"   
-#define BESHARE_USER_KEY_FILE_NAME "beshare_user_key"   
+#define BESHARE_SETTINGS_FILE_NAME "beshare_settings"	
+#define BESHARE_USER_KEY_FILE_NAME "beshare_user_key"	
 
 ShareApplication::ShareApplication(const char * optConnectTo) : 
 	BApplication(BESHARE_MIME_TYPE), fWindow(NULL), fOptConnectTo(optConnectTo)
@@ -55,7 +59,7 @@ ShareApplication::RefsReceived(BMessage * msg)
 {
 	entry_ref ref; 
 	if (msg->FindRef("refs", &ref) == B_NO_ERROR) 
-   		fSettingsFileEntry.SetTo(&ref);
+			fSettingsFileEntry.SetTo(&ref);
 }
 
 
@@ -88,7 +92,7 @@ ShareApplication::ReadyToRun()
 			(void) installMsg.Flatten(&idFile);
 		}
 	}
-   
+	
 	// Attempt to load settings...
 	BFile settingsFile(&fSettingsFileEntry, B_READ_ONLY);
 	BMessage settings;
@@ -143,7 +147,7 @@ ShareApplication:: MessageReceived(BMessage * msg)
 		}
 	break;
 
-    case 'scrn':
+	 case 'scrn':
 		if ((fWindow)&&(fWindow->Lock())) {
 			const char * fileName;
 			fWindow->DoScreenShot((msg->FindString("name", &fileName) == B_NO_ERROR) ? fileName : "", fWindow);

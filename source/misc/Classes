@@ -1,0 +1,90 @@
+ChatWindow (BWindow)
+This is a semi-abstract base class; it defines a window that can be used for chat.
+Subclasses are ShareWindow (the main BeShare window) and PrivateChatWindow.
+
+PrivateChatWindow (ChatWindow)
+Private chat window
+
+ReflowingTextView (BTextView) (used in ChatWindow)
+Subsclass of BTextView that automatically reflows the text when it is resized
+
+ShareApplication (BApplication)
+The Application class
+
+ShareConstants.h
+Contatdata
+
+ShareFileTransfer (BHandler) (BListItem) 
+This class handles the sending and receiving of one or more files  to/from another BeShare client.  
+It also serves as a BListItem for the BeShare GUI, so that the user can track the download's progress.
+
+OffsetAndPath (located in ShareFileTransfer.h)
+a simple storage class, holds a file offset and a file path
+
+ShareFileTransferCompareFunctor (located in ShareFileTransfer.h)
+A custom compare functor for case-insensitive comparisons of Strings.
+
+ShareMIMEInfo (BMenu) (used in ShareWindow)
+
+ShareNetClient (BHandler)
+This class handles the TCP connection to the MUSCLE server, and also maintains files in the shares (uploads) 
+directory as well as the query-results directory.
+
+CountedEntryRef (located in ShareNetClient.h)
+
+WatchedDirData (located in ShareNetClient.h)
+
+ShareStrings
+For all the translatins. Perhaps use Haiku own later..
+
+ShareUtils
+misc utils
+
+ShareWindow (ChatWindow)
+Main chat window
+
+TransferListView (BListView)
+Subclass of BListView that only clears the background area that doesn't contain items.  
+This reduces flicker during downloads
+
+
+3:d party classes.
+
+--- CLV Classes begin ---
+RemoteFileItem (CLVListItem)
+Represents information about a file that is available for download.
+We use objects of this class as keys in our search results hash table.
+
+RemoteUserItem (CLVEasyItem)
+This class represents a single remote user and his current matching file set
+
+ResultsView (ColumnListView)
+
+ShareColumn (CLVColumn)
+
+UserListView (ColumnListView)
+--- CLV end ----
+
+ColorPicker (BWindow)
+3:rd party files for ColorPicking
+
+md5
+Not a class but usedfor HaschMD5.
+
+SplitPane (BView)
+/*******************************************************
+*	SplitPane©
+*
+*	SplitPane is a usefull UI component. It alows the 
+*	use to ajust two view Horizontaly or Vertacly so
+*	that they are a desired size. This type of Pane 
+*	shows up most comonly in Mail/News Readers.
+*
+*	@author  YNOP (ynop@acm.org)
+*	@version beta
+*	@date	 Dec. 10 1999
+*******************************************************/
+/* jaf: All BPoint arguments represent the value to use when in
+ *		B_VERTICAL alignment followed by the value to use when in
+ *		B_HORIZONTAL alignment. 
+ */

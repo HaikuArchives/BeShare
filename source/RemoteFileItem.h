@@ -5,7 +5,8 @@
 #include "message/Message.h"
 
 #include "CLVListItem.h"
-#include "ShareConstants.h"
+
+using namespace muscle;
 
 class ColumnListView;
 
@@ -18,28 +19,28 @@ class RemoteUserItem;
 class RemoteFileItem : public CLVListItem
 {
 public:
-   RemoteFileItem(RemoteUserItem * owner, const char * fileName, const MessageRef & attrs);
-   ~RemoteFileItem();
+	RemoteFileItem(RemoteUserItem * owner, const char * fileName, const MessageRef & attrs);
+	~RemoteFileItem();
 
-   const char * GetFileName() const {return _fileName();}
+	const char * GetFileName() const {return _fileName();}
 
-   virtual void DrawItemColumn(BView * owner, BRect rect, int32 colIdx, bool complete);
+	virtual void DrawItemColumn(BView * owner, BRect rect, int32 colIdx, bool complete);
 
-   const Message & GetAttributes() const {return *_attributes.GetItemPointer();}
+	const Message & GetAttributes() const {return *_attributes.GetItemPointer();}
 
-   void Update(BView * view, const BFont * font);
+	void Update(BView * view, const BFont * font);
 
-   int Compare(const RemoteFileItem * item2, int32 key) const;
+	int Compare(const RemoteFileItem * item2, int32 key) const;
 
-   RemoteUserItem * GetOwner() const {return _owner;}
+	RemoteUserItem * GetOwner() const {return _owner;}
 
-   const char * GetPath() const;
+	const char * GetPath() const;
 
 private:
-   RemoteUserItem * _owner;
-   String _fileName;
-   MessageRef _attributes;      
-   float _textOffset;
+	RemoteUserItem * _owner;
+	String _fileName;
+	MessageRef _attributes;		
+	float _textOffset;
 };
 
 };  // end namespace beshare
