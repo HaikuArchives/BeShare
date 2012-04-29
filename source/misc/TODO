@@ -2,7 +2,7 @@ TODO / feature list
 
 What I'm working on.
  - When quiting befor disconnect an crach happends.
- - File download error. It now work as mutch that you can download from a 2.28 but not from another 2.30
+ - File download error. It now work as mutch that you can download from a 2.28 but not from another 2.30. Now it downloads but the reciving end has the wrong status...
 
  - Check username when connect..
  - Use one button for search and de search. they should co exist. When search are finniched..

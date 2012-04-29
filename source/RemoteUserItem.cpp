@@ -6,6 +6,8 @@
 #include "ShareWindow.h"
 
 namespace beshare {
+	
+#define CLASSNAME "RemoteUserItem"
 
 enum {
 	REMOTE_USER_COLUMN_HANDLE = 0,
@@ -46,6 +48,7 @@ RemoteUserItem::RemoteUserItem(ShareWindow* owner, const char* sessionID)
 
 RemoteUserItem::~RemoteUserItem()
 {
+	TRACE_REMOTEUSERITEM(("%s::%s : begin\n",CLASSNAME, __func__));
 	String text = GetUserString();
 	text += str(STR_HAS_DISCONNECTED);
 	_shareWindow->LogMessage(LOG_USER_EVENT_MESSAGE, text());
@@ -56,6 +59,7 @@ RemoteUserItem::~RemoteUserItem()
 String
 RemoteUserItem::GetUserString() const
 {
+	TRACE_REMOTEUSERITEM(("%s::%s : begin\n",CLASSNAME, __func__));
 	String text(str(STR_USER_NUMBER));
 	text += _sessionID;
 
@@ -71,6 +75,7 @@ RemoteUserItem::GetUserString() const
 void
 RemoteUserItem::SetHandle(const char* handle, const char* displayHandle)
 {
+	TRACE_REMOTEUSERITEM(("%s::%s : begin\n",CLASSNAME, __func__));
 	if ((strcmp(handle, _handle())) || (strcmp(displayHandle, _displayHandle()))) {
 		String text = GetUserString();
 		text += str(STR_IS_NOW_KNOWN_AS);
@@ -93,9 +98,9 @@ RemoteUserItem::SetHandle(const char* handle, const char* displayHandle)
 
 
 void
-RemoteUserItem ::
-SetStatus(const char * status, const char * displayStatus)
+RemoteUserItem::SetStatus(const char * status, const char * displayStatus)
 {
+	TRACE_REMOTEUSERITEM(("%s::%s : begin\n",CLASSNAME, __func__));
 	String text = GetUserString();
 	text += str(STR_IS_NOW);
 	text += status;
@@ -107,44 +112,50 @@ SetStatus(const char * status, const char * displayStatus)
 	_shareWindow->RefreshUserItem(this);
 }
 
+
 void
-RemoteUserItem ::
-SetNumSharedFiles(int32 bw)
+RemoteUserItem::SetNumSharedFiles(int32 bw)
 {
+	TRACE_REMOTEUSERITEM(("%s::%s : begin\n",CLASSNAME, __func__));
 	_numSharedFiles = bw;
   
 	char temp[100] = "?";
-	if (_numSharedFiles >= 0) 
-	{
-		if ((_firewalled)&&(_shareWindow->GetFirewalled())) sprintf(temp, "(%li)", _numSharedFiles);
-															  else sprintf(temp, "%li", _numSharedFiles);
+	if (_numSharedFiles >= 0) {
+		if ((_firewalled)&&(_shareWindow->GetFirewalled()))
+			sprintf(temp, "(%li)", _numSharedFiles);
+		else
+			sprintf(temp, "%li", _numSharedFiles);
 	}
 	SetColumnContent(REMOTE_USER_COLUMN_FILES, temp, false, true);
 	_shareWindow->RefreshUserItem(this);
 }
 
+
 void
-RemoteUserItem ::
-SetUploadStats(uint32 cu, uint32 mu)
+RemoteUserItem::SetUploadStats(uint32 cu, uint32 mu)
 {
+	TRACE_REMOTEUSERITEM(("%s::%s : begin\n",CLASSNAME, __func__));
 	_curUploads = cu;
 	_maxUploads = mu;
 
 	char temp[128];
-	if (_curUploads < NO_FILE_LIMIT)
-	{
-		if (_maxUploads >= NO_FILE_LIMIT) sprintf(temp, "(%lu) 0%%", _curUploads);
-											  else sprintf(temp, "(%lu/%lu) %.0f%%", _curUploads, _maxUploads, GetLoadFactor()*100.0f);
-	}
-	else strcpy(temp, "?");
+	if (_curUploads < NO_FILE_LIMIT) {
+		if (_maxUploads >= NO_FILE_LIMIT)
+			sprintf(temp, "(%lu) 0%%", _curUploads);
+		else
+			sprintf(temp, "(%lu/%lu) %.0f%%", _curUploads, _maxUploads, GetLoadFactor()*100.0f);
+	} else
+		strcpy(temp, "?");
 
 	SetColumnContent(REMOTE_USER_COLUMN_LOAD, temp, false, true);
 	_shareWindow->RefreshUserItem(this);
 }
 
+
 void
 RemoteUserItem::SetBandwidth(const char * bandwidthLabel, uint32 bps)
 {
+	TRACE_REMOTEUSERITEM(("%s::%s : begin\n",CLASSNAME, __func__));
 	_bandwidthLabel = bandwidthLabel;
 	_bandwidth = bps;
 
@@ -157,18 +168,21 @@ RemoteUserItem::SetBandwidth(const char * bandwidthLabel, uint32 bps)
 	_shareWindow->RefreshUserItem(this);
 }
 
+
 void
-RemoteUserItem ::
-SetClient(const char * client, const char * displayClient)
+RemoteUserItem::SetClient(const char * client, const char * displayClient)
 {
+	TRACE_REMOTEUSERITEM(("%s::%s : begin\n",CLASSNAME, __func__));
 	_client = client;
 	_displayClient = displayClient;
 	SetColumnContent(REMOTE_USER_COLUMN_CLIENT, _displayClient(), false, false);
 }
 
+
 void
 RemoteUserItem::ClearFiles()
 {
+	TRACE_REMOTEUSERITEM(("%s::%s : begin\n",CLASSNAME, __func__));
 	// Make sure all our files refresh too, in case the "owner name" column is visible
 	for (HashtableIterator<const char*, RemoteFileItem*> iter(_files.GetIterator()); iter.HasData(); iter++) {
 		_shareWindow->RemoveFileItem(iter.GetValue());
@@ -180,22 +194,20 @@ RemoteUserItem::ClearFiles()
 void
 RemoteUserItem::PutFile(const char* fileName, const MessageRef& fileAttrs)
 {
-	TRACE_REMOTEUSERITEM(("RemoteUserItem::PutFile begin\n"));
+	TRACE_REMOTEUSERITEM(("%s::%s : begin\n",CLASSNAME, __func__));
 	RemoveFile(fileName);
 	RemoteFileItem* item = new RemoteFileItem(this, fileName, fileAttrs);
 	_files.Put(item->GetFileName(), item);
 	_shareWindow->AddFileItem(item);
-	TRACE_REMOTEUSERITEM(("RemoteUserItem::PutFile end\n"));
 }
 
 
 void
-RemoteUserItem ::
-RemoveFile(const char * fileName)
+RemoteUserItem::RemoveFile(const char * fileName)
 {
+	TRACE_REMOTEUSERITEM(("%s::%s : begin\n",CLASSNAME, __func__));
 	RemoteFileItem * item;
-	if (_files.Remove(fileName, item) == B_NO_ERROR)
-	{
+	if (_files.Remove(fileName, item) == B_NO_ERROR) {
 		_shareWindow->RemoveFileItem(item);
 		delete item;
 	}
@@ -203,22 +215,20 @@ RemoveFile(const char * fileName)
 
 
 void
-RemoteUserItem ::
-SetFirewalled(bool fw)
+RemoteUserItem::SetFirewalled(bool fw)
 {
-	if (fw != _firewalled)
-	{
+	TRACE_REMOTEUSERITEM(("%s::%s : begin\n",CLASSNAME, __func__));
+	if (fw != _firewalled) {
 		_firewalled = fw;
 		SetNumSharedFiles(GetNumSharedFiles());  // force update
 	}
 }
 
+
 void 
-RemoteUserItem :: 
-DrawItemColumn(BView* owner, BRect rect, int32 col, bool complete)
+RemoteUserItem::DrawItemColumn(BView* owner, BRect rect, int32 col, bool complete)
 {
-	if ((_isBot)&&(col == 0))
-	{
+	if ((_isBot)&&(col == 0)) {
 		BFont f;
 		owner->GetFont(&f);
 		font_family family; 
@@ -229,14 +239,15 @@ DrawItemColumn(BView* owner, BRect rect, int32 col, bool complete)
 		CLVEasyItem::DrawItemColumn(owner, rect, col, complete);
 		f.SetFamilyAndStyle(family, style);
 		owner->SetFont(&f);
-	}
-	else CLVEasyItem::DrawItemColumn(owner, rect, col, complete);
+	} else
+		CLVEasyItem::DrawItemColumn(owner, rect, col, complete);
 }
 
+
 int 
-RemoteUserItem ::
-Compare(const RemoteUserItem * u2, int32 sortKey) const
+RemoteUserItem::Compare(const RemoteUserItem * u2, int32 sortKey) const
 {
+	TRACE_REMOTEUSERITEM(("%s::%s : begin\n",CLASSNAME, __func__));
 	switch(sortKey)
 	{
 		case REMOTE_USER_COLUMN_HANDLE:	 return strcasecmp(GetDisplayHandle(), u2->GetDisplayHandle());
@@ -255,12 +266,16 @@ Compare(const RemoteUserItem * u2, int32 sortKey) const
 	}
 }
 
+
 float
-RemoteUserItem ::
-GetLoadFactor() const
+RemoteUserItem::GetLoadFactor() const
 {
-	if (_maxUploads >= NO_FILE_LIMIT) return  0.0f;
-	if (_curUploads >= NO_FILE_LIMIT) return -1.0f;
+	TRACE_REMOTEUSERITEM(("%s::%s : begin\n",CLASSNAME, __func__));
+	if (_maxUploads >= NO_FILE_LIMIT)
+		return  0.0f;
+	
+	if (_curUploads >= NO_FILE_LIMIT)
+		return -1.0f;
 	return ((float)_curUploads)/((float)_maxUploads);
 }
 

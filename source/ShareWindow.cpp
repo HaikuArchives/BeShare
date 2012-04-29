@@ -932,7 +932,7 @@ ShareWindow::CreatePresetItem(int32 what, int32 which, bool enabled, bool shiftS
 
 
 void
-ShareWindow ::
+ShareWindow::
 AddUserColumn(const BMessage & settingsMsg, int labelID, float dw, const char * optLabel, uint32 extraFlags)
 {
 	char buf[128];
@@ -944,7 +944,7 @@ AddUserColumn(const BMessage & settingsMsg, int labelID, float dw, const char * 
 }
 
 void 
-ShareWindow ::
+ShareWindow::
 SaveUserColumn(BMessage & settingsMsg, int labelID, CLVColumn * col) const
 {
 	char buf[128];
@@ -953,7 +953,7 @@ SaveUserColumn(BMessage & settingsMsg, int labelID, CLVColumn * col) const
 }
 
 void
-ShareWindow ::
+ShareWindow::
 RestoreSplitPane(const BMessage & settingsMsg, SplitPane * sp, const char * name) const
 {
 	BMessage temp;
@@ -961,7 +961,7 @@ RestoreSplitPane(const BMessage & settingsMsg, SplitPane * sp, const char * name
 }
 
 void
-ShareWindow ::
+ShareWindow::
 AddServerItem(const char * serverName, bool quiet, int index)
 {
 	for (int i=_serverMenu->CountItems()-1; i>=0; i--) if (strcasecmp(_serverMenu->ItemAt(i)->Label(), serverName) == 0) return;
@@ -982,7 +982,7 @@ AddServerItem(const char * serverName, bool quiet, int index)
 }
 
 void
-ShareWindow ::
+ShareWindow::
 AddUserNameItem(const char * un)
 {
 	BMessage * msg = new BMessage(SHAREWINDOW_COMMAND_USER_SELECTED_USER_NAME);
@@ -991,7 +991,7 @@ AddUserNameItem(const char * un)
 }
 		
 void
-ShareWindow ::
+ShareWindow::
 AddUserStatusItem(const char * us)
 {
 	BMessage * msg = new BMessage(SHAREWINDOW_COMMAND_USER_SELECTED_USER_STATUS);
@@ -1000,7 +1000,7 @@ AddUserStatusItem(const char * us)
 }
 		
 void
-ShareWindow ::
+ShareWindow::
 SaveSplitPane(BMessage & settingsMsg, const SplitPane * sp, const char * name) const
 {
 	BMessage state;
@@ -1305,7 +1305,7 @@ ShareWindow::MakeLimitSubmenu(const BMessage& settingsMsg, uint32 code, const ch
 }
 
 void
-ShareWindow ::
+ShareWindow::
 AddBandwidthOption(BMenu * bMenu, const char * label, int32 bps)
 {
 	BMessage * msg = new BMessage(SHAREWINDOW_COMMAND_SET_ADVERTISED_BANDWIDTH);
@@ -1340,7 +1340,7 @@ ShareWindow::IPBanTimeLeft(uint32 ip)
 
 
 uint32
-ShareWindow ::
+ShareWindow::
 ParseRemoteIP(const char * hn) const
 {
 	uint32 rip = 0;
@@ -1420,7 +1420,9 @@ ShareWindow::RequestDownloads(const BMessage& filelistMsg, const BDirectory& dow
 	for (int32 i = 0; (filelistMsg.FindPointer("item", i, (void **)&item) == B_NO_ERROR); i++) {
 		if (_resultsView->HasItem(item)) {
 			RemoteUserItem* owner = item->GetOwner();
-			if ((owner->GetHostName()[0])&&((owner->GetPort() > 0) || (owner->GetFirewalled()))) {
+			if ((owner->GetHostName()[0])
+				&& ((owner->GetPort() > 0)
+				|| (owner->GetFirewalled()))) {
 				
 				ShareFileTransfer* xfer;
 				if (newTransferSessions.Get(owner, xfer) == B_ERROR) {
@@ -2282,7 +2284,7 @@ ShareWindow::MessageReceived(BMessage* msg)
 					RefCountableRef tag;
 					if (next()->FindTag(AST_NAME_SOCKET, tag) == B_NO_ERROR)
 					{
-					 ConstSocketRef sref(tag, false);
+					 ConstSocketRef sref(tag, true);
 					 uint32 remoteIP;
 					 if ((sref()) && (_sharingEnabled->IsMarked()) && ((remoteIP = GetPeerIPAddress(sref, true)) > 0))
 					 {
@@ -2306,23 +2308,22 @@ ShareWindow::MessageReceived(BMessage* msg)
 							 }
 							 sockIO.FlushOutput();
 							}
-						}
-						else
-						{
+						} else {
 							ShareFileTransfer * newSession = new ShareFileTransfer(_shareDir, _netClient->GetLocalSessionID(), 0, 0, _maxUploadRate);
 							AddHandler(newSession);
-							if (newSession->InitSocketUploadSession(sref, remoteIP, CountActiveSessions(true, NULL) >= _maxSimultaneousUploadSessions) == B_NO_ERROR) _transferList->AddItem(newSession);
-							else
-							{
-							 LogMessage(LOG_ERROR_MESSAGE, str(STR_COULDNT_START_SHAREFILETRANSFER_SESSION));
-							 RemoveHandler(newSession);
-							 delete newSession;
+							if (newSession->InitSocketUploadSession(sref, remoteIP, CountActiveSessions(true, NULL) >= _maxSimultaneousUploadSessions) == B_NO_ERROR)
+								_transferList->AddItem(newSession);
+							else {
+								LogMessage(LOG_ERROR_MESSAGE, str(STR_COULDNT_START_SHAREFILETRANSFER_SESSION));
+								RemoveHandler(newSession);
+								delete newSession;
 							}
 							UpdateDownloadButtonStatus();
 							DequeueTransferSessions();
 						}
-					 }
-					 //else CloseSocket(sref);
+					 } 
+					 //else
+					 	//CloseSocket(sref);
 					}
 				}
 				break;
@@ -2549,7 +2550,7 @@ ShareWindow::MessageReceived(BMessage* msg)
 	 break;
 	 
 	 default:
-		ChatWindow :: MessageReceived(msg);
+		ChatWindow:: MessageReceived(msg);
 	 break;
 	}
 }
@@ -2712,7 +2713,7 @@ ShareWindow::OkayToLog(LogMessageType type, LogDestinationType dest, bool isPriv
 
  
 void
-ShareWindow ::
+ShareWindow::
 UpdateLRUMenu(BMenu * menu, const char * lookfor, uint32 what, const char * fieldName, int maxSize, bool caseSensitive, uint32 maxLabelLen)
 {
 	// Put the query into the query list, or move it to the top
@@ -2834,7 +2835,7 @@ ShareWindow::UpdateQueryEnabledStatus()
 }
 
 void
-ShareWindow ::
+ShareWindow::
 UpdateConnectStatus(bool titleToo)
 {
 	const char * sname = _serverEntry->Text();
@@ -2988,8 +2989,7 @@ ShareWindow::QuitRequested()
 
 
 void 
-ShareWindow ::
-SendOnLogins()
+ShareWindow::SendOnLogins()
 {
 	// execute the onLogin script, if any
 	int numLines = _onLoginStrings.GetNumItems();
@@ -2997,7 +2997,7 @@ SendOnLogins()
 }
 
 void
-ShareWindow ::
+ShareWindow::
 RemoveServerItem(const char * serverName, bool quiet)
 {
 	for (int i=_serverMenu->CountItems()-1; i>=0; i--) 
@@ -3129,8 +3129,7 @@ ShareWindow::PutUser(const char* sessionID, const char* userName, const char* ho
 // Goes through the list of transfers, and any transfers that are non-finished downloads from
 // the same installID as (user), we'll restart at (user)'s new IP address.
 void 
-ShareWindow ::
-RestartDownloadsFor(const RemoteUserItem * user)
+ShareWindow::RestartDownloadsFor(const RemoteUserItem * user)
 {
 	// Save any active, pending, or errored-out downloads; maybe we can continue them later.
 	for (int i=_transferList->CountItems()-1; i>=0; i--)
@@ -3217,7 +3216,7 @@ ShareWindow::SetUserFileCount(const char * sessionID, int32 fc)
 
 
 void 
-ShareWindow ::
+ShareWindow::
 RemoveUser(const char * sessionID)
 {
 	RemoteUserItem * user;
@@ -3330,7 +3329,7 @@ ShareWindow::BeginBatchFileResultUpdate()
 
 
 void
-ShareWindow ::
+ShareWindow::
 EndBatchFileResultUpdate()
 {
 	int tempSize = _tempAddList.CountItems();
@@ -3364,7 +3363,7 @@ EndBatchFileResultUpdate()
 
 
 void
-ShareWindow ::
+ShareWindow::
 AddResultsItemList(const BList & list)
 {
 	if (list.CountItems() > 0)
@@ -3407,14 +3406,14 @@ ShareWindow::FileTransferDisconnected(ShareFileTransfer * who)
 
 
 const char * 
-ShareWindow ::
+ShareWindow::
 GetFileCellText(const RemoteFileItem * item, int32 columnIndex) const
 {
 	return ((ShareColumn *)_resultsView->ColumnAt(columnIndex))->GetFileCellText(item);
 }
 
 const BBitmap *
-ShareWindow ::
+ShareWindow::
 GetBitmap(const RemoteFileItem * item, int32 /*columnIndex*/) const
 {
 	const BBitmap * bmp = NULL;
@@ -3430,7 +3429,7 @@ GetBitmap(const RemoteFileItem * item, int32 /*columnIndex*/) const
 }
 
 const BBitmap *
-ShareWindow ::
+ShareWindow::
 GetBitmap(const char * mimeString)
 {
 	ShareMIMEInfo * mi = mimeString ? CacheMIMETypeInfo(mimeString) : NULL;
@@ -3439,7 +3438,7 @@ GetBitmap(const char * mimeString)
 }
 
 ShareMIMEInfo *
-ShareWindow ::
+ShareWindow::
 CacheMIMETypeInfo(const char * mimeString)
 {
 	ShareMIMEInfo * ret;
@@ -3608,7 +3607,7 @@ ShareWindow::RefreshTransferItem(ShareFileTransfer * item)
 
 
 void
-ShareWindow ::
+ShareWindow::
 RefreshFileItem(RemoteFileItem * item)
 {
 	for (int i=_resultsPages.GetNumItems()-1; i>=0; i--)
@@ -3622,7 +3621,7 @@ RefreshFileItem(RemoteFileItem * item)
 }
 
 void
-ShareWindow ::
+ShareWindow::
 RefreshUserItem(RemoteUserItem * item)
 {
 	_usersView->InvalidateItem(_usersView->IndexOf(item));
@@ -3630,7 +3629,7 @@ RefreshUserItem(RemoteUserItem * item)
 }
 
 void
-ShareWindow ::
+ShareWindow::
 RefreshTransfersFor(RemoteUserItem * user)
 {
 	for (int i=_transferList->CountItems()-1; i>=0; i--)
@@ -3646,20 +3645,20 @@ RefreshTransfersFor(RemoteUserItem * user)
 
 
 int
-ShareWindow ::
+ShareWindow::
 CompareFunc(const CLVListItem* item1, const CLVListItem* item2, int32 sortKey)
 {
 	return ((RemoteFileItem *)item1)->Compare(((RemoteFileItem *)item2), sortKey);	
 }
 
-int ShareWindow ::
+int ShareWindow::
 UserCompareFunc(const CLVListItem * i1, const CLVListItem * i2, int32 sortKey)
 {
 	return ((const RemoteUserItem *) i1)->Compare((const RemoteUserItem *)i2, sortKey);
 }
 
 int 
-ShareWindow ::
+ShareWindow::
 Compare(const RemoteFileItem * rf1, const RemoteFileItem * rf2, int32 sortKey) const
 {
 	return ((const ShareColumn *)_resultsView->ColumnAt(sortKey))->Compare(rf1, rf2);
@@ -3667,7 +3666,7 @@ Compare(const RemoteFileItem * rf1, const RemoteFileItem * rf2, int32 sortKey) c
 
 
 void 
-ShareWindow ::
+ShareWindow::
 ResetLayout()
 {
 	_mainSplit->SetSwapped(false);
@@ -3724,7 +3723,7 @@ ShareWindow::MatchUserName(const char * un, String & result, const char * optMat
 
 
 status_t
-ShareWindow ::
+ShareWindow::
 DoTabCompletion(const char * origText, String & returnCompletedText, const char * optMatchFilter) const
 {
 	// Do it all in lower case, for case insensitivity
@@ -3929,7 +3928,7 @@ ShareWindow::SendOutMessageOrPing(const String & text, ChatWindow * optEchoTo, b
 
 
 void 
-ShareWindow ::
+ShareWindow::
 LogPattern(const char * preamble, const String & pattern, ChatWindow * optEchoTo)
 {
 	String iStr(preamble);
@@ -3944,7 +3943,7 @@ LogPattern(const char * preamble, const String & pattern, ChatWindow * optEchoTo
 }
 
 void 
-ShareWindow ::
+ShareWindow::
 LogRateLimit(const char * preamble, uint32 limit, ChatWindow * optEchoTo)
 {
 	String iStr(preamble);
@@ -3989,7 +3988,7 @@ ExpandAlias(const String & text, String & retStr) const
 }
 
 void
-ShareWindow ::
+ShareWindow::
 SendChatText(const String & t, ChatWindow * optEchoTo)
 {
 	const String * text = &t;	// point to the string we will use; in the common case it's the passed-in one.
@@ -4397,7 +4396,7 @@ ShareWindow::MatchesUserFilter(const RemoteUserItem * user, const char * filter)
 }
 
 const char *
-ShareWindow ::
+ShareWindow::
 GetUserNameBySessionID(const char * sessionID) const
 {
 	RemoteUserItem * user;
@@ -4444,7 +4443,7 @@ ShareWindow::UpdatePrivateWindowUserList(PrivateChatWindow * w, const char * tar
 }
 
 void
-ShareWindow ::
+ShareWindow::
 SetQueryInProgress(bool qp)
 {
 	if (qp != (_queryInProgressRunner != NULL))
@@ -4464,14 +4463,14 @@ SetQueryInProgress(bool qp)
 }
 
 void
-ShareWindow ::
+ShareWindow::
 SortResults()
 {
 	_resultsView->SortItems();
 }
 
 void
-ShareWindow ::
+ShareWindow::
 DrawQueryInProgress(bool inProgress)
 {
 	BView * clv = _resultsView->GetColumnLabelView();
@@ -4767,40 +4766,40 @@ ShareWindow::ResetAutoReconnectState(bool resetCountToo)
 	TRACE_BESHAREWINDOW(("ShareWindow::ResetAutoReconnectState end\n"));
 }
 
+
 void 
-ShareWindow::
-PauseAllUploads()
+ShareWindow::PauseAllUploads()
 {
-	for (int32 i=_transferList->CountItems()-1; i>=0; i--)
-	{
-	 ShareFileTransfer * xfr = (ShareFileTransfer *) _transferList->ItemAt(i);
-	 if (xfr->IsUploadSession())
-	 {
-		if (xfr->IsWaitingOnLocal() == false) xfr->RequeueTransfer();
-		xfr->SetBeginTransferEnabled(false);
-	 }
+	for (int32 i=_transferList->CountItems()-1; i>=0; i--) {
+		ShareFileTransfer * xfr = (ShareFileTransfer *) _transferList->ItemAt(i);
+		if (xfr->IsUploadSession()) {
+			if (xfr->IsWaitingOnLocal() == false)
+				xfr->RequeueTransfer();
+			xfr->SetBeginTransferEnabled(false);
+		}
 	}
 	_transferList->Invalidate();
 	DequeueTransferSessions();
 }
 
+
 void 
-ShareWindow::
-ResumeAllUploads()
+ShareWindow::ResumeAllUploads()
 {
 	uint32 num = _transferList->CountItems();
-	for (uint32 i=0; i<num; i++)
-	{
-	 ShareFileTransfer * xfr = (ShareFileTransfer *) _transferList->ItemAt(i);
-	 if ((xfr->IsUploadSession())&&(xfr->IsWaitingOnLocal()))
-	 {
-		if (xfr->GetBeginTransferEnabled()) xfr->BeginTransfer();
-									else xfr->SetBeginTransferEnabled(true);
-	 }
+	for (uint32 i=0; i<num; i++) {
+		ShareFileTransfer * xfr = (ShareFileTransfer *) _transferList->ItemAt(i);
+		if ((xfr->IsUploadSession())&&(xfr->IsWaitingOnLocal())) {
+			if (xfr->GetBeginTransferEnabled())
+				xfr->BeginTransfer();
+			else
+				xfr->SetBeginTransferEnabled(true);
+		}
 	}
 	_transferList->Invalidate();
 	DequeueTransferSessions();
 }
+
 
 void 
 ShareWindow::SetLocalUserName(const char * name)

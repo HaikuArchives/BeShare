@@ -13,7 +13,11 @@
 namespace beshare {
 
 RemoteFileItem::RemoteFileItem(RemoteUserItem* owner, const char* fileName, const MessageRef& attrs)
-  : CLVListItem(0, false, false, 18.0f), _owner(owner), _fileName(fileName), _attributes(attrs)
+  : 
+  CLVListItem(0, false, false, 18.0f),
+  _owner(owner),
+  _fileName(fileName),
+  _attributes(attrs)
 {
 	// empty
 }

@@ -47,26 +47,31 @@ TransferListView::TransferListView(BRect rect, uint32 banCommand)
 		B_WILL_DRAW|B_FRAME_EVENTS|B_NAVIGABLE|B_FULL_UPDATE_ON_RESIZE)
 	, fBanCommand(banCommand)
 {
+	TRACE_TRANSFERLISTVIEW(("TransferListView::TransferListView begin\n"));
 	SetLowColor(B_TRANSPARENT_32_BIT);// we'll draw in the background, thanks
 	SetViewColor(B_TRANSPARENT_32_BIT); // we'll draw in the background, thanks
+	TRACE_TRANSFERLISTVIEW(("TransferListView::TransferListView begin\n"));
 }
 
 
 void 
 TransferListView::MessageReceived(BMessage * msg)
 {
+	TRACE_TRANSFERLISTVIEW(("TransferListView::MessageReceived begin\n"));
 	BListView::MessageReceived(msg);
 	BMessage downloads;
 	if (msg->FindMessage("be:originator-data", &downloads) == B_NO_ERROR) {
 		ShareWindow * win = (ShareWindow *) Window();
 		win->RequestDownloads(downloads, win->_downloadsDir, NULL);
 	}
+	TRACE_TRANSFERLISTVIEW(("TransferListView::MessageReceived begin\n"));
 }
 
 
 void
 TransferListView::Draw(BRect ur)
 {
+	TRACE_TRANSFERLISTVIEW(("TransferListView::Draw begin\n"));
 	BRect backgroundArea = ur;
 	
 	int numItems = CountItems();
@@ -80,12 +85,14 @@ TransferListView::Draw(BRect ur)
 	}
 	
 	BListView::Draw(ur);
+	TRACE_TRANSFERLISTVIEW(("TransferListView::Draw end\n"));
 }
 
 
 void
 TransferListView::MouseDown(BPoint where)
 {
+	TRACE_TRANSFERLISTVIEW(("TransferListView::MouseDown begin\n"));
 	BPoint pt;
 	ulong buttons;
 
@@ -314,12 +321,14 @@ TransferListView::MouseDown(BPoint where)
  		}
 	} else
 		BListView::MouseDown(where);
+	TRACE_TRANSFERLISTVIEW(("TransferListView::MouseDown end\n"));
 }
 
 
 void
 TransferListView::MoveSelectedItems(int delta)
 {
+	TRACE_TRANSFERLISTVIEW(("TransferListView::MoveSelectedItems begin\n"));
 	// First, identify our movers by value...
 	BList movers;
 	{
@@ -352,12 +361,14 @@ TransferListView::MoveSelectedItems(int delta)
 		int32 idx = IndexOf((BListItem*)movers.ItemAt(k));
 		if (idx >= 0) Select(idx, true);
 	} 
+	TRACE_TRANSFERLISTVIEW(("TransferListView::MoveSelectedItems end\n"));
 }
 
 
 void
 TransferListView::MoveSelectedToExtreme(int dir)
 {
+	TRACE_TRANSFERLISTVIEW(("TransferListView::MoveSelectedToExtreme begin\n"));
 	// First, Make a list of selected items and unselected items
 	BList selected, unselected;
 	{
@@ -383,13 +394,15 @@ TransferListView::MoveSelectedToExtreme(int dir)
 		AddList(&unselected);
 		Select(0, selected.CountItems()-1);
 	}
+	TRACE_TRANSFERLISTVIEW(("TransferListView::MoveSelectedToExtreme end\n"));
 }
 
 
 void
 TransferListView::_AddFileItems(BMenu * menu, type_code tc, const ShareFileTransfer * xfr)
 {
-	ShareWindow * win = (ShareWindow *) Looper();
+	TRACE_TRANSFERLISTVIEW(("TransferListView::_AddFileItems begin\n"));
+	ShareWindow* win = (ShareWindow *) Looper();
 	String next;
 
 	for (HashtableIterator<String, OffsetAndPath> iter(xfr->GetDisplayFileSet().GetIterator()); iter.HasData(); iter++) {
@@ -418,12 +431,14 @@ TransferListView::_AddFileItems(BMenu * menu, type_code tc, const ShareFileTrans
 		mi->SetEnabled(enableIt);
 		menu->AddItem(mi);
 	}
+	TRACE_TRANSFERLISTVIEW(("TransferListView::_AddFileItems end\n"));
 }
 
 
 void
 TransferListView::_AddLimitItem(BMenu * addTo, uint32 transferRate, uint32 currentLimit, uint32 & prevVal)
 {
+	TRACE_TRANSFERLISTVIEW(("TransferListView::_AddLimitItem begin\n"));
 	char buf[128]; 
 	if (transferRate > 0) {
 		sprintf(buf, "%luKB%s", transferRate, str(STR_SEC));
@@ -442,14 +457,14 @@ TransferListView::_AddLimitItem(BMenu * addTo, uint32 transferRate, uint32 curre
 	
 	addTo->AddItem(mi);
 	prevVal = transferRate;
+	TRACE_TRANSFERLISTVIEW(("TransferListView::_AddLimitItem end\n"));
 }
 
 
 void
-TransferListView::_AddBanItem(BMenu* addTo, 
-	const Hashtable<uint32, bool>& canBans, int count, const char* unit, 
-	bigtime_t microsPerUnit)
+TransferListView::_AddBanItem(BMenu* addTo, const Hashtable<uint32, bool>& canBans, int count, const char* unit, bigtime_t microsPerUnit)
 {
+	TRACE_TRANSFERLISTVIEW(("TransferListView::_AddBanItem begin\n"));
 	char buf[128];
 	if (count > 0)
 		sprintf(buf, "%i %s", count, unit);
@@ -469,6 +484,7 @@ TransferListView::_AddBanItem(BMenu* addTo,
 		msg->AddInt64("duration", (count >= 0) ? count*microsPerUnit : 0);
 
 	addTo->AddItem(new BMenuItem(buf, msg));
+	TRACE_TRANSFERLISTVIEW(("TransferListView::_AddBanItem end\n"));
 }
 
 };// end namespace beshare

@@ -31,9 +31,8 @@ namespace beshare {
 //#define DEBUG_REMOTEUSERITEM
 //#define DEBUG_BESHARENETCLIENT
 #define DEBUG_SHAREFILETRANFER
+//#define DEBUG_TRANSFERLISTVIEW
 #endif
-
-
 
 #ifdef DEBUG_BESHAREWINDOW
 #define TRACE_BESHAREWINDOW(x) printf x
@@ -41,11 +40,17 @@ namespace beshare {
 #define TRACE_BESHAREWINDOW(x) /* nothing */
 #endif
 
+#ifdef DEBUG_TRANSFERLISTVIEW
+#define TRACE_TRANSFERLISTVIEW(x) printf x
+#else
+#define TRACE_TRANSFERLISTVIEW(x) /* nothing */
+#endif
+
 // The ShareFileTransfer.cpp file
 #ifdef DEBUG_SHAREFILETRANFER
 #define TRACE_SHAREFILETRANFER(x) printf x
 #else
-#define TRACE_SHAREFILETRANFER(x) /* nothing */
+#define TRACE_SHAREFILETRANFER(x) //nothing
 #endif
 
 // The ShareNetClient.cpp file
