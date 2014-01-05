@@ -3,7 +3,7 @@
 
 namespace beshare {
 
-#define VERSION_STRING "2.30"
+#define VERSION_STRING "2.31"
 
 #define DEFAULT_LISTEN_PORT 7000
 #define LISTEN_PORT_RANGE	50
