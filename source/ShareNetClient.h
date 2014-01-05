@@ -6,6 +6,7 @@
 #include <storage/NodeMonitor.h>
 #include <storage/Directory.h>
 #include <storage/Entry.h>
+#include <support/Locker.h>
 
 #include "besupport/BThread.h"
 #include "util/Hashtable.h"
