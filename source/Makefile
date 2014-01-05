@@ -139,7 +139,7 @@ LOCAL_INCLUDE_PATHS := \
 
 #	specify the level of optimization that you desire
 #	NONE, SOME, FULL
-OPTIMIZE := -03
+OPTIMIZE := FULL
 
 #	specify any preprocessor symbols to be defined.  The symbols will not
 #	have their values set automatically; you must supply the value (if any)
@@ -241,5 +241,7 @@ EXTRA_DEPS :=
 #	otherwise it will tell you at the end what the build flags were.
 #CHATTY			:=
 
-include /boot/develop/etc/makefile-engine
+DEVEL_DIRECTORY := \
+	$(shell findpaths -r "makefile_engine" B_FIND_PATH_DEVELOP_DIRECTORY)
+include $(DEVEL_DIRECTORY)/etc/makefile-engine
 
