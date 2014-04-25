@@ -1,0 +1,7 @@
+Compiling BeShare
+======================
+
+Really quick compilation instructions:
+1. download a copy of MUSCLE: https://public.msli.com/lcs/muscle/ & extract into a folder called "muscle" here in the root
+2. change your GCC to GCC4 ("setarch x86" on GCC2hybrid builds)
+3. "make" in src
