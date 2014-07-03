@@ -100,7 +100,10 @@ SRCS= ChatWindow.cpp \
 		../muscle/zlib/zlib/compress.c \
 		../muscle/zlib/zlib/crc32.c \
 		../muscle/zlib/zlib/deflate.c \
-		../muscle/zlib/zlib/gzio.c \
+		../muscle/zlib/zlib/gzlib.c \
+		../muscle/zlib/zlib/gzread.c \
+		../muscle/zlib/zlib/gzwrite \
+		../muscle/zlib/zlib/gzclose.c \
 		../muscle/zlib/zlib/trees.c \
 		../muscle/zlib/zlib/zutil.c \
 		../muscle/zlib/zlib/inflate.c \
