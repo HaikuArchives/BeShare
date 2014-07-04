@@ -9,7 +9,6 @@
 
 #include "CLVListItem.h"
 #include "ColumnListView.h"
-#include "SplitPane.h"
 #include "ShareWindow.h"
 
 namespace beshare {
@@ -64,7 +63,6 @@ private:
 	BTextControl * _usersEntry;
 	BCheckBox * _logEnabled;
 	ColumnListView * _usersList;
-	SplitPane * _split;
 	bool _munged;
 };
 

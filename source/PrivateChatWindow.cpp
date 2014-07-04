@@ -1,9 +1,9 @@
 #include "PrivateChatWindow.h"
 
 #include <Screen.h>
+#include <LayoutBuilder.h>
 
 #include "ShareStrings.h"
-#include "SplitPane.h"
 #include "CLVEasyItem.h"
 
 namespace beshare {
@@ -48,45 +48,26 @@ PrivateChatWindow :: PrivateChatWindow(bool loggingEnabled, const BMessage & msg
 	_mainWindow(mainWindow),
 	_munged(false)
 {
-	const float hMargin = 2.0f;
-	const float vMargin = 2.0f;
-
 	SetSizeLimits(MIN_WIDTH, MAX_WIDTH, MIN_HEIGHT, MAX_HEIGHT);
 
 	BMessenger toMe(this);
 
-	BRect b(Bounds());
-
-	BView * contentView = new BView(b, NULL, B_FOLLOW_ALL_SIDES, 0);
-	AddBorderView(contentView);
-	AddChild(contentView);
-
-	BRect logLabelRect(b.Width()-(hMargin+contentView->StringWidth(str(STR_LOG))+25.0f), vMargin, b.Width()-hMargin, TEXT_ENTRY_HEIGHT);
-	_logEnabled = new BCheckBox(logLabelRect, NULL, str(STR_LOG), NULL, B_FOLLOW_RIGHT | B_FOLLOW_TOP);
+	_logEnabled = new BCheckBox(NULL, str(STR_LOG), NULL);
 	if (loggingEnabled) _logEnabled->SetValue(B_CONTROL_ON);
-	AddBorderView(_logEnabled);
-	contentView->AddChild(_logEnabled);
-
+	
 	// text control for indicating users stretches all the way across the top of the window
-	_usersEntry = new BTextControl(BRect(hMargin, vMargin, logLabelRect.left-hMargin, TEXT_ENTRY_HEIGHT), NULL, str(STR_CHAT_WITH), defaultStr, new BMessage(PRIVATE_WINDOW_USER_TEXT_CHANGED), B_FOLLOW_TOP|B_FOLLOW_LEFT_RIGHT);
+	_usersEntry = new BTextControl(NULL, str(STR_CHAT_WITH), defaultStr, new BMessage(PRIVATE_WINDOW_USER_TEXT_CHANGED));
 	_usersEntry->SetDivider(_usersEntry->StringWidth(str(STR_CHAT_WITH))+4.0f);
 	_usersEntry->SetTarget(toMe);
 	_usersEntry->MakeFocus();
-	AddBorderView(_usersEntry);
-	contentView->AddChild(_usersEntry);
-
-	// Area that the split view will occupy (everything underneath the _usersEntry view)
-	BRect splitBounds(hMargin,_usersEntry->Frame().bottom+vMargin,b.Width()-hMargin, b.Height()-vMargin);
-
+	
 	// chat view is the left side of the split...
-	_chatView = new BView(BRect(0,0,splitBounds.Width()-USER_LIST_WIDTH,splitBounds.Height()), NULL, B_FOLLOW_ALL_SIDES, 0);
-	AddBorderView(_chatView);
-
+	_chatView = new BView(NULL, 0);
+	
 	// the user list is the right side of the split
 	const float ID_WIDTH=24.0f;
 	CLVContainerView * cv;
-	_usersList = new ColumnListView(BRect(0, 0, USER_LIST_WIDTH-(B_V_SCROLL_BAR_WIDTH+2), splitBounds.Height()-2),&cv,NULL,B_FOLLOW_ALL_SIDES, B_WILL_DRAW|B_FRAME_EVENTS|B_NAVIGABLE,B_MULTIPLE_SELECTION_LIST,false,false,true,true,B_FANCY_BORDER);
-	AddBorderView(cv);
+	_usersList = new ColumnListView(BRect(),&cv,NULL,B_FOLLOW_ALL_SIDES, B_WILL_DRAW|B_FRAME_EVENTS|B_NAVIGABLE,B_MULTIPLE_SELECTION_LIST,false,false,true,true,B_FANCY_BORDER);
 
 	_usersList->AddColumn(new CLVColumn(str(STR_NAME), _usersList->Bounds().Width()-ID_WIDTH, CLV_SORT_KEYABLE));
 	_usersList->AddColumn(new CLVColumn(str(STR_ID), ID_WIDTH, CLV_SORT_KEYABLE|CLV_RIGHT_JUSTIFIED));
@@ -106,16 +87,20 @@ PrivateChatWindow :: PrivateChatWindow(bool loggingEnabled, const BMessage & msg
 		delete [] order;
 	}
 
-	// And the split itself
-	_split = new SplitPane(splitBounds, _chatView, cv, B_FOLLOW_ALL_SIDES);
-	_split->SetResizeViewOne(true, true);
-	_split->SetBarPosition(BPoint(splitBounds.right-(B_V_SCROLL_BAR_WIDTH+USER_LIST_WIDTH), splitBounds.bottom-30.0f));
-	BMessage splitMsg;
-	if (msg.FindMessage("split", &splitMsg) == B_NO_ERROR) _split->SetState(&splitMsg);
-
-	contentView->AddChild(_split);
-	AddBorderView(_split);
-
+	BLayoutBuilder::Group<>(this, B_VERTICAL)
+		.SetInsets(B_USE_SMALL_INSETS)
+		.AddGroup(B_HORIZONTAL, B_USE_HALF_ITEM_SPACING)
+			.SetInsets(0, 0, 0, 0)
+			.Add(_usersEntry)
+			.Add(_logEnabled)
+		.End()
+		.AddSplit(B_HORIZONTAL, B_USE_HALF_ITEM_SPACING)
+			.SetInsets(0, 0, 0, 0)
+			.Add(_chatView)
+			.Add(cv)
+		.End();
+	
+	
 	float fontSize;
 	if (msg.FindFloat("fontsize", &fontSize) == B_NO_ERROR) SetFontSize(fontSize);
 
@@ -141,7 +126,7 @@ SaveStateTo(BMessage & msg) const
 	msg.AddRect("frame", Frame());
 
 	BMessage sp;
-	_split->GetState(sp);
+	//_split->GetState(sp); // TODO
 	msg.AddMessage("split", &sp);
 	msg.AddInt32("index", _index);  // not persistent, but needed by ShareWindow
 

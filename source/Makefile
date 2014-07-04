@@ -51,7 +51,6 @@ SRCS= ChatWindow.cpp \
 		ShareStrings.cpp \
 		ShareUtils.cpp \
 		ShareWindow.cpp \
-		SplitPane.cpp \
 		TransferListView.cpp \
 		UserListView.cpp \
 		santa/BetterScrollView/BetterScrollView.cpp \
@@ -201,7 +200,7 @@ SYMBOLS =
 #	specify debug settings
 #	if TRUE will allow application to be run from a source-level
 #	debugger.  Note that this will disable all optimzation.
-DEBUGGER = 
+DEBUGGER =
 
 #	specify additional compiler flags for all files
 COMPILER_FLAGS =

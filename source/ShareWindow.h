@@ -30,7 +30,6 @@ class CLVColumn;
 
 namespace beshare {
 
-class SplitPane;
 class ShareFileTransfer;
 class RemoteUserItem;
 class RemoteFileItem;
@@ -46,7 +45,6 @@ public:
 	ShareWindow(uint64 installID, BMessage & settingsMsg, const char * connectServer);
 	~ShareWindow();
 
-	virtual void FrameResized(float w, float h);
 	virtual void MessageReceived(BMessage * msg);
 
 	virtual bool QuitRequested();
@@ -328,7 +326,7 @@ private:
 	BButton * _cancelTransfersButton;
 
 	BMenu		  * _queryMenu;
-	BView		  * _queryView;
+	BMenuField 	  * _queryMenuField;
 
 	BMenu		  * _serverMenu;
 	BMenuField	* _serverMenuField;
@@ -337,6 +335,7 @@ private:
 	BMenu		  * _userNameMenu;
 	BTextControl * _userNameEntry;
 
+	BMenuField* _userStatusMenuField;
 	BMenu		  * _userStatusMenu;
 	BTextControl * _userStatusEntry;
 
@@ -386,12 +385,7 @@ private:
 
 	Hashtable<ShareMIMEInfo *, bool> _emptyMimeInfos;		 /* MIME infos that aren't in the BMenu yet */
 
-	SplitPane * _resultsTransferSplit;
-	SplitPane * _mainSplit;
-	SplitPane * _chatUsersSplit;
-
 	BView * _chatView;
-	BView * _statusView;
 
 	BList _tempAddList;	 // batch up items to be added, for efficiency
 
@@ -405,9 +399,6 @@ private:
 	uint32 _uploadBandwidth;
 
 	BMessageRunner * _connectionReaper;	// Every so often, causes us to check for moribund connections & kill them
-
-	void RestoreSplitPane(const BMessage & settingMsg, SplitPane * sp, const char * name) const;
-	void SaveSplitPane(BMessage & settingsMsg, const SplitPane * sp, const char * name) const;
 
 	void ResetLayout();
 

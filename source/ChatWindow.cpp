@@ -10,6 +10,7 @@
 #include <Roster.h>
 #include <MessageFilter.h>
 #include <StringView.h>
+#include <LayoutBuilder.h>
 
 #include "regex/StringMatcher.h"
 #include "util/StringTokenizer.h"
@@ -1202,29 +1203,24 @@ ChatWindow::CloseLogFile()
 void
 ChatWindow::ReadyToRun()
 {
-	BRect chatViewBounds = GetChatView()->Bounds();
-
-	BRect chatTextBounds(0, 0, chatViewBounds.Width(), chatViewBounds.Height()-(TEXT_ENTRY_HEIGHT+5.0f));
-	BBox * box = new BBox(chatTextBounds, NULL, B_FOLLOW_ALL_SIDES);
-	GetChatView()->AddChild(box);		  
-
-	_chatText = new ReflowingTextView(BRect(2,2,chatTextBounds.Width()-(2+B_V_SCROLL_BAR_WIDTH), chatTextBounds.Height()-2), NULL, chatTextBounds, B_FOLLOW_ALL_SIDES);
+	_chatText = new ReflowingTextView(BRect(), NULL, BRect(), B_FOLLOW_ALL_SIDES);
 
 	_chatText->MakeEditable(false);
 	_chatText->SetStylable(true);
 
-	_chatScrollView = new BScrollView(NULL, _chatText, B_FOLLOW_ALL_SIDES, 0L, false, true, B_FANCY_BORDER);
-	box->AddChild(_chatScrollView);
+	_chatScrollView = new BScrollView(NULL, _chatText, 0L, false, true, B_FANCY_BORDER);
 
 	String chat(str(STR_CHAT_VERB));
 	chat += ':';
-	_textEntry = new BTextControl(BRect(0, chatViewBounds.Height()-TEXT_ENTRY_HEIGHT, chatViewBounds.Width(), chatViewBounds.Height()), NULL, chat(), NULL, NULL, B_FOLLOW_LEFT_RIGHT | B_FOLLOW_BOTTOM);
-	AddBorderView(_textEntry);
+	_textEntry = new BTextControl(NULL, chat(), NULL, NULL);
 
 	_textEntry->TextView()->AddFilter(new PasteMessageFilter(CHATWINDOW_COMMAND_SEND_CHAT_TEXT, _textEntry));
 	_textEntry->SetDivider(_textEntry->StringWidth(chat())+4.0f);
 			
-	GetChatView()->AddChild(_textEntry);
+	BLayoutBuilder::Group<>(GetChatView(), B_VERTICAL, B_USE_HALF_ITEM_SPACING)
+		.SetInsets(0, 0, 0, 0)
+		.Add(_chatScrollView)
+		.Add(_textEntry);
 
 	UpdateColors();
 
