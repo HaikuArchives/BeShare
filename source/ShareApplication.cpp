@@ -244,7 +244,7 @@ ShareApplication::AboutRequested()
 	str += "Jeremy Friesner (jfriesne)\n";
 	str += "Fredrik Modéen (modeenf)\n";
 	str += "Augustin Cavalier (waddlesplash)\n";
-	str += "Vitaliy Mikitchenko (vitvep)\n";
+	str += "Vitaliy Mikitchenko (vitviper)\n";
 
 	BAlert *about = new BAlert("About", str.String(), "BeShare Page", "Development Page", "Okay");
 	BTextView *v = about->TextView();
