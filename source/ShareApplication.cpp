@@ -1,6 +1,8 @@
 
 #include "ShareApplication.h"
 
+#include <Alert.h>
+#include <String.h>
 #include <AppFileInfo.h>
 #include <Path.h>
 #include <File.h>
@@ -226,6 +228,55 @@ ShareApplication:: MessageReceived(BMessage * msg)
 		BApplication::MessageReceived(msg);
 	break;
 	}
+}
+
+void
+ShareApplication::AboutRequested()
+{
+	BString version;
+	BString str("BeShare");
+	str += "\nVersion ";
+	str += VERSION_STRING;
+	str += " — MUSCLE ";
+	str += MUSCLE_VERSION_STRING;
+	str += "\n\n";
+	
+	str += "Jeremy Friesner (jfriesne)\n";
+	str += "Fredrik Modéen (modeenf)\n";
+	str += "Augustin Cavalier (waddlesplash)\n";
+	str += "Vitaliy Mikitchenko (vitvep)\n";
+
+	BAlert *about = new BAlert("About", str.String(), "BeShare Page", "Development Page", "Okay");
+	BTextView *v = about->TextView();
+	if (v) {
+		rgb_color red = {255, 0, 51, 255};
+		rgb_color blue = {0, 102, 255, 255};
+
+		v->SetStylable(true);
+		char *text = (char*)v->Text();
+		char *s = text;
+		// set all Be in BeShare in blue and red
+		while ((s = strstr(s, "BeShare")) != NULL) {
+			int32 i = s - text;
+			v->SetFontAndColor(i, i+1, NULL, 0, &blue);
+			v->SetFontAndColor(i+1, i+2, NULL, 0, &red);
+			s += 2;
+		}
+		// first text line 
+		s = strchr(text, '\n');
+		BFont font;
+		v->GetFontAndColor(0, &font);
+		font.SetSize(16);
+		v->SetFontAndColor(0, s-text+1, &font, B_FONT_SIZE);
+	};
+	
+	const char * url = NULL;
+	switch(about->Go())
+	{
+		case 0: url = BESHARE_HOMEPAGE_URL;	break;
+		case 1: url = BESHARE_SOURCE_URL; break;
+	}
+	if (url) be_roster->Launch("text/html", 1, (char**) &url);
 }
 
 };  // end namespace beshare

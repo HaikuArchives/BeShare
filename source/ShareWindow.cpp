@@ -2324,18 +2324,7 @@ ShareWindow::MessageReceived(BMessage* msg)
 	 	break;
 
 	 case SHAREWINDOW_COMMAND_ABOUT:
-	 {
-		char temp[200];
-		sprintf(temp, "BeShare\nv%s - MUSCLE %s\n\nJeremy Friesner (jfriesne)\nFredrik Modéen (modeenf)\nAugustin Cavalier (waddlesplash)\nVitaliy Mikitchenko (vitvep)", VERSION_STRING, MUSCLE_VERSION_STRING);
-		const char * url = NULL;
-		switch((new BAlert("About BeShare", temp, "BeShare Page", "Development Page", "Okay"))->Go())
-		{
-			case 0: url = BESHARE_HOMEPAGE_URL;	break;
-			case 1: url = BESHARE_SOURCE_URL; break;
-		}
-
-		if (url) be_roster->Launch("text/html", 1, (char**) &url);
-	 }
+	 	be_app->PostMessage(B_ABOUT_REQUESTED);
 	 break;
 
 	case SHAREWINDOW_COMMAND_RECONNECT_TO_SERVER:

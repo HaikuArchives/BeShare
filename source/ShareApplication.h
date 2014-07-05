@@ -19,6 +19,7 @@ public:
 	virtual void RefsReceived(BMessage * msg);
 	virtual void ReadyToRun();
 	virtual void DispatchMessage(BMessage * msg, BHandler * handler);
+	virtual void AboutRequested();
 
 	void SaveSettings(const BMessage & settingsMsg);
 
