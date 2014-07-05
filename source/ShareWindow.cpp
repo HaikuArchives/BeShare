@@ -2326,13 +2326,12 @@ ShareWindow::MessageReceived(BMessage* msg)
 	 case SHAREWINDOW_COMMAND_ABOUT:
 	 {
 		char temp[200];
-		sprintf(temp, "BeShare v%s (MUSCLE %s)\n%s\nJeremy Friesner (jaf@lcsaudio.com)\nFredrik Modéen ([firstname]@[lastname].se)\n\n%s Vitaliy Mikitchenko", VERSION_STRING, MUSCLE_VERSION_STRING, str(STR_BY), str(STR_COLOR_PREFS_BY));
+		sprintf(temp, "BeShare\nv%s - MUSCLE %s\n\nJeremy Friesner (jfriesne)\nFredrik Modéen (modeenf)\nAugustin Cavalier (waddlesplash)\nVitaliy Mikitchenko (vitvep)", VERSION_STRING, MUSCLE_VERSION_STRING);
 		const char * url = NULL;
-		switch((new BAlert("About BeShare", temp, "BeBits Page", "BeShare Page", "Okay"))->Go())
+		switch((new BAlert("About BeShare", temp, "BeShare Page", "Development Page", "Okay"))->Go())
 		{
-			case 0: url = BESHARE_BEBITS_URL;	break;
-			case 1: url = BESHARE_HOMEPAGE_URL; break;
-//			case 2: url = BESHARE_SOURCE_URL; break;
+			case 0: url = BESHARE_HOMEPAGE_URL;	break;
+			case 1: url = BESHARE_SOURCE_URL; break;
 		}
 
 		if (url) be_roster->Launch("text/html", 1, (char**) &url);
@@ -2510,7 +2509,7 @@ void ShareWindow::UpdaterCommandReceived(const char * key, const char * value)
 			 if (temp.Length() > 30) temp = temp.Substring(0, 30);
 
 			 char buf[256];
-			 sprintf(buf, str(STR_BESHARE_UPGRADE_NOTICE), temp(), BESHARE_BEBITS_URL);
+			 sprintf(buf, str(STR_BESHARE_UPGRADE_NOTICE), temp(), BESHARE_HOMEPAGE_URL);
 			 LogMessage(LOG_INFORMATION_MESSAGE, buf);
 			}
 		}

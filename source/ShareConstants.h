@@ -3,23 +3,22 @@
 
 namespace beshare {
 
-#define VERSION_STRING "2.31"
+#define VERSION_STRING "2.30"
 
 #define DEFAULT_LISTEN_PORT 7000
 #define LISTEN_PORT_RANGE	50
 #define CLUMP_CHAR			 '\1' 
 
 #define BESHARE_MIME_TYPE "application/x-vnd.Haiku-BeShare"
-#define FACTORY_DEFAULT_USER_NAME		  "binky"
+#define FACTORY_DEFAULT_USER_NAME		  "BeShareUser"
 #define FACTORY_DEFAULT_USER_STATUS		"here"
 #define FACTORY_DEFAULT_USER_AWAY_STATUS "away"
 
 #define AUTO_UPDATER_SERVER "beshare.tycomsystems.com"
 #define AUTO_UPDATER_URL	 "http://" AUTO_UPDATER_SERVER "/servers.txt"
 
-#define BESHARE_BEBITS_URL		"http://www.bebits.com/app/1330/"
-#define BESHARE_HOMEPAGE_URL	"http://www.lcscanada.com/beshare/"
-#define BESHARE_SOURCE_URL		"http://dev.osdrawer.net/projects/beshare"
+#define BESHARE_HOMEPAGE_URL	"http://haikuarchives.github.io/BeShare/"
+#define BESHARE_SOURCE_URL		"https://github.com/HaikuArchives/BeShare"
 
 #define NO_FILE_LIMIT 999999
 
