@@ -156,8 +156,11 @@ all translator addresses:  socca@bemail.org, beat.rupp@gmx.net, ted@3rd-rock.net
 
 History
 =======
-v2.30 * Now we build against 5.67. The about box are now using version 
-	 from MUSCLE server.
+v2.30 * Compiles against MUSCLE 6.
+      * The about box now shows the version of your MUSCLE client.
+      * Source code comes with a script to automatically fetch MUSCLE sources.
+      * Uses the Haiku layout system for a smoother interface!
+      * Redid the About window to look nicer.
 
 v2.29  * Merged in YNOP and yuktar uptime code
 	  * Compiled with gcc4 only 
