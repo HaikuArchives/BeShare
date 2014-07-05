@@ -2527,6 +2527,7 @@ void ShareWindow::MakeAway()
 void
 ShareWindow::LogMessage(LogMessageType type, const char * text, const char * optSessionID, const rgb_color * optTextColor, bool isPersonal, ChatWindow * optEchoTo)
 {
+	_messageWasSentToPrivateChatWindow = false;
 	// Ignore messages that match our ignore pattern.
 	if ((_ignorePattern.Length() > 0)&&(optSessionID)) {
 		RemoteUserItem * user;
@@ -2548,9 +2549,12 @@ ShareWindow::LogMessage(LogMessageType type, const char * text, const char * opt
 				toPriv.AddString("sid", optSessionID);
 
 				PrivateChatWindow * nextWin;
-				for (HashtableIterator<PrivateChatWindow*, String> iter(_privateChatWindows.GetIterator()); iter.HasData(); iter++) {						
-						if ((MatchesUserFilter(user, iter.GetValue().Cstr())) && (nextWin->PostMessage(&toPriv) == B_NO_ERROR))
+				for (HashtableIterator<PrivateChatWindow*, String> iter(_privateChatWindows.GetIterator()); iter.HasData(); iter++) {
+						nextWin = iter.GetKey();
+						if ((MatchesUserFilter(user, iter.GetValue().Cstr())) && (nextWin->PostMessage(&toPriv) == B_NO_ERROR)) {
 							_messageWasSentToPrivateChatWindow = true;
+							return;
+						}
 				}
 
 				if ((_messageWasSentToPrivateChatWindow == false)&&(_autoPrivPattern.Length() > 0)) {
@@ -2572,7 +2576,6 @@ ShareWindow::LogMessage(LogMessageType type, const char * text, const char * opt
 	}
 
 	ChatWindow::LogMessage(type, text, optSessionID, optTextColor, isPersonal, optEchoTo);
-	_messageWasSentToPrivateChatWindow = false;
 }
 
 
