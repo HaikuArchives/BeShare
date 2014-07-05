@@ -1,5 +1,5 @@
 BeShare v2.30
-http://dev.osdrawer.net/projects/beshare
+http://haikuarchives.github.io/BeShare/
 ===================
 
 BeShare är ett fildelningsprogram. Det fungerar precis som alla andra 

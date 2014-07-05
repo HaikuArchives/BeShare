@@ -1,5 +1,5 @@
 BeShare v2.30
-http://dev.osdrawer.net/projects/beshare
+http://haikuarchives.github.io/BeShare/
 ==================
 
 Tradução Português-BR:

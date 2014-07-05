@@ -1,6 +1,5 @@
 BeShare v2.30
-http://dev.osdrawer.net/projects/beshare
-(hungarian documentation)
+http://haikuarchives.github.io/BeShare/
 =========================
 
 BeShare egy BeOS-re írt file-megosztó program. Más ilyen programokhoz
