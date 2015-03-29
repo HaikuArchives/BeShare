@@ -101,14 +101,14 @@ enum LogDestinationType {
 };
 
 // Sound names for the prefs panel
-#define SYSTEM_SOUND_USER_NAME_MENTIONED						"BeShare-Name Said"
-#define SYSTEM_SOUND_PRIVATE_MESSAGE_RECEIVED				 "BeShare-Private Msg"
-#define SYSTEM_SOUND_AUTOCOMPLETE_FAILURE					  "BeShare-NoComplete"
-#define SYSTEM_SOUND_DOWNLOAD_FINISHED						  "BeShare-DLFinished"
-#define SYSTEM_SOUND_UPLOAD_STARTED							  "BeShare-ULStarted"
-#define SYSTEM_SOUND_UPLOAD_FINISHED							 "BeShare-ULFinished"
-#define SYSTEM_SOUND_WATCHED_USER_SPEAKS						"BeShare-WatchedUser"
-#define SYSTEM_SOUND_PRIVATE_MESSAGE_WINDOW					"BeShare-PrivateWndw"
+#define SYSTEM_SOUND_USER_NAME_MENTIONED				"BeShare-Name Said"
+#define SYSTEM_SOUND_PRIVATE_MESSAGE_RECEIVED			"BeShare-Private Msg"
+#define SYSTEM_SOUND_AUTOCOMPLETE_FAILURE				"BeShare-NoComplete"
+#define SYSTEM_SOUND_DOWNLOAD_FINISHED					"BeShare-DLFinished"
+#define SYSTEM_SOUND_UPLOAD_STARTED						"BeShare-ULStarted"
+#define SYSTEM_SOUND_UPLOAD_FINISHED					"BeShare-ULFinished"
+#define SYSTEM_SOUND_WATCHED_USER_SPEAKS				"BeShare-WatchedUser"
+#define SYSTEM_SOUND_PRIVATE_MESSAGE_WINDOW				"BeShare-PrivateWndw"
 #define SYSTEM_SOUND_INACTIVE_CHAT_WINDOW_RECEIVED_TEXT	"BeShare-InactivChat"
 
 #define LIMIT_BANDWIDTH_COMMAND 'lbcc'
