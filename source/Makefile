@@ -84,20 +84,7 @@ SRCS= ChatWindow.cpp \
 		../muscle/util/String.cpp \
 		../muscle/util/SocketMultiplexer \
 		../muscle/zlib/ZLibCodec.cpp \
-		../muscle/zlib/ZLibUtilityFunctions.cpp \
-		../muscle/zlib/zlib/adler32.c \
-		../muscle/zlib/zlib/compress.c \
-		../muscle/zlib/zlib/crc32.c \
-		../muscle/zlib/zlib/deflate.c \
-		../muscle/zlib/zlib/gzlib.c \
-		../muscle/zlib/zlib/gzread.c \
-		../muscle/zlib/zlib/gzwrite \
-		../muscle/zlib/zlib/gzclose.c \
-		../muscle/zlib/zlib/trees.c \
-		../muscle/zlib/zlib/zutil.c \
-		../muscle/zlib/zlib/inflate.c \
-		../muscle/zlib/zlib/inftrees.c \
-		../muscle/zlib/zlib/inffast.c
+		../muscle/zlib/ZLibUtilityFunctions.cpp
 
 #	specify the resource definition files to use
 #	full path or a relative path to the resource file can be used.
@@ -129,7 +116,7 @@ RSRCS=
 #		naming scheme you need to specify the path to the library
 #		and it's name
 #		library: my_lib.a entry: my_lib.a or path/my_lib.a
-LIBS= be translation network santa $(STDCPPLIBS)
+LIBS= be translation network santa z $(STDCPPLIBS)
 
 #	specify additional paths to directories following the standard
 #	libXXX.so or libXXX.a naming scheme.  You can specify full paths
