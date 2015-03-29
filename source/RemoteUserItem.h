@@ -3,7 +3,7 @@
 
 #include "message/Message.h"
 
-#include "CLVEasyItem.h"
+#include <santa/CLVEasyItem.h>
 
 using namespace muscle;
 

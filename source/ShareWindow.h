@@ -16,8 +16,8 @@
 #include "message/Message.h"
 #include "besupport/BThread.h"
 
-#include "PrefilledBitmap.h"
-#include "CLVListItem.h"
+#include <santa/PrefilledBitmap.h>
+#include <santa/CLVListItem.h>
 
 #include "TransferListView.h"
 #include "ShareConstants.h"
@@ -55,7 +55,7 @@ public:
 
 	void PutUser(const char * sessionID, const char * userName, const char * hostName, int userPort, bool * isBot, uint64 installID, const char * client, bool * supportsPartialHash);
 	void RemoveUser(const char * sessionID);
-	
+
 	void PutResult(const char * sessionID, const char * fileName, bool isFirewalled, const MessageRef & fileInfo);
 	void RemoveResult(const char * sessionID, const char * fileName);
 
@@ -74,7 +74,7 @@ public:
 
 	// Returns a bitmap representing the icon of the given type, if any
 	const BBitmap * GetBitmap(const char * mimeType);
- 
+
 	// Given a session ID, returns the user name for that ID, or NULL if the user is unknown
 	const char * GetUserNameBySessionID(const char * sessionID) const;
 
@@ -91,7 +91,7 @@ public:
 	void SetUserStatus(const char * sessionID, const char * status);
 	void SetUserBandwidth(const char * sessionID, const char * label, uint32 bps);
 	void SetUserFileCount(const char * sessionID, int32 fileCount);
-	void SetUserIsFirewalled(const char * sessionID, bool firewalled); 
+	void SetUserIsFirewalled(const char * sessionID, bool firewalled);
 
 	// Tells the net client to send a message to another BeShare client, asking it
 	// to connect back to us.
@@ -125,8 +125,8 @@ public:
 	virtual void SendChatText(const String & text, ChatWindow * optEchoTo);
 
 	virtual bool ShowMessageTargets() const {return true;}
-	virtual bool ShowTimestamps(LogDestinationType d) const {return _filterItems[d][FILTER_TIMESTAMPS]->IsMarked();} 
-	virtual bool ShowUserIDs(LogDestinationType d) const {return _filterItems[d][FILTER_USER_IDS]->IsMarked();} 
+	virtual bool ShowTimestamps(LogDestinationType d) const {return _filterItems[d][FILTER_TIMESTAMPS]->IsMarked();}
+	virtual bool ShowUserIDs(LogDestinationType d) const {return _filterItems[d][FILTER_USER_IDS]->IsMarked();}
 	virtual bool OkayToLog(LogMessageType type, LogDestinationType dest, bool isPrivate) const;
 	virtual void UpdateColors();
 
@@ -193,7 +193,7 @@ public:
 	uint32 GetCompressionLevel() const {return _compressionLevel;}
 
 	// 'what' codes that are used internally by this class
-	enum 
+	enum
 	{
 		SHAREWINDOW_COMMAND_RECONNECT_TO_SERVER = '$win',
 		SHAREWINDOW_COMMAND_DISCONNECT_FROM_SERVER,
@@ -271,7 +271,7 @@ private:
 	static int UserCompareFunc(const CLVListItem* item1, const CLVListItem* item2, int32 sort_key);
 	int Compare(const RemoteFileItem * rf1, const RemoteFileItem * rf2, int32 sort_key) const;
 
-	friend class RemoteUserItem; 
+	friend class RemoteUserItem;
 	friend class RemoteFileItem;
 	friend class ShareColumn;
 	friend class ShareMIMEInfo;
@@ -357,11 +357,11 @@ private:
 	BMenuItem * _loginOnStartup;
 	BMenuItem * _retainFilePaths;
 	BMenuItem * _autoUpdateServers;
- 
+
 	BMenu * _attribMenu;
 
 	BMenuItem * _colorItem;
-					
+
 	ColumnListView * _resultsView;
 	ColumnListView * _usersView;
 
@@ -424,7 +424,7 @@ private:
 	void RestoreAttributesPreset(const BMessage & restoreMsg);
 
 	void ReconnectToServer();
- 
+
 	void DoAutoReconnect();
 	void ResetAutoReconnectState(bool resetCountToo);
 
@@ -501,10 +501,10 @@ private:
 	Queue<String> _onLoginStrings;
 	String _onIdleString;
 	bool _idleSendPending;
- 
+
 	Hashtable<uint32, uint64> _bans;  // users who may not d/l from us
 	Hashtable<String, String> _aliases;
-  
+
 	bool _showServerStatus;
 	uint64 _installID;	  // used to identify this user between sessions
 

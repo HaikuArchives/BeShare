@@ -15,7 +15,7 @@
 #include "regex/StringMatcher.h"
 #include "util/StringTokenizer.h"
 
-#include "Colors.h"
+#include <santa/Colors.h>
 
 #include "ShareUtils.h"
 #include "ShareStrings.h"
@@ -30,7 +30,7 @@ namespace beshare {
 #define TEXT_ENTRY_HEIGHT 20
 
 // All of our colors
-static rgb_color _defaultColors[NUM_COLORS] = { 
+static rgb_color _defaultColors[NUM_COLORS] = {
 	{ 255, 255, 255, 255 }, // COLOR_BG
 	{ 245, 255, 255, 255 }, // COLOR_SCROLLBG
 	{ 216, 216, 216, 255 }, // COLOR_BORDERS
@@ -51,7 +51,7 @@ static rgb_color _defaultColors[NUM_COLORS] = {
 	{ 255, 216, 216, 255 }, // COLOR_UPLOAD
 	{ 216, 255, 216, 255 }  // COLOR_PAUSEDUPLOAD
 };
-											 
+
 
 ChatWindow::ChatWindow(BRect defRect, const char * title, window_look look, window_feel feel, uint32 flags)
 	:
@@ -82,11 +82,11 @@ ChatWindow :: ~ChatWindow()
 }
 
 const
-rgb_color& ChatWindow :: 
+rgb_color& ChatWindow ::
 GetColor(uint32 which, int forceDelta) const
 {
 	bool useDefault = (_customColorsEnabled == false);
-	
+
 	if (forceDelta < 0)
 		useDefault = false;
 	else if (forceDelta > 0)
@@ -190,7 +190,7 @@ void ChatWindow::MessageReceived(BMessage * msg)
 			}
 			UpdateColors();
 		}
-		break;			
+		break;
 
 		case CHATWINDOW_COMMAND_UPDATE_COLORS:
 			UpdateColors();
@@ -199,7 +199,7 @@ void ChatWindow::MessageReceived(BMessage * msg)
 		case CHATWINDOW_COMMAND_INVALIDATE_TEXT_VIEW:
 			_chatText->Invalidate();	// thats it...
 		break;
-		
+
 		case CHATWINDOW_COMMAND_SET_CUSTOM_TITLE:
 		{
 			const char * title;
@@ -238,13 +238,13 @@ void ChatWindow::MessageReceived(BMessage * msg)
 					_chatHistory.AddTail(text);
 					if (_chatHistory.GetNumItems() > CHAT_HISTORY_LENGTH) _chatHistory.RemoveHead();
 				}
-				_chatHistoryPosition = -1;  // reset to bottom of list for next time							 
+				_chatHistoryPosition = -1;  // reset to bottom of list for next time
 				SendChatText(text, this);
 			}
 			_textEntry->SetText("");
 			break;
 		}
-		
+
 		default:
 			BWindow::MessageReceived(msg);
 		break;
@@ -252,10 +252,10 @@ void ChatWindow::MessageReceived(BMessage * msg)
 }
 
 
-void 
+void
 ChatWindow::ChatTextReceivedBeep(bool isPersonal, bool mentionsName)
 {
-	if ((isPersonal)||(mentionsName)) 
+	if ((isPersonal)||(mentionsName))
 		DoBeep(isPersonal ? SYSTEM_SOUND_PRIVATE_MESSAGE_RECEIVED : SYSTEM_SOUND_USER_NAME_MENTIONED);
 }
 
@@ -263,7 +263,7 @@ ChatWindow::ChatTextReceivedBeep(bool isPersonal, bool mentionsName)
 void
 ChatWindow::LogMessage(LogMessageType type, const char * inText, const char * optSessionID, const rgb_color * inOptTextColor, bool isPersonal, ChatWindow * optEchoTo)
 {
-	if ((optEchoTo)&&(optEchoTo != this)) {  
+	if ((optEchoTo)&&(optEchoTo != this)) {
 		optEchoTo->LogMessage(type, inText, optSessionID, inOptTextColor, isPersonal, NULL);
 		return;
 	}
@@ -273,13 +273,13 @@ ChatWindow::LogMessage(LogMessageType type, const char * inText, const char * op
 		const rgb_color * optTextColor = inOptTextColor;
 
 		if (OkayToLog(type, d, isPersonal)) {
-			const char * preamble = "???"; 
+			const char * preamble = "???";
 			const rgb_color & textColor = GetColor(COLOR_TEXT);
 			rgb_color color = GetColor(COLOR_TEXT);
 			String temp;
 			int startRed = -1;
 			int redLen = 0;
-			
+
 			if (optTextColor == NULL) optTextColor = &textColor;
 
 			switch(type)
@@ -304,7 +304,7 @@ ChatWindow::LogMessage(LogMessageType type, const char * inText, const char * op
 				case LOG_LOCAL_USER_CHAT_MESSAGE:
 					if ((strncmp(text, "/me ", 4) == 0)||(strncmp(text, "/me\'", 4) == 0)) {
 						preamble = str(STR_ACTION);
-						
+
 						GetLocalUserName(temp);
 						temp += &text[3];
 						text = temp();
@@ -325,7 +325,7 @@ ChatWindow::LogMessage(LogMessageType type, const char * inText, const char * op
 							temp += optSessionID;
 							temp += " / ";
 							GetUserNameForSession(optSessionID, t2);
-							temp += t2; 
+							temp += t2;
 							temp += ") ";
 						}
 						preamble = temp();
@@ -378,15 +378,15 @@ ChatWindow::LogMessage(LogMessageType type, const char * inText, const char * op
 								(*temp == '_')||
 								(*temp >= 0x80)) temp++;
 						if (temp > orig) shortName = shortName.Substring(0, temp-orig);
-						 
+
 						String iText(text);
 						iText = iText.ToUpperCase();
 						shortName = shortName.ToUpperCase();
 						startRed = iText.IndexOf(shortName.Prepend(" "));  // only counts if it's the start of a word!
-						
+
 						if (startRed >= 0) startRed++;
 										  else startRed = (iText.StartsWith(shortName)) ? 0 : -1;  // or if it's the start of text
-						if (startRed >= 0) 
+						if (startRed >= 0)
 						{
 							redLen = shortName.Length();
 
@@ -402,7 +402,7 @@ ChatWindow::LogMessage(LogMessageType type, const char * inText, const char * op
 								// See if we can't extend the red back out to the original name length....
 								String temp;
 								GetLocalUserName(temp);
-								temp = temp.ToUpperCase(); 
+								temp = temp.ToUpperCase();
 								const char * c1 = &iText()[startRed+redLen];
 								const char * c2 = &temp()[redLen];
 								while((c1)&&(c2)&&(*c1 == *c2))
@@ -484,7 +484,7 @@ ChatWindow::ScrollToTop()
 {
 	if (_isScrolling)
 		return;
-	
+
 	BScrollBar * sb = _chatScrollView->ScrollBar(B_VERTICAL);
 	if (sb) {
 		float min, max;
@@ -577,7 +577,7 @@ ChatWindow::InsertChatText(LogDestinationType dest, const char * t, int textLen,
 					{
 						int32 rbIndex = FindMatchingBracket(next, inLabelCount);
 						if (rbIndex >= 0) labels.Tail() += next.Substring(0, rbIndex);
-						else 
+						else
 						{
 							labels.Tail() += next;
 							labels.Tail() += ' ';
@@ -597,11 +597,11 @@ ChatWindow::InsertChatText(LogDestinationType dest, const char * t, int textLen,
 						inLabelCount++;
 						String s = next.Substring(1);
 						int rbIndex = FindMatchingBracket(s, inLabelCount);
-						if (rbIndex >= 0) 
+						if (rbIndex >= 0)
 						{
 							labels.Tail() = s.Substring(0, rbIndex);
 						}
-						else 
+						else
 						{
 							labels.Tail() += s;
 							labels.Tail() += ' ';
@@ -658,7 +658,7 @@ ChatWindow::InsertChatText(LogDestinationType dest, const char * t, int textLen,
 			else InsertChatTextAux(t, textLen, optStyle);
 		}
 		break;
- 
+
 		case DESTINATION_LOG_FILE:
 		{
 			if (_logFile == NULL)
@@ -674,7 +674,7 @@ ChatWindow::InsertChatText(LogDestinationType dest, const char * t, int textLen,
 					_logFile = fopen(path.Path(), "w+");
 				}
 			}
-			if (_logFile) 
+			if (_logFile)
 			{
 				String temp(t);
 				if (textLen < (int)temp.Length()) temp = temp.Substring(0, textLen);
@@ -715,9 +715,9 @@ ChatWindow :: InsertDroppedText(const char * u)
 	int32 tl = tv->TextLength();
 	tv->Select(tl, tl);
 }
- 
 
-void 
+
+void
 ChatWindow::DispatchMessage(BMessage * msg, BHandler * target)
 {
 	switch(msg->what)
@@ -729,13 +729,13 @@ ChatWindow::DispatchMessage(BMessage * msg, BHandler * target)
 			if ((msg->FindInt8("byte", &c) == B_NO_ERROR)&&(msg->FindInt32("modifiers", &mod) == B_NO_ERROR)&&((c == B_ENTER)||((mod & B_LEFT_COMMAND_KEY) == 0)))
 			{
 				BTextView * tv = dynamic_cast<BTextView *>(target);
-				
+
 				if ((tv)&&(tv->IsEditable()))
 				{
-					if (tv == _textEntry->TextView()) 
+					if (tv == _textEntry->TextView())
 					{
 						UserChatted();
-						if (c == B_ENTER) 
+						if (c == B_ENTER)
 						{
 							PostMessage(CHATWINDOW_COMMAND_SEND_CHAT_TEXT);
 							ScrollToBottom();
@@ -754,13 +754,13 @@ ChatWindow::DispatchMessage(BMessage * msg, BHandler * target)
 
 						msg = NULL;  // don't do anything further with the message!
 					}
-					else 
+					else
 					{
 						int lineDiff = 0;
 						float scrollDiff = 0.0; // for scrolling the chat-window, like in Terminal - added by Hugh
 						float scrollLine = _chatText->LineHeight();
 						float scrollPage = _chatText->Bounds().Height() - scrollLine;  // scroll one line less for better orientation
-						
+
 						switch(c)
 						{
 							case B_UP_ARROW:
@@ -801,7 +801,7 @@ ChatWindow::DispatchMessage(BMessage * msg, BHandler * target)
 								}
 							break;
 						}
-								
+
 						if ((lineDiff)&&(_chatHistory.GetNumItems() > 0))
 						{
 							int numItems = _chatHistory.GetNumItems();
@@ -815,7 +815,7 @@ ChatWindow::DispatchMessage(BMessage * msg, BHandler * target)
 							{
 								_chatHistoryPosition += lineDiff;
 								if (_chatHistoryPosition < 0) _chatHistoryPosition = 0;
-								if (_chatHistoryPosition >= numItems) 
+								if (_chatHistoryPosition >= numItems)
 								{
 									_chatHistoryPosition = -1;
 									_textEntry->SetText("");
@@ -832,7 +832,7 @@ ChatWindow::DispatchMessage(BMessage * msg, BHandler * target)
 						else if (scrollDiff)
 						{
 							// check bounds
-							float view_y = _chatText->Bounds().top;					
+							float view_y = _chatText->Bounds().top;
 							float max_y  = _chatText->TextRect().bottom - _chatText->Bounds().Height();
 
 							view_y += scrollDiff;	// move view
@@ -882,7 +882,7 @@ ChatWindow::DispatchMessage(BMessage * msg, BHandler * target)
 					// If there is a beshare-specific string, use that instead
 					String temp;
 					const char * bu;
-					if (tempMsg->FindString("beshare:link", &bu) == B_NO_ERROR) 
+					if (tempMsg->FindString("beshare:link", &bu) == B_NO_ERROR)
 					{
 						u = bu;
 						const char * hr;
@@ -896,11 +896,11 @@ ChatWindow::DispatchMessage(BMessage * msg, BHandler * target)
 							u = temp();
 						}
 					}
-	
+
 					InsertDroppedText(u);
 					msg = NULL;  // don't pass to superclass!
 				}
-	
+
 				String linkStr, humanReadableNames, atName;
 				entry_ref ref;
 				for (int32 i=0; tempMsg->FindRef("refs", i, &ref) == B_NO_ERROR; i++)
@@ -910,12 +910,12 @@ ChatWindow::DispatchMessage(BMessage * msg, BHandler * target)
 						case 0:  linkStr += "beshare:"; break;
 						default: linkStr += ',';		  break;
 					}
-	
+
 					String next = ref.name;
 					if (humanReadableNames.Length() > 0) humanReadableNames += ", ";
 					humanReadableNames += next;
 					next.Replace('@', '?');  // @ signs would confuse us!
-					next = GetQualifiedSharedFileName(ref.name); 
+					next = GetQualifiedSharedFileName(ref.name);
 					int32 atIdx = next.IndexOf('@');
 					if (atIdx >= 0)
 					{
@@ -955,7 +955,7 @@ ChatWindow::DispatchMessage(BMessage * msg, BHandler * target)
 }
 
 
-void 
+void
 ChatWindow::SetCommandURLTarget(const BMessenger & target, const BMessage & queryMsg, const BMessage & privMsg)
 {
 	BMessage setQueryTarget(CHATWINDOW_COMMAND_SET_COMMAND_TARGET);
@@ -981,13 +981,13 @@ ChatWindow::UserChatted()
 
 
 bool
-ChatWindow::IsScrollBarNearBottom() const 
+ChatWindow::IsScrollBarNearBottom() const
 {
 	bool scrollDown = false;
 	if (_chatScrollView)
 	{
 		BScrollBar * sb = _chatScrollView->ScrollBar(B_VERTICAL);
-		if (sb) 
+		if (sb)
 		{
 			float min, max, smallStep, bigStep;
 			sb->GetRange(&min, &max);
@@ -1026,19 +1026,19 @@ ChatWindow::SetFont(const String & fontString, bool doLog)
 	{
 		String useFamily, useStyle;
 		int32 which = -1;
-		int32 numFamilies = count_font_families(); 
-		for (int32 i=0; i<numFamilies; i++) 
+		int32 numFamilies = count_font_families();
+		for (int32 i=0; i<numFamilies; i++)
 		{
-			font_family family; 
-			uint32 flags; 
-			if (get_font_family(i, &family, &flags) == B_NO_ERROR) 
-			{ 
+			font_family family;
+			uint32 flags;
+			if (get_font_family(i, &family, &flags) == B_NO_ERROR)
+			{
 				if (count_font_styles(family) > 0)
 				{
-					String fStr(family); 
+					String fStr(family);
 					if (fStr.IndexOfIgnoreCase(fs) >= 0)
 					{
-						font_style style; 
+						font_style style;
 						if (get_font_style(family, 0, &style, &flags) == B_NO_ERROR)
 						{
 							which = i;
@@ -1057,7 +1057,7 @@ ChatWindow::SetFont(const String & fontString, bool doLog)
 			_customBoldFont = *be_bold_font;
 			_customBoldFont.SetFamilyAndStyle(useFamily(), "Bold");
 			_fontName = useFamily;
-			if (doLog) 
+			if (doLog)
 			{
 				String s(str(STR_FONT_SET_TO));
 				s += ' ';
@@ -1065,7 +1065,7 @@ ChatWindow::SetFont(const String & fontString, bool doLog)
 				LogMessage(LOG_INFORMATION_MESSAGE, s(), NULL, NULL, false, this);
 			}
 		}
-		else if (doLog) 
+		else if (doLog)
 		{
 			String s = str(STR_COULDNT_FIND_FONT);
 			s += ": ";
@@ -1073,7 +1073,7 @@ ChatWindow::SetFont(const String & fontString, bool doLog)
 			LogMessage(LOG_ERROR_MESSAGE, s(), NULL, NULL, false, this);
 		}
 	}
-	else 
+	else
 	{
 		_fontName = "";
 		if (doLog) LogMessage(LOG_INFORMATION_MESSAGE, str(STR_FONT_RESET_TO_DEFAULT), NULL, NULL, false, this);
@@ -1133,7 +1133,7 @@ ChatWindow::UpdateTextViewColors(BTextView * view)
 
 
 void
-ChatWindow::SetColor(uint32 which, const rgb_color & c) 
+ChatWindow::SetColor(uint32 which, const rgb_color & c)
 {
 	_colors[which] = c;
 	if ((c.red == 0)&&(c.green == 0)&&(c.blue == 0)) _colors[which].green = 1; // if I don't put this, the text doesn't show up???
@@ -1141,16 +1141,12 @@ ChatWindow::SetColor(uint32 which, const rgb_color & c)
 
 
 void
-ChatWindow::UpdateColumnListViewColors(ColumnListView * view) 
+ChatWindow::UpdateColumnListViewColors(ColumnListView * view)
 {
-	if ((ColorsDiffer(view->TextColor(), GetColor(COLOR_TEXT)))||
-		 (ColorsDiffer(view->BgColor(),	GetColor(COLOR_BG)))||
-		 (ColorsDiffer(view->ViewColor(), GetColor(COLOR_BG)))||
+	if ((ColorsDiffer(view->ViewColor(), GetColor(COLOR_BG)))||
 		 (ColorsDiffer(view->ItemSelectColor(true), GetColor(COLOR_SELECTION)))||
 		 (ColorsDiffer(view->ItemSelectColor(false), GetColor(COLOR_SELECTION))))
 	{
-		view->SetTextColor(GetColor(COLOR_TEXT));
-		view->SetBgColor(GetColor(COLOR_BG));
 		view->SetViewColor(GetColor(COLOR_BG));
 		view->SetItemSelectColor(true, GetColor(COLOR_SELECTION));
 		view->SetItemSelectColor(false, GetColor(COLOR_SELECTION));
@@ -1216,7 +1212,7 @@ ChatWindow::ReadyToRun()
 
 	_textEntry->TextView()->AddFilter(new PasteMessageFilter(CHATWINDOW_COMMAND_SEND_CHAT_TEXT, _textEntry));
 	_textEntry->SetDivider(_textEntry->StringWidth(chat())+4.0f);
-			
+
 	BLayoutBuilder::Group<>(GetChatView(), B_VERTICAL, B_USE_HALF_ITEM_SPACING)
 		.SetInsets(0, 0, 0, 0)
 		.Add(_chatScrollView)

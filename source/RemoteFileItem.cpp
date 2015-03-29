@@ -6,14 +6,14 @@
 #include "RemoteUserItem.h"
 
 #include "ShareWindow.h"
-#include "ColumnListView.h"
 
-#include "CLVListItem.h"
+#include <santa/ColumnListView.h>
+#include <santa/CLVListItem.h>
 
 namespace beshare {
 
 RemoteFileItem::RemoteFileItem(RemoteUserItem* owner, const char* fileName, const MessageRef& attrs)
-  : 
+  :
   CLVListItem(0, false, false, 18.0f),
   _owner(owner),
   _fileName(fileName),
@@ -33,9 +33,10 @@ void
 RemoteFileItem::DrawItemColumn(BView * clv, BRect itemRect, int32 colIdx, bool complete)
 {
 	bool selected = IsSelected();
-	rgb_color color = (selected) ? ((ColumnListView*)clv)->ItemSelectColor() : ((ColumnListView *)clv)->BgColor();
+	rgb_color color = (selected) ? ((ColumnListView*)clv)->ItemSelectColor()
+		: _owner->GetShareWindow()->GetColor(COLOR_BG);
 	clv->SetLowColor(color);
-	
+
 	if ((selected) || (complete)) {
 		clv->SetHighColor(color);
 		clv->FillRect(itemRect);
@@ -45,16 +46,16 @@ RemoteFileItem::DrawItemColumn(BView * clv, BRect itemRect, int32 colIdx, bool c
 		BRegion Region;
 		Region.Include(itemRect);
 		clv->ConstrainClippingRegion(&Region);
-		clv->SetHighColor(((ColumnListView *)clv)->TextColor());
+		clv->SetHighColor(_owner->GetShareWindow()->GetColor(COLOR_TEXT));
 		const char* text = _owner->GetShareWindow()->GetFileCellText(this, colIdx);
-		
+
 		if (text)
 			clv->DrawString(text, BPoint(itemRect.left+2.0,itemRect.top+_textOffset));
-		
+
 		clv->ConstrainClippingRegion(NULL);
 	} else if (colIdx == 0) {
 		const BBitmap* bmp = _owner->GetShareWindow()->GetBitmap(this, colIdx);
-		
+
 		if (bmp) {
 			clv->SetDrawingMode(B_OP_OVER);
 			clv->DrawBitmap(bmp, BPoint(itemRect.left + ((itemRect.Width()-bmp->Bounds().Width())/2.0f), itemRect.top+((itemRect.Height()-bmp->Bounds().Height())/2.0f)));

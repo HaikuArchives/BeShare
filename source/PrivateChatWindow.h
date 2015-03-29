@@ -7,8 +7,9 @@
 #include <Message.h>
 #include <Handler.h>
 
-#include "CLVListItem.h"
-#include "ColumnListView.h"
+#include <santa/CLVListItem.h>
+#include <santa/ColumnListView.h>
+
 #include "ShareWindow.h"
 
 namespace beshare {
@@ -47,13 +48,13 @@ protected:
 	virtual void GetLocalUserName(String & retLocalUserName) const;
 	virtual void GetLocalSessionID(String & retLocalSessionID) const;
 	virtual status_t ExpandAlias(const String & str, String & ret) const;
-	
+
 	virtual void SendChatText(const String & text, ChatWindow * optEchoTo);
 	virtual BView * GetChatView() const {return _chatView;}
 	virtual String GetQualifiedSharedFileName(const String & name) const;
 	virtual void ChatTextReceivedBeep(bool isPersonal, bool mentionsName);
 	virtual const char * GetLogFileNamePrefix() const {return "Private";}
-	
+
 private:
 	static int CompareFunc(const CLVListItem * i1, const CLVListItem * i2, int32 sortKey);
 

@@ -3,10 +3,10 @@
 #include <Screen.h>
 #include <PopUpMenu.h>
 #include <File.h>
-#include <Path.h>	 
-#include <FindDirectory.h>	 
-#include <NodeMonitor.h>	 
-#include <Resources.h>	 
+#include <Path.h>
+#include <FindDirectory.h>
+#include <NodeMonitor.h>
+#include <Resources.h>
 #include <Beep.h>
 #include <BitmapStream.h>
 #include <TranslationUtils.h>
@@ -16,8 +16,8 @@
 #include <MenuBar.h>
 #include <Roster.h>
 
-#include "CLVColumnLabelView.h"
-#include "CLVColumn.h"
+#include <santa/CLVColumnLabelView.h>
+#include <santa/CLVColumn.h>
 
 #include "util/StringTokenizer.h"
 #include "util/Socket.h"
@@ -51,7 +51,7 @@ namespace beshare {
 // Any servers in this list will *always* be added to the server menu on startup.
 // Most servers need not be listed here, as the auto-server-updater-thingy will
 // add them at run time based on the servers.txt file it downloads
-static const char * _defaultServers[] = 
+static const char * _defaultServers[] =
 {
 #ifdef DEBUG_BESHARE
 	"localhost:2960",	// For develop..
@@ -70,9 +70,9 @@ static const char * _defaultServers[] =
 
 // Default window position
 #define WINDOW_START_X 30
-#define WINDOW_START_Y 50		 
+#define WINDOW_START_Y 50
 #define WINDOW_START_W 775
-#define WINDOW_START_H 430		 
+#define WINDOW_START_H 430
 
 // Size constants for the non-resizable parts of the GUI
 #define USER_LIST_WIDTH		125
@@ -114,7 +114,7 @@ static uint8 DefaultData[256] =
 
 static const BRect defaultPrivateRect(100,300,500,475);
 
-ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * connectServer) 
+ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * connectServer)
 	:
 	ChatWindow(
 		BRect(WINDOW_START_X, WINDOW_START_Y, WINDOW_START_X + WINDOW_START_W, WINDOW_START_Y + WINDOW_START_H)
@@ -175,7 +175,7 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 	#if DEBUG_BESHARE
 		//PrintLanguage();
 	#endif
-	
+
 	font_height plainFontAttrs;
 	be_plain_font->GetHeight(&plainFontAttrs);
 
@@ -190,7 +190,7 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 
 	bool cce;
 	SetCustomColorsEnabled((settingsMsg.FindBool("customcolors", &cce) == B_NO_ERROR) ? cce : true);
-	
+
 	(void) settingsMsg.FindInt32("maxdownloadrate", (int32*)&_maxDownloadRate);
 	(void) settingsMsg.FindInt32("maxuploadrate",	(int32*)&_maxUploadRate);
 
@@ -205,9 +205,9 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 			_languageSet = true;
 		}
 	}
-	
+
 	SetLanguage(_language);	// always call this!
-	
+
 	float tempFloat;
 	if (settingsMsg.FindFloat("fontsize", &tempFloat) == B_NO_ERROR)
 		SetFontSize(tempFloat);
@@ -221,10 +221,10 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 			BScreen s;
 			screenBounds = s.Frame();
 		}
-		
+
 		if (pos.left > screenBounds.Width())
 			pos.left = WINDOW_START_X;
-		
+
 		if (pos.top > screenBounds.Height())
 			pos.top = WINDOW_START_Y;
 
@@ -240,7 +240,7 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 	const char * pat;
 	if (settingsMsg.FindString("watchpattern", &pat) == B_NO_ERROR)
 		_watchPattern = pat;
-	
+
 	if (settingsMsg.FindString("autoprivpattern", &pat) == B_NO_ERROR)
 		_autoPrivPattern = pat;
 
@@ -271,7 +271,7 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 	// Try a few "well-known" ports first, if we can't get any of them, dynamically allocate one
 	{
 		for (uint16 i = DEFAULT_LISTEN_PORT; i <= DEFAULT_LISTEN_PORT + LISTEN_PORT_RANGE; i++) {
-			uint16 port = (i<DEFAULT_LISTEN_PORT+LISTEN_PORT_RANGE)?i:0; 
+			uint16 port = (i<DEFAULT_LISTEN_PORT+LISTEN_PORT_RANGE)?i:0;
 			if ((_acceptThread.SetPort(port) == B_NO_ERROR)&&(_acceptThread.StartInternalThread() == B_NO_ERROR))
 				break;	// okay to go!
 		}
@@ -281,7 +281,7 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 	const char * aliasName;
 	const char * aliasValue;
 	for (int i = 0; ((settingsMsg.FindString("aliasname", i, &aliasName) == B_NO_ERROR)
-		&& (settingsMsg.FindString("aliasvalue", i, &aliasValue) == B_NO_ERROR)); i++) 
+		&& (settingsMsg.FindString("aliasvalue", i, &aliasValue) == B_NO_ERROR)); i++)
 		_aliases.Put(aliasName, aliasValue);
 
 	// Recall any bans we had in effect
@@ -312,7 +312,7 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 	fileMenu->AddItem(new BSeparatorItem);
 
 
-	fileMenu->AddItem(new BMenuItem(str(STR_OPEN_PRIVATE_CHAT_WINDOW), new BMessage(SHAREWINDOW_COMMAND_OPEN_PRIVATE_CHAT_WINDOW), shortcut(SHORTCUT_OPEN_PRIVATE_CHAT_WINDOW)));		 
+	fileMenu->AddItem(new BMenuItem(str(STR_OPEN_PRIVATE_CHAT_WINDOW), new BMessage(SHAREWINDOW_COMMAND_OPEN_PRIVATE_CHAT_WINDOW), shortcut(SHORTCUT_OPEN_PRIVATE_CHAT_WINDOW)));
 
 	fileMenu->AddItem(new BMenuItem(str(STR_CLEAR_CHAT_LOG), new BMessage(SHAREWINDOW_COMMAND_CLEAR_CHAT_LOG), shortcut(SHORTCUT_CLEAR_CHAT_LOG)));
 	fileMenu->AddItem(new BMenuItem(str(STR_RESET_LAYOUT), new BMessage(SHAREWINDOW_COMMAND_RESET_LAYOUT), shortcut(SHORTCUT_RESET_LAYOUT)));
@@ -335,7 +335,7 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 			savePresets->AddItem(CreatePresetItem(SHAREWINDOW_COMMAND_SAVE_ATTRIBUTE_PRESET, which, true, true));
 			restorePresets->AddItem(_restorePresets[which] = CreatePresetItem(SHAREWINDOW_COMMAND_RESTORE_ATTRIBUTE_PRESET, which, (_attribPresets[which].what > 0), false));
 		}
-		
+
 		_attribMenu->AddItem(savePresets);
 		_attribMenu->AddItem(restorePresets);
 		_attribMenu->AddSeparatorItem();
@@ -360,7 +360,7 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 	int32 bw;
 	if (settingsMsg.FindInt32("bandwidth", &bw) == B_NO_ERROR)
 		_uploadBandwidth = bw;
-	
+
 	AddBandwidthOption(bMenu, "300 baud",			75);
 	AddBandwidthOption(bMenu, "14.4 kbps",		14400);
 	AddBandwidthOption(bMenu, "28.8 kbps",		28800);
@@ -384,7 +384,7 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 	_toggleFileLogging->SetMarked((settingsMsg.FindBool("filelogging", &lu) == B_NO_ERROR) ? lu : false);
 	filterMenus[DESTINATION_LOG_FILE]->AddItem(_toggleFileLogging);
 	filterMenus[DESTINATION_LOG_FILE]->AddSeparatorItem();
- 
+
 	for (int f = 0; f < NUM_DESTINATIONS; f++) {
 		char filterSaveName[32];
 		sprintf(filterSaveName, "chatfilter%i", f);
@@ -394,7 +394,7 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 			mi->SetMarked((settingsMsg.FindBool(filterSaveName, g, &lu) == B_NO_ERROR) ? lu : ((f != DESTINATION_DISPLAY)||(g != FILTER_TIMESTAMPS)));
 			filterMenus[f]->AddItem(mi);
 	 	}
-		
+
 		settingsMenu->AddItem(filterMenus[f]);
 	}
 
@@ -406,10 +406,10 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 		BMessage * lmsg = new BMessage(SHAREWINDOW_COMMAND_SELECT_LANGUAGE);
 		lmsg->AddInt32("language", l);
 		BMenuItem * nextLMenu = new BMenuItem(GetLanguageName(l, true), lmsg);
-		
+
 		if (l == _language)
 			nextLMenu->SetMarked(true);
-		
+
 		langMenu->AddItem(nextLMenu);
 	}
 
@@ -419,26 +419,26 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 		BMenu * pageSizeMenu = new BMenu(str(STR_RESULTS_PER_PAGE));
 		pageSizeMenu->SetRadioMode(true);
 		uint32 pageSizes[] = {500, 1000, 2000, 3000, 5000, 8000, 10000, 100000};
-		
+
 		for (size_t p = 0; p < ARRAYITEMS(pageSizes); p++) {
 			ps = pageSizes[p];
 			BMessage * pmsg = new BMessage(SHAREWINDOW_COMMAND_SET_PAGE_SIZE);
 			pmsg->AddInt32("pagesize", ps);
 			char temp[64];
-			
+
 			if (ps >= 1000)
 				sprintf(temp, "%lu,000", ps/1000);
 			else
 				sprintf(temp, "%lu",	 ps);
-		
+
 			BMenuItem * nextPMenu = new BMenuItem(temp, pmsg);
-		
+
 			if (ps == _pageSize)
 				nextPMenu->SetMarked(true);
-		
+
 			pageSizeMenu->AddItem(nextPMenu);
 		}
-	
+
 		settingsMenu->AddItem(pageSizeMenu);
 	}
 
@@ -456,18 +456,18 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 			away = awayTimes[p];
 			BMessage * amsg = new BMessage(SHAREWINDOW_COMMAND_SET_AUTO_AWAY);
 			amsg->AddInt32("autoaway", away);
-			
+
 			char temp[64];
 			if (away > 0)
 				sprintf(temp, "%lu %s", away, str(STR_MINUTES));
 			else
 				strcpy(temp, str(STR_DISABLED));
-		
+
 			BMenuItem * nextAMenu = new BMenuItem(temp, amsg);
-			
+
 			if (away == _idleTimeoutMinutes)
 				nextAMenu->SetMarked(true);
-			
+
 			autoAwayMenu->AddItem(nextAMenu);
 		}
 		settingsMenu->AddItem(autoAwayMenu);
@@ -475,7 +475,7 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 
 	{
 		int32 compLevel;
-		
+
 		if (settingsMsg.FindInt32("complevel", &compLevel) == B_NO_ERROR)
 			_compressionLevel = compLevel;
 
@@ -487,10 +487,10 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 			BMessage * cmsg = new BMessage(SHAREWINDOW_COMMAND_SET_COMPRESSION_LEVEL);
 			cmsg->AddInt32("complevel", compLevels[i]);
 			BMenuItem * nextCMenu = new BMenuItem(str(compLabels[i]), cmsg);
-		
+
 			if (compLevels[i] == _compressionLevel)
 				nextCMenu->SetMarked(true);
-			
+
 			dataCompMenu->AddItem(nextCMenu);
 	 	}
 		settingsMenu->AddItem(dataCompMenu);
@@ -501,7 +501,7 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 		_onLoginStrings.AddTail(onLogin);
 
 	_fullUserQueries = new BMenuItem(str(STR_FULL_USER_QUERIES), new BMessage(SHAREWINDOW_COMMAND_TOGGLE_FULL_USER_QUERIES), shortcut(SHORTCUT_FULL_USER_QUERIES));
-	_fullUserQueries->SetMarked((settingsMsg.FindBool("fulluserqueries", &lu) == B_NO_ERROR) ? lu : true); 
+	_fullUserQueries->SetMarked((settingsMsg.FindBool("fulluserqueries", &lu) == B_NO_ERROR) ? lu : true);
 	settingsMenu->AddItem(_fullUserQueries);
 
 	_sharingEnabled = new BMenuItem(str(STR_FILE_SHARING_ENABLED), new BMessage(SHAREWINDOW_COMMAND_TOGGLE_FILE_SHARING_ENABLED), shortcut(SHORTCUT_FILE_SHARING_ENABLED));
@@ -509,7 +509,7 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 	settingsMenu->AddItem(_sharingEnabled);
 
 	_shortestUploadsFirst = new BMenuItem(str(STR_SHORTEST_UPLOADS_FIRST), new BMessage(SHAREWINDOW_COMMAND_TOGGLE_SHORTEST_UPLOADS_FIRST));
-	_shortestUploadsFirst->SetMarked((settingsMsg.FindBool("shortestfirst", &lu) == B_NO_ERROR) ? lu : true); 
+	_shortestUploadsFirst->SetMarked((settingsMsg.FindBool("shortestfirst", &lu) == B_NO_ERROR) ? lu : true);
 	settingsMenu->AddItem(_shortestUploadsFirst);
 
 	_autoClearCompletedDownloads = new BMenuItem(str(STR_AUTOCLEAR_COMPLETED_DOWNLOADS), new BMessage(SHAREWINDOW_COMMAND_TOGGLE_AUTOCLEAR_COMPLETED_DOWNLOADS), 0);
@@ -530,7 +530,7 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 	String setColorsString = str(STR_SET_COLORS); setColorsString += B_UTF8_ELLIPSIS;
 	_colorItem = new BMenuItem(setColorsString(), new BMessage(SHAREWINDOW_COMMAND_SHOW_COLOR_PICKER));
 	settingsMenu->AddItem(_colorItem);
-	
+
 	settingsMenu->AddItem(new BSeparatorItem);
 
 	_autoUpdateServers = new BMenuItem(str(STR_AUTOUPDATE_SERVER_LIST), new BMessage(SHAREWINDOW_COMMAND_TOGGLE_AUTOUPDATE_SERVER_LIST), 0);
@@ -542,7 +542,7 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 	_firewalled = new BMenuItem(str(STR_IM_FIREWALLED), new BMessage(SHAREWINDOW_COMMAND_TOGGLE_FIREWALLED));
 
 	settingsMenu->AddItem(_firewalled);
-	
+
 	/*************************************************
 	 * First splitter node: queries, file transfers, etc.
 	 ******************************************************/
@@ -567,7 +567,7 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 		msg->AddString("query", listQuery);
 		_queryMenu->AddItem(new BMenuItem(listQuery, msg));
 	}
-	
+
 	// Fill out the Server menu and text control
 	_serverMenu = new BMenu(str(STR_SERVER));
 	_serverMenuField = new BMenuField(NULL, NULL, _serverMenu);
@@ -589,11 +589,11 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 
 	if (settingsMsg.FindString("server", &sn) == B_NO_ERROR)
 		firstName = sn;
-			
+
 	_serverEntry = new BTextControl(NULL, NULL, firstName, new BMessage(SHAREWINDOW_COMMAND_USER_CHANGED_SERVER));
 	_serverEntry->SetTarget(toMe);
 	_serverEntry->SetDivider(0.0f);
-	
+
 	// Fill out the UserName menu and text control
 	_userNameMenu = new BMenu(str(STR_USER_NAME_COLON));
 	BMenuField* _userNameMenuField = new BMenuField(NULL, NULL, _userNameMenu);
@@ -614,7 +614,7 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 
 	_userNameEntry = new BTextControl(NULL, NULL, un, new BMessage(SHAREWINDOW_COMMAND_USER_CHANGED_NAME));
 	_userNameEntry->SetTarget(toMe);
-	
+
 	// Fill out the UserStatus menu and text control
 	String statusColon = str(STR_STATUS);
 	statusColon += ':';
@@ -628,7 +628,7 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 		AddUserStatusItem(us);
 	}
 
-	if (_userStatusMenu->CountItems() == 0) {	
+	if (_userStatusMenu->CountItems() == 0) {
 		AddUserStatusItem(FACTORY_DEFAULT_USER_STATUS);
 		AddUserStatusItem(FACTORY_DEFAULT_USER_AWAY_STATUS);
 	}
@@ -640,7 +640,7 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 
 	_userStatusEntry = new BTextControl(NULL, NULL, us, new BMessage(SHAREWINDOW_COMMAND_USER_CHANGED_STATUS));
 	_userStatusEntry->SetTarget(toMe);
-	
+
 	/***********************************************/
 	CLVContainerView* resultsContainerView;
 	_resultsView = new ResultsView(SHAREWINDOW_COMMAND_SWITCH_TO_PAGE, BRect(),&resultsContainerView, NULL, B_FOLLOW_ALL_SIDES, B_WILL_DRAW|B_FRAME_EVENTS|B_NAVIGABLE,B_MULTIPLE_SELECTION_LIST,false,true,true,true,B_FANCY_BORDER);
@@ -664,7 +664,7 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 	BScrollView* _transferListScroll = new BScrollView("", _transferList, B_FOLLOW_ALL_SIDES, 0L, false, true, B_FANCY_BORDER);
 
 	_cancelTransfersButton = new BButton(NULL, str(STR_REMOVE_SELECTED), new BMessage(SHAREWINDOW_COMMAND_CANCEL_DOWNLOADS));
-	
+
 	/***********************************************/
 	_chatView = new BView(BRect(), "ChatView", B_FOLLOW_ALL_SIDES, 0);	// this will be populated by base class!
 
@@ -674,7 +674,7 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 	_usersView->SetMessage(new BMessage(SHAREWINDOW_COMMAND_SELECT_USER));
 	_usersView->SetTarget(toMe);
 	/******************************************/
-	
+
 	BLayoutBuilder::Group<>(this, B_VERTICAL, B_USE_HALF_ITEM_SPACING)
 		.SetInsets(0, 0, 0, 0)
 		.Add(_menuBar)
@@ -697,9 +697,9 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 						.Add(_disableQueryButton)
 						.AddStrut(B_USE_ITEM_SPACING)
 					.End()
-					
+
 					.Add(resultsContainerView)
-					
+
 					.AddGroup(B_HORIZONTAL, B_USE_HALF_ITEM_SPACING)
 						.Add(_prevPageButton)
 						.Add(_requestDownloadsButton)
@@ -735,10 +735,10 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 	if (numColumns > 0) {
 		{
 			int32 * userDisplayOrder = new int32[numColumns];
-			for (int di=0; di<numColumns; di++) 
+			for (int di=0; di<numColumns; di++)
 				if (settingsMsg.FindInt32("usercolumnsorder", di, &userDisplayOrder[di]) != B_NO_ERROR)
 					userDisplayOrder[di] = di;
-			
+
 			_usersView->SetDisplayOrder(userDisplayOrder);
 			delete [] userDisplayOrder;
 		}
@@ -751,7 +751,7 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 				sortModes[di] = (settingsMsg.FindInt32("usersortmode", di, &temp) == B_NO_ERROR) ? (CLVSortMode)temp : NoSort;
 				numSortKeys++;
 			}
-		
+
 			if (numSortKeys > 0)
 				_usersView->SetSorting(numSortKeys, sortKeys, sortModes);
 			delete [] sortKeys;
@@ -801,7 +801,7 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 	if (connectServer) {
 		String cs = connectServer;
 		int32 slashIdx = cs.IndexOf('/');
-		
+
 		if (slashIdx >= 0) {
 			_queryOnConnect = cs.Substring(slashIdx+1);
 			cs = cs.Substring(0, slashIdx);
@@ -828,16 +828,16 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 	if (_autoUpdateServers->IsMarked()) {
 		ThreadWorkerSessionRef plainSessionRef(new ThreadWorkerSession());
 		plainSessionRef()->SetGateway(AbstractMessageIOGatewayRef(new PlainTextMessageIOGateway));
-		
+
 		if ((_checkServerListThread.StartInternalThread() == B_NO_ERROR)
 			&& (_checkServerListThread.AddNewConnectSession(AUTO_UPDATER_SERVER, 80, plainSessionRef) != B_NO_ERROR))
 			_checkServerListThread.ShutdownInternalThread();
 	}
-	
+
 	PostMessage(CHATWINDOW_COMMAND_UPDATE_COLORS);
 
 	const char * tempFontString;
-	
+
 	if (settingsMsg.FindString("font", &tempFontString) == B_NO_ERROR)
 		SetFont(tempFontString, false);
 }
@@ -869,7 +869,7 @@ AddUserColumn(const BMessage & settingsMsg, int labelID, float dw, const char * 
 	_usersView->AddColumn(new CLVColumn(optLabel ? optLabel : str(labelID), width, CLV_SORT_KEYABLE | extraFlags));
 }
 
-void 
+void
 ShareWindow::
 SaveUserColumn(BMessage & settingsMsg, int labelID, CLVColumn * col) const
 {
@@ -890,7 +890,7 @@ AddServerItem(const char * serverName, bool quiet, int index)
 												else _serverMenu->AddItem(new BMenuItem(serverName, msg), index);
 
 	if (quiet == false)
-	{ 
+	{
 	 String serverLabel(serverName);
 	 if (serverLabel.Length() > 90) serverLabel = serverLabel.Substring(0,90);
 	 char buf[256];
@@ -907,7 +907,7 @@ AddUserNameItem(const char * un)
 	msg->AddString("username", un);
 	_userNameMenu->AddItem(new BMenuItem(un, msg));
 }
-		
+
 void
 ShareWindow::
 AddUserStatusItem(const char * us)
@@ -916,7 +916,7 @@ AddUserStatusItem(const char * us)
 	msg->AddString("userstatus", us);
 	_userStatusMenu->AddItem(new BMenuItem(us, msg));
 }
-		
+
 ShareWindow::~ShareWindow()
 {
 	if (_colorPicker->Lock()) _colorPicker->Quit();
@@ -950,7 +950,7 @@ ShareWindow::~ShareWindow()
 		if (next->Lock())
 			next->Quit();
 	}
-		
+
 	ClearUsers();
 
 	delete _netClient;
@@ -964,7 +964,7 @@ ShareWindow::~ShareWindow()
 }
 
 
-void 
+void
 ShareWindow::GenerateSettingsMessage(BMessage & settingsMsg)
 {
 	settingsMsg.MakeEmpty();
@@ -990,7 +990,7 @@ ShareWindow::GenerateSettingsMessage(BMessage & settingsMsg)
 	 {
 		BMessage xfrMsg;
 		next->SaveToArchive(xfrMsg);
-		settingsMsg.AddMessage("transfer", &xfrMsg);	 
+		settingsMsg.AddMessage("transfer", &xfrMsg);
 	 }
 	}
 
@@ -1022,9 +1022,9 @@ ShareWindow::GenerateSettingsMessage(BMessage & settingsMsg)
 
 	// Save any additional strings....
 	int qmLen = _queryMenu->CountItems();
-	for (int qh=0; qh<qmLen; qh++) 
+	for (int qh=0; qh<qmLen; qh++)
 	{
-	 const char * s; 
+	 const char * s;
 	 const BMessage * qmsg = _queryMenu->ItemAt(qh)->Message();
 	 if ((qmsg)&&(qmsg->FindString("query", &s) == B_NO_ERROR)) settingsMsg.AddString("query", s);
 	}
@@ -1039,7 +1039,7 @@ ShareWindow::GenerateSettingsMessage(BMessage & settingsMsg)
 	settingsMsg.AddBool("retainfilepaths", _retainFilePaths->IsMarked());
 	settingsMsg.AddBool("loginonstartup", _loginOnStartup->IsMarked());
 	settingsMsg.AddBool("autoupdateservers", _autoUpdateServers->IsMarked());
-	
+
 	settingsMsg.AddInt32("uploads", _maxSimultaneousUploadSessions);
 	settingsMsg.AddInt32("downloads", _maxSimultaneousDownloadSessions);
 	settingsMsg.AddInt32("uploadsperuser", _maxSimultaneousUploadSessionsPerUser);
@@ -1076,13 +1076,13 @@ ShareWindow::GenerateSettingsMessage(BMessage & settingsMsg)
 		float colWidth = 0.0f;
 
 		ShareColumn* sc;
-		
+
 		if (_columns.Get(nextString.Cstr(), sc) == B_NO_ERROR)
 			colWidth = sc->Width();
-		
+
 		columnsSubMessage.AddFloat(nextString.Cstr(), (colWidth > 0.0f) ? colWidth : width);
 	}
-	
+
 	settingsMsg.AddMessage("columns", &columnsSubMessage);
 
 	SaveUserColumn(settingsMsg, STR_NAME,			_usersView->ColumnAt(0));
@@ -1127,7 +1127,7 @@ ShareWindow::GenerateSettingsMessage(BMessage & settingsMsg)
 		settingsMsg.AddString("aliasname", iter.GetKey().Cstr());
 		settingsMsg.AddString("aliasvalue", iter.GetValue().Cstr());
 	}
-	
+
 	// Save our colors
 	for (int32 i = 0; i < NUM_COLORS; i++)
 		SaveColorToMessage("colors", GetColor(i, -1), settingsMsg);
@@ -1136,7 +1136,7 @@ ShareWindow::GenerateSettingsMessage(BMessage & settingsMsg)
 }
 
 
-void 
+void
 ShareWindow::
 SavePrivateWindowInfo(const BMessage & msg)
 {
@@ -1164,11 +1164,11 @@ ShareWindow::ClearUsers()
 		next = iter.GetValue();
 		TRACE_BESHAREWINDOW(("Remove user %s\n", next->GetUserString().Cstr()));
 		delete next;
-	}	
-	
+	}
+
 	TRACE_BESHAREWINDOW(("ShareWindow::ClearUsers after loop\n"));
 	_users.Clear();
-	
+
 	BMessage msg(PrivateChatWindow::PRIVATE_WINDOW_REMOVE_USER);
 	TRACE_BESHAREWINDOW(("ShareWindow::ClearUsers before send message to priv\n"));
 	SendToPrivateChatWindows(msg, NULL);
@@ -1217,7 +1217,7 @@ AddBandwidthOption(BMenu * bMenu, const char * label, int32 bps)
 	msg->AddInt32("bps", bps);
 	msg->AddString("label", label);
 	BMenuItem * item = new BMenuItem(label, msg);
-	if (bps == (int) _uploadBandwidth) 
+	if (bps == (int) _uploadBandwidth)
 	{
 	 item->SetMarked(true);
 	 _netClient->SetUploadBandwidth(label, bps);
@@ -1238,7 +1238,7 @@ ShareWindow::IPBanTimeLeft(uint32 ip)
 		if (time <= now)
 			_bans.Remove(ip);
 	}
-	
+
 	uint64 * banTime = _bans.Get(ip);
 	return banTime ? ((*banTime == (uint64)-1) ? (uint64)-1 : *banTime-now) : 0;
 }
@@ -1259,7 +1259,7 @@ ParseRemoteIP(const char * hn) const
 }
 
 
-void 
+void
 ShareWindow::TransferCallbackRejected(const char * from, uint64 timeLeft)
 {
 	TRACE_BESHAREWINDOW(("ShareWindow::TransferCallbackRejected begin\n"));
@@ -1291,19 +1291,19 @@ ShareWindow::ConnectBackRequestReceived(const char * targetSessionID, uint16 por
 				if ((_netClient)
 					&& (banRef())
 					&& (banRef()->AddString(PR_NAME_SESSION, "") == B_NO_ERROR)
-					&& (banRef()->AddString(PR_NAME_KEYS, String("/*/")+targetSessionID) == B_NO_ERROR)) 
+					&& (banRef()->AddString(PR_NAME_KEYS, String("/*/")+targetSessionID) == B_NO_ERROR))
 						_netClient->SendMessageToSessions(banRef, true);
 			} else {
 				ShareFileTransfer* xfer = new ShareFileTransfer(_shareDir, _netClient->GetLocalSessionID(), target->GetInstallID(), 0, _maxUploadRate);
 				AddHandler(xfer);
-			
+
 				if (xfer->InitConnectSession(target->GetHostName(), port, rip, target->GetSessionID()) == B_NO_ERROR) {
 					_transferList->AddItem(xfer);
 				} else {
 					RemoveHandler(xfer);
 					delete xfer;
 				}
-				
+
 				DequeueTransferSessions();
 			}
 		}
@@ -1312,7 +1312,7 @@ ShareWindow::ConnectBackRequestReceived(const char * targetSessionID, uint16 por
 }
 
 
-void 
+void
 ShareWindow::RequestDownloads(const BMessage& filelistMsg, const BDirectory& downloadDir, BPoint *droppoint)
 {
 	TRACE_BESHAREWINDOW(("ShareWindow::RequestDownloads begin\n"));
@@ -1328,16 +1328,16 @@ ShareWindow::RequestDownloads(const BMessage& filelistMsg, const BDirectory& dow
 			if ((owner->GetHostName()[0])
 				&& ((owner->GetPort() > 0)
 				|| (owner->GetFirewalled()))) {
-				
+
 				ShareFileTransfer* xfer;
 				if (newTransferSessions.Get(owner, xfer) == B_ERROR) {
 					xfer = new ShareFileTransfer(downloadDir, _netClient->GetLocalSessionID(), owner->GetInstallID(), owner->GetSupportsPartialHash() ? NUM_PARTIAL_HASH_BYTES : 0, _maxDownloadRate);
 			 		AddHandler(xfer);
 					newTransferSessions.Put(owner, xfer);
 				}
-				
+
 				xfer->AddRequestedFileName(item->GetFileName(), 0LL, _retainFilePaths->IsMarked() ? item->GetPath() : "", droppoint);
-				
+
 				if (droppoint)
 					droppoint->y += 50;
 			} else {
@@ -1433,7 +1433,7 @@ ShareWindow::DequeueTransferSessions(bool upload)
 			ShareFileTransfer * next = (ShareFileTransfer *) _transferList->ItemAt(j);
 			const char * nextSession = next->GetRemoteSessionID();
 			if ((next->IsUploadSession() == upload) && (next->IsWaitingOnLocal())
-				&& (CountActiveSessions(upload, nextSession[0] ? nextSession : NULL) < (upload ? _maxSimultaneousUploadSessionsPerUser : _maxSimultaneousDownloadSessionsPerUser))) {	
+				&& (CountActiveSessions(upload, nextSession[0] ? nextSession : NULL) < (upload ? _maxSimultaneousUploadSessionsPerUser : _maxSimultaneousDownloadSessionsPerUser))) {
 				next->BeginTransfer();
 				if (--numToStart == 0)
 					break;
@@ -1460,7 +1460,7 @@ ShareWindow::DequeueTransferSessions()
 				&& (next->ErrorOccurred() == false))
 					(void) origList.Put(next, true);
 		}
-		
+
 		if (origList.GetNumItems() > 0) {
 			// Then sort the list so that smallest transfers are first
 			Hashtable<ShareFileTransfer *, bool> sortList = origList;
@@ -1475,7 +1475,7 @@ ShareWindow::DequeueTransferSessions()
 				while(((orig = origIter.GetKey()) == B_NO_ERROR)
 					&& ((sort = sortIter.GetKey()) == B_NO_ERROR)) {
 					if (orig != sort) {
-						sortOrderChanged = true; 
+						sortOrderChanged = true;
 						break;
 					}
 				}
@@ -1492,7 +1492,7 @@ ShareWindow::DequeueTransferSessions()
 						ShareFileTransfer * next = (ShareFileTransfer *) _transferList->ItemAt(j);
 						if (sortList.ContainsKey(next)) {
 							ShareFileTransfer * replaceWith;
-							if ((replaceWith = sortListIter.GetKey()) == B_NO_ERROR) 
+							if ((replaceWith = sortListIter.GetKey()) == B_NO_ERROR)
 								_transferList->ReplaceItem(j, replaceWith);
 							else
 								break;  // nothing left to replace!
@@ -1525,7 +1525,7 @@ ShareWindow::CountActiveSessions(bool upload, const char * optForSessionID) cons
 }
 
 
-// Returns the total number of upload sessions 
+// Returns the total number of upload sessions
 uint32
 ShareWindow::CountUploadSessions() const
 {
@@ -1612,7 +1612,7 @@ void ShareWindow::RestoreAttributesPreset(const BMessage & restoreMsg)
 	{
 	 float width;
 	 if (restoreMsg.FindFloat("width", j, &width) != B_NO_ERROR) width = 70.0f;
-	 
+
 	 BMessage addMsg(SHAREWINDOW_COMMAND_TOGGLE_COLUMN);
 	 addMsg.AddString("attrib", addColName);
 	 addMsg.AddFloat("width", width);
@@ -1639,8 +1639,8 @@ void
 ShareWindow::RemoveLRUItem(BMenu* menu, const BMessage& msg)
 {
 	int32 idx;
-	
-	if ((msg.FindInt32("index", &idx) == B_NO_ERROR) && (idx >= 0) && (idx < menu->CountItems())) 
+
+	if ((msg.FindInt32("index", &idx) == B_NO_ERROR) && (idx >= 0) && (idx < menu->CountItems()))
 		delete menu->RemoveItem(idx);
 }
 
@@ -1676,7 +1676,7 @@ ShareWindow::MessageReceived(BMessage* msg)
 				} pinfo;
 
 				if (BNode(&fileentry).ReadAttr(B_HOST_IS_LENDIAN?"_trk/pinfo_le":"_trk/pinfo", B_RAW_TYPE, 0, &pinfo, sizeof(pinfo)) != sizeof(pinfo)) pinfo.point.Set(-1,-1);
-				
+
 				// remove the entry, which was created for us by the receiver
 				fileentry.Remove();
 				BMessage downloads;
@@ -1685,7 +1685,7 @@ ShareWindow::MessageReceived(BMessage* msg)
 			}
 		}
 	 }
-	 break;		
+	 break;
 
 	 case SHAREWINDOW_COMMAND_BAN_USER:
 	 {
@@ -1700,7 +1700,7 @@ ShareWindow::MessageReceived(BMessage* msg)
 			{
 			 char buf[256];
 			 char ipbuf[16]; Inet_NtoA(ip, ipbuf);
-			 sprintf(buf, str(STR_USER_AT_IP_PS_BANNED_FOR), ipbuf); 
+			 sprintf(buf, str(STR_USER_AT_IP_PS_BANNED_FOR), ipbuf);
 			 String temp(buf);
 			 temp += ' ';
 			 temp += durstr;
@@ -1726,7 +1726,7 @@ ShareWindow::MessageReceived(BMessage* msg)
 	 case SHAREWINDOW_COMMAND_SET_COMPRESSION_LEVEL:
 	 {
 		int32 compLevel;
-		if (msg->FindInt32("complevel", &compLevel) == B_NO_ERROR) 
+		if (msg->FindInt32("complevel", &compLevel) == B_NO_ERROR)
 		{
 			_compressionLevel = compLevel;
 			_netClient->UpdateEncoding();
@@ -1754,7 +1754,7 @@ ShareWindow::MessageReceived(BMessage* msg)
 		else
 		{
 			const char * username;
-			if (msg->FindString("username", &username) == B_NO_ERROR) 
+			if (msg->FindString("username", &username) == B_NO_ERROR)
 			{
 			 if (strcmp(username, _userNameEntry->Text()))
 			 {
@@ -1772,7 +1772,7 @@ ShareWindow::MessageReceived(BMessage* msg)
 		else
 		{
 			const char * userstatus;
-			if (msg->FindString("userstatus", &userstatus) == B_NO_ERROR) 
+			if (msg->FindString("userstatus", &userstatus) == B_NO_ERROR)
 			{
 			 if (strcmp(userstatus, _userStatusEntry->Text()))
 			 {
@@ -1787,10 +1787,10 @@ ShareWindow::MessageReceived(BMessage* msg)
 	 case SHAREWINDOW_COMMAND_SWITCH_TO_PAGE:
 	 {
 		int32 page;
-		if (msg->FindInt32("page", &page) == B_NO_ERROR) 
+		if (msg->FindInt32("page", &page) == B_NO_ERROR)
 		{
 			SwitchToPage(page);
-			UpdateTitleBar();	
+			UpdateTitleBar();
 		}
 	 }
 	 break;
@@ -1801,11 +1801,11 @@ ShareWindow::MessageReceived(BMessage* msg)
 		if (msg->FindInt32("pagesize", &l) == B_NO_ERROR) _pageSize = l;
 	 }
 	 break;
- 
+
 	 case SHAREWINDOW_COMMAND_TOGGLE_FILE_LOGGING:
 	 {
 		bool newState = !_toggleFileLogging->IsMarked();
-		if (newState == false) 
+		if (newState == false)
 		{
 			LogMessage(LOG_INFORMATION_MESSAGE, str(STR_LOGGING_DISABLED));
 			CloseLogFile();
@@ -1857,7 +1857,7 @@ ShareWindow::MessageReceived(BMessage* msg)
 	 {
 		uint32 which;
 		if ((msg->FindInt32("which", (int32*) &which) == B_NO_ERROR)&&(which < ARRAYITEMS(_attribPresets))) RestoreAttributesPreset(_attribPresets[which]);
-		else 
+		else
 		{
 			BMessage settingsMsg;
 			if (msg->FindMessage("settings", &settingsMsg) == B_NO_ERROR) RestoreAttributesPreset(settingsMsg);
@@ -1900,7 +1900,7 @@ ShareWindow::MessageReceived(BMessage* msg)
 		const char * target;
 		if ((msg->FindPointer("which", (void **) &w) == B_NO_ERROR)&&
 			(msg->FindString("users", &target) == B_NO_ERROR)&&
-			(_privateChatWindows.ContainsKey(w))) 
+			(_privateChatWindows.ContainsKey(w)))
 		{
 			_privateChatWindows.Put(w, target);
 			UpdatePrivateWindowUserList(w, target);
@@ -1918,9 +1918,9 @@ ShareWindow::MessageReceived(BMessage* msg)
 		uint32 idx = _privateChatWindows.GetNumItems();
 		const BMessage * archive = (idx < _privateChatInfos.GetNumItems()) ? _privateChatInfos.GetItemAt(idx) : NULL;
 		const BMessage blank;
-		
+
 		TRACE_BESHAREWINDOW(("ShareWindow::MessageReceived SHAREWINDOW_COMMAND_OPEN_PRIVATE_CHAT_WINDOW 1\n"));
-		
+
 		PrivateChatWindow * pcw = new PrivateChatWindow(_toggleFileLogging->IsMarked(), archive?*archive:blank, idx, this, (strlen(target) > 0) ? target : NULL);
 		TRACE_BESHAREWINDOW(("ShareWindow::MessageReceived SHAREWINDOW_COMMAND_OPEN_PRIVATE_CHAT_WINDOW 2\n"));
 		pcw->ReadyToRun();
@@ -1940,12 +1940,12 @@ ShareWindow::MessageReceived(BMessage* msg)
 		pcw->Show();
 		TRACE_BESHAREWINDOW(("ShareWindow::MessageReceived SHAREWINDOW_COMMAND_OPEN_PRIVATE_CHAT_WINDOW end\n"));
 	}
-	break;		
+	break;
 
 	 case SHAREWINDOW_COMMAND_CHECK_FOR_MORIBUND_CONNECTIONS:
 	 {
 		if (_idleSendPending)
-		{		
+		{
 			SendChatText(_onIdleString, NULL);
 			_idleSendPending = false;
 		}
@@ -1963,7 +1963,7 @@ ShareWindow::MessageReceived(BMessage* msg)
 				printf("Connection %i is moribund, aborting!\n", i);
 				next->AbortSession(true);
 			 }
-			} 
+			}
 		}
 
 		// Check for auto-away every minute, too
@@ -2003,7 +2003,7 @@ ShareWindow::MessageReceived(BMessage* msg)
 		}
 	 }
 	 break;
- 
+
 	 case SHAREWINDOW_COMMAND_OPEN_SHARED_FOLDER:
 		OpenTrackerFolder(_shareDir);
 	 break;
@@ -2026,11 +2026,11 @@ ShareWindow::MessageReceived(BMessage* msg)
 
 		bool filesThere = false;
 		int32 nextIndex;
-		for (int i=0; ((nextIndex = _usersView->CurrentSelection(i)) >= 0); i++) 
+		for (int i=0; ((nextIndex = _usersView->CurrentSelection(i)) >= 0); i++)
 		{
 			RemoteUserItem * next = (RemoteUserItem *)_usersView->ItemAt(nextIndex);
 			if (i > 0) strng += ',';
-			strng += next->GetSessionID(); 
+			strng += next->GetSessionID();
 			if ((GetFirewalled() == false)||(next->GetFirewalled() == false)) filesThere = true;
 		}
 		if (filesThere)
@@ -2042,7 +2042,7 @@ ShareWindow::MessageReceived(BMessage* msg)
 	 }
 	 break;
 
-	 case SHAREWINDOW_COMMAND_RESET_LAYOUT: 
+	 case SHAREWINDOW_COMMAND_RESET_LAYOUT:
 		ResetLayout();
 	 break;
 
@@ -2084,7 +2084,7 @@ ShareWindow::MessageReceived(BMessage* msg)
 			SetQueryEnabled(false, false);
 			SetQueryEnabled(true, false);
 		}
-		for (int i=_usersView->CountItems()-1; i>=0; i--) 
+		for (int i=_usersView->CountItems()-1; i>=0; i--)
 		{
 			RemoteUserItem * rui = (RemoteUserItem *)_usersView->ItemAt(i);
 			rui->SetNumSharedFiles(rui->GetNumSharedFiles());	// force update to set/unset parens
@@ -2148,7 +2148,7 @@ ShareWindow::MessageReceived(BMessage* msg)
 						StringTokenizer tok(nextString()+8, "=");
 						const char * param = tok.GetNextToken();
 						if (param)
-						{ 
+						{
 							const char * val = tok.GetRemainderOfString();
 							String valStr(val?val:"");
 							UpdaterCommandReceived(String(param).Trim()(), valStr.Trim()());
@@ -2163,7 +2163,7 @@ ShareWindow::MessageReceived(BMessage* msg)
 			 {
 				MessageRef pmsg = GetMessageFromPool();
 				if (pmsg())
-				{ 
+				{
 					pmsg()->AddString(PR_NAME_TEXT_LINE, "GET /servers.txt HTTP/1.1\nUser-Agent: BeShare/"VERSION_STRING"\nHost: "AUTO_UPDATER_SERVER"\n\n");
 					_checkServerListThread.SendMessageToSessions(pmsg);
 				}
@@ -2226,7 +2226,7 @@ ShareWindow::MessageReceived(BMessage* msg)
 							UpdateDownloadButtonStatus();
 							DequeueTransferSessions();
 						}
-					 } 
+					 }
 					 //else
 					 	//CloseSocket(sref);
 					}
@@ -2260,7 +2260,7 @@ ShareWindow::MessageReceived(BMessage* msg)
 			{
 			 RemoveHandler(next);
 			 _transferList->RemoveItem(i);
-			 delete next;	
+			 delete next;
 			}
 		}
 		UpdateDownloadButtonStatus();
@@ -2275,7 +2275,7 @@ ShareWindow::MessageReceived(BMessage* msg)
 	 {
 		Queue<ShareFileTransfer *> killList;
 		int32 nextIndex;
-		for (int i=0; ((nextIndex = _transferList->CurrentSelection(i)) >= 0); i++) 
+		for (int i=0; ((nextIndex = _transferList->CurrentSelection(i)) >= 0); i++)
 		{
 			ShareFileTransfer * next = (ShareFileTransfer *)_transferList->ItemAt(nextIndex);
 			killList.AddTail(next);
@@ -2295,16 +2295,16 @@ ShareWindow::MessageReceived(BMessage* msg)
 		{
 			BMessage filelistMsg;
 			int32 nextIndex;
-			
+
 			for (int32 i = 0; ((nextIndex =_resultsView->CurrentSelection(i)) >= 0); i++)
 				filelistMsg.AddPointer("item", _resultsView->ItemAt(nextIndex));
-		
+
 			RequestDownloads(filelistMsg, _downloadsDir, NULL);
 			_resultsView->DeselectAll();
 			UpdateDownloadButtonStatus();
 	 }
 	 break;
- 
+
 	 case SHAREWINDOW_COMMAND_USER_CHANGED_NAME:
 		SetLocalUserName(String(_userNameEntry->Text()).Trim()());
 	 break;
@@ -2312,7 +2312,7 @@ ShareWindow::MessageReceived(BMessage* msg)
 	 case SHAREWINDOW_COMMAND_USER_CHANGED_STATUS:
 	 {
 		bool a;
-		if ((msg->FindBool("auto", &a) != B_NO_ERROR)||(a == false)) 
+		if ((msg->FindBool("auto", &a) != B_NO_ERROR)||(a == false))
 		{
 			_lastInteractionAt = system_time();
 			_revertToStatus = _oneTimeAwayStatus = "";
@@ -2324,7 +2324,7 @@ ShareWindow::MessageReceived(BMessage* msg)
 		case SHAREWINDOW_COMMAND_DISCONNECT_FROM_SERVER:
 			if (_autoReconnectRunner)
 				LogMessage(LOG_INFORMATION_MESSAGE, str(STR_AUTO_RECONNECT_SEQUENCE_TERMINATED));
-			
+
 			ResetAutoReconnectState(true);	// user intervened, so reset count
 			UpdateConnectStatus(false);	 // make sure disconnect button goes disabled
 			_netClient->DisconnectFromServer();
@@ -2363,7 +2363,7 @@ ShareWindow::MessageReceived(BMessage* msg)
 		}
 	 }
 	 break;
- 
+
 	 case SHAREWINDOW_COMMAND_USER_CHANGED_SERVER:	// user entered new server text
 		UpdateConnectStatus(false);
 	 break;
@@ -2404,12 +2404,12 @@ ShareWindow::MessageReceived(BMessage* msg)
 				if (msg->FindFloat("width", &newWidth) == B_NO_ERROR) sc->SetWidth(newWidth);
 
 				bool isVisible = (_resultsView->IndexOfColumn(sc) >= 0);
-				if ((isVisible)&&(mi->IsMarked() == false)) 
+				if ((isVisible)&&(mi->IsMarked() == false))
 				{
 					_activeAttribs.Remove(sc->GetAttributeName());
 					_resultsView->RemoveColumn(sc);
 				}
-				else if ((isVisible == false)&&(mi->IsMarked())) 
+				else if ((isVisible == false)&&(mi->IsMarked()))
 				{
 					float w = DEFAULT_COLUMN_WIDTH;
 					if (_activeAttribs.Get(sc->GetAttributeName(), w) == B_NO_ERROR) sc->SetWidth(w);
@@ -2441,7 +2441,7 @@ ShareWindow::MessageReceived(BMessage* msg)
 			_colorPicker->Show();
 		}
 	 break;
-	 
+
 	 default:
 		ChatWindow:: MessageReceived(msg);
 	 break;
@@ -2475,7 +2475,7 @@ ShareWindow::UpdatePrivateChatWindowsColors()
 		updateAllColors.AddInt32("color", i);
 		SaveColorToMessage("rgb", col, updateAllColors);
 	}
-	
+
 	PrivateChatWindow* priv;
 
 	for (HashtableIterator<PrivateChatWindow *, String> iter(_privateChatWindows.GetIterator()); iter.HasData(); iter++) {
@@ -2538,18 +2538,18 @@ ShareWindow::LogMessage(LogMessageType type, const char * text, const char * opt
 	// Ignore messages that match our ignore pattern.
 	if ((_ignorePattern.Length() > 0)&&(optSessionID)) {
 		RemoteUserItem * user;
-		
+
 		if ((_users.Get(optSessionID, user) == B_NO_ERROR) && (MatchesUserFilter(user, _ignorePattern())))
 			return;
 	}
 
 	const rgb_color watchColor = GetColor(COLOR_WATCH);
-	
+
 	if ((optSessionID)&&((optEchoTo == NULL)||(optEchoTo == this))&&(type == LOG_REMOTE_USER_CHAT_MESSAGE)) {
 		RemoteUserItem * user;
-		
+
 		if (_users.Get(optSessionID, user) == B_NO_ERROR) {
-			
+
 			if (isPersonal) {
 				BMessage toPriv(LOG_REMOTE_USER_CHAT_MESSAGE);
 				toPriv.AddString("text", text);
@@ -2596,7 +2596,7 @@ ShareWindow::OkayToLog(LogMessageType type, LogDestinationType dest, bool isPriv
 	switch(type)
 	{
 	 case LOG_INFORMATION_MESSAGE:	 whichFilter = FILTER_INFO_MESSAGES;	break;
-	 case LOG_WARNING_MESSAGE:		 whichFilter = FILTER_WARNING_MESSAGES; break; 
+	 case LOG_WARNING_MESSAGE:		 whichFilter = FILTER_WARNING_MESSAGES; break;
 	 case LOG_ERROR_MESSAGE:			whichFilter = FILTER_ERROR_MESSAGES;	break;
 	 case LOG_LOCAL_USER_CHAT_MESSAGE:
 	 case LOG_REMOTE_USER_CHAT_MESSAGE: whichFilter = isPrivate ? FILTER_PRIVATE_MESSAGES : FILTER_CHAT; break;
@@ -2607,7 +2607,7 @@ ShareWindow::OkayToLog(LogMessageType type, LogDestinationType dest, bool isPriv
 	return (whichFilter == -1) ? true : _filterItems[dest][whichFilter]->IsMarked();
 }
 
- 
+
 void
 ShareWindow::
 UpdateLRUMenu(BMenu * menu, const char * lookfor, uint32 what, const char * fieldName, int maxSize, bool caseSensitive, uint32 maxLabelLen)
@@ -2644,7 +2644,7 @@ ShareWindow::SetQueryEnabled(bool e, bool putInQueryMenu)
 	TRACE_BESHAREWINDOW(("ShareWindow::SetQueryEnabled begin\n"));
 	if (e != _queryEnabled) {
 		_queryEnabled = e;
-	
+
 		if (_queryEnabled) {
 			TRACE_BESHAREWINDOW(("ShareWindow::SetQueryEnabled _queryEnabled = true\n"));
 			// If there is an '@' sign, split the string into separate filename and username queries
@@ -2677,14 +2677,14 @@ ShareWindow::SetQueryEnabled(bool e, bool putInQueryMenu)
 							}
 							check++;
 						}
-		
+
 						if (nonNumericFound)
-							userExp = userExp.Prepend("*").Append("*"); 
+							userExp = userExp.Prepend("*").Append("*");
 					}
-				
+
 					MakeRegexCaseInsensitive(userExp);
 					StringMatcher match(userExp());
-				
+
 					RemoteUserItem* next;
 					for (HashtableIterator<const char *, RemoteUserItem *> iter(_users.GetIterator()); iter.HasData(); iter++) {
 						next = iter.GetValue();
@@ -2738,10 +2738,10 @@ UpdateConnectStatus(bool titleToo)
 
 	bool c = ((_isConnected) || (_isConnecting));
 	_connectMenuItem->SetEnabled(!c);
-	
+
 	if (sname[0] == '\0')
 		sname = "???";
-	
+
 	_disconnectMenuItem->SetEnabled((c) || (_autoReconnectRunner != NULL));
 
 	_firewalled->SetMarked(_netClient->GetFirewalled());
@@ -2779,27 +2779,27 @@ ShareWindow::UpdateTitleBar()
 				title += sid;
 				title += ' ';
 			}
-			
+
 			title += '(';
 			title += _userNameEntry->Text();
 			title += ')';
-			
+
 			title += str(STR_CONNECTED_TO);
 			title += _connectedTo;
-			
+
 			uint32 count = _netClient->GetSharedFileCount();
 			if (count > 0) {
 				title += ' ';
 				char buf[256];
 				sprintf(buf, str(STR_SHARING_PERCENTI_LOCAL_FILES), (int) _netClient->GetSharedFileCount());
-				title += buf; 
+				title += buf;
 			}
 	 	} else {
 	 		uint32 totalNumFiles = 0, pageBase = 0;
-			
+
 			for (int i=_resultsPages.GetNumItems()-1; i>=0; i--) {
 				uint32 pageSize = _resultsPages[i]->GetNumItems();
-				
+
 				if (i < (int)_currentPage)
 					pageBase += pageSize;
 				totalNumFiles += pageSize;
@@ -2807,12 +2807,12 @@ ShareWindow::UpdateTitleBar()
 			if (totalNumFiles > 0) {
 				uint32 numFiles = _resultsView->CountItems();
 				char buf[256];
-			
+
 				if (totalNumFiles > numFiles)
 					sprintf(buf, str(STR_PERCENTLU_DASH_PERCENTLU_OF_PERCENTLU_RESULTS_SHOWN), pageBase+1, pageBase+numFiles, totalNumFiles);
-				else 
+				else
 					sprintf(buf, str(STR_PERCENTLU_RESULTS_SHOWN), numFiles);
-			
+
 				title += buf;
 				GetByteSizeString(_bytesShown, buf);
 				title += buf;
@@ -2853,28 +2853,28 @@ ShareWindow::QuitRequested()
 {
 	if (_enableQuitRequester) {
 		int numInProgress = 0;
-		
+
 		for (int i=_transferList->CountItems()-1; i>=0; i--) {
 			ShareFileTransfer* next = (ShareFileTransfer*)_transferList->ItemAt(i);
-			
+
 			if (next->IsFinished() == false)
 				numInProgress++;
 		}
-	 
+
 		if (numInProgress > 0) {
 			char temp[512];
 			sprintf(temp, str(STR_TRANSFERS_IN_PROGRESS_ARE_YOU_SURE_YOU_WANT_TO_QUIT), numInProgress);
-		
+
 			if ((new BAlert("BeShare", temp, str(STR_QUIT), str(STR_DONT_QUIT)))->Go())
 				return false;
 		}
-	
+
 		if(_isConnected)
 			_netClient->DisconnectFromServer();
-		
+
 		be_app->PostMessage(B_QUIT_REQUESTED);
 	}
-	
+
 	if (_idle) {
 		_idle = false;
 		BMessage msg(SHAREWINDOW_COMMAND_UNIDLE);
@@ -2884,7 +2884,7 @@ ShareWindow::QuitRequested()
 }
 
 
-void 
+void
 ShareWindow::SendOnLogins()
 {
 	// execute the onLogin script, if any
@@ -2896,13 +2896,13 @@ void
 ShareWindow::
 RemoveServerItem(const char * serverName, bool quiet)
 {
-	for (int i=_serverMenu->CountItems()-1; i>=0; i--) 
+	for (int i=_serverMenu->CountItems()-1; i>=0; i--)
 	{
 	 BMenuItem * item = _serverMenu->ItemAt(i);
-	 if (strcasecmp(item->Label(), serverName) == 0) 
+	 if (strcasecmp(item->Label(), serverName) == 0)
 	 {
 		if (quiet == false)
-		{ 
+		{
 			String serverLabel(serverName);
 			if (serverLabel.Length() > 90) serverLabel = serverLabel.Substring(0,90);
 			char buf[256];
@@ -2918,7 +2918,7 @@ RemoveServerItem(const char * serverName, bool quiet)
 
 
 // The methods below are called by our ShareNetClient at the appropriate times.
-void 
+void
 ShareWindow::SetConnectStatus(bool isConnecting, bool isConnected)
 {
 	TRACE_BESHAREWINDOW(("ShareWindow::SetConnectStatus begin\n"));
@@ -2942,9 +2942,9 @@ ShareWindow::SetConnectStatus(bool isConnecting, bool isConnected)
 		else if (_isConnecting)
 			LogMessage(LOG_ERROR_MESSAGE, str(STR_CONNECTION_TO_SERVER_FAILED));
 	}
-	
+
 	TRACE_BESHAREWINDOW(("ShareWindow::SetConnectStatus if middle\n"));
-	
+
 	_isConnecting = isConnecting;
 	_isConnected	= isConnected;
 
@@ -2962,7 +2962,7 @@ ShareWindow::SetConnectStatus(bool isConnecting, bool isConnected)
 }
 
 
-void 
+void
 ShareWindow::PutUser(const char* sessionID, const char* userName, const char* hostName, int port, bool* isBot, uint64 installID, const char* client, bool* supportsPartialHash)
 {
 	TRACE_BESHAREWINDOW(("ShareWindow::PutUser begin\n"));
@@ -2986,16 +2986,16 @@ ShareWindow::PutUser(const char* sessionID, const char* userName, const char* ho
 	}
 
 	bool wasReadyForRestart = ((user->GetInstallID() > 0)&&((user->GetPort() > 0)||(user->GetFirewalled())));
-	
+
 	if (userName)
 		user->SetHandle(userName, SubstituteLabelledURLs(userName).Trim()());
-	
+
 	if (hostName)
 		user->SetHostName(hostName);
-	
+
 	if (port >= 0)
 		user->SetPort(port);
-	
+
 	if (isBot) user->SetIsBot(*isBot);
 
 	if ((installID > 0) && (user->GetInstallID() == 0))
@@ -3024,7 +3024,7 @@ ShareWindow::PutUser(const char* sessionID, const char* userName, const char* ho
 
 // Goes through the list of transfers, and any transfers that are non-finished downloads from
 // the same installID as (user), we'll restart at (user)'s new IP address.
-void 
+void
 ShareWindow::RestartDownloadsFor(const RemoteUserItem * user)
 {
 	// Save any active, pending, or errored-out downloads; maybe we can continue them later.
@@ -3049,7 +3049,7 @@ ShareWindow::SetUserBandwidth(const char* sessionID, const char* label, uint32 b
 	TRACE_BESHAREWINDOW(("ShareWindow::SetUserBandwidth begin\n"));
 	PutUser(sessionID, NULL, NULL, -1, NULL, 0, NULL, NULL);	// make sure the RemoteUserItem is present!
 	RemoteUserItem * user;
-	
+
 	if (_users.Get(sessionID, user) == B_NO_ERROR)
 		user->SetBandwidth(label, bps);
 	TRACE_BESHAREWINDOW(("ShareWindow::SetUserBandwidth end\n"));
@@ -3061,7 +3061,7 @@ ShareWindow::SetUserStatus(const char* sessionID, const char* status)
 {
 	TRACE_BESHAREWINDOW(("ShareWindow::SetUserStatus begin\n"));
 	PutUser(sessionID, NULL, NULL, -1, NULL, 0, NULL, NULL);	// make sure the RemoteUserItem is present!
-	
+
 	RemoteUserItem* user;
 	if (_users.Get(sessionID, user) == B_NO_ERROR)
 		user->SetStatus(status, SubstituteLabelledURLs(status).Trim()());
@@ -3075,11 +3075,11 @@ ShareWindow::SetUserUploadStats(const char* sessionID, uint32 cur, uint32 max)
 {
 	TRACE_BESHAREWINDOW(("ShareWindow::SetUserUploadStats begin\n"));
 	PutUser(sessionID, NULL, NULL, -1, NULL, 0, NULL, NULL);	// make sure the RemoteUserItem is present!
-	
+
 	RemoteUserItem* user;
 	if (_users.Get(sessionID, user) == B_NO_ERROR)
 		user->SetUploadStats(cur, max);
-	
+
 	TRACE_BESHAREWINDOW(("ShareWindow::SetUserUploadStats end\n"));
 }
 
@@ -3088,11 +3088,11 @@ ShareWindow::SetUserIsFirewalled(const char * sessionID, bool fw)
 {
 	TRACE_BESHAREWINDOW(("ShareWindow::SetUserIsFirewalled begin\n"));
 	PutUser(sessionID, NULL, NULL, -1, NULL, 0, NULL, NULL);	// make sure the RemoteUserItem is present!
-	
+
 	RemoteUserItem* user;
 	if (_users.Get(sessionID, user) == B_NO_ERROR)
 		user->SetFirewalled(fw);
-	
+
 	TRACE_BESHAREWINDOW(("ShareWindow::SetUserIsFirewalled end\n"));
 }
 
@@ -3102,21 +3102,21 @@ ShareWindow::SetUserFileCount(const char * sessionID, int32 fc)
 {
 	TRACE_BESHAREWINDOW(("ShareWindow::SetUserFileCount begin\n"));
 	PutUser(sessionID, NULL, NULL, -1, NULL, 0, NULL, NULL);	// make sure the RemoteUserItem is present!
-	
+
 	RemoteUserItem* user;
 	if (_users.Get(sessionID, user) == B_NO_ERROR)
 		user->SetNumSharedFiles(fc);
-	
+
 	TRACE_BESHAREWINDOW(("ShareWindow::SetUserFileCount end\n"));
 }
 
 
-void 
+void
 ShareWindow::
 RemoveUser(const char * sessionID)
 {
 	RemoteUserItem * user;
-	if (_users.Remove(sessionID, user) == B_NO_ERROR) 
+	if (_users.Remove(sessionID, user) == B_NO_ERROR)
 	{
 	 // Any downloads who are awaiting callbacks from this user might as well forget it now
 	 // he can't get the message and call us back if he's left the server!
@@ -3125,7 +3125,7 @@ RemoveUser(const char * sessionID)
 		ShareFileTransfer * next = (ShareFileTransfer *) _transferList->ItemAt(i);
 		if ((next->IsAccepting())&&(strcmp(next->GetRemoteSessionID(), sessionID) == 0)) next->AbortSession(true, true);
 	 }
-	
+
 	 _usersView->RemoveItem(user);
 	 BMessage msg(PrivateChatWindow::PRIVATE_WINDOW_REMOVE_USER);
 	 msg.AddString("id", user->GetSessionID());
@@ -3136,60 +3136,60 @@ RemoveUser(const char * sessionID)
 
 
 void
-ShareWindow::SendToPrivateChatWindows(BMessage & msg, const RemoteUserItem * matchesItem) 
+ShareWindow::SendToPrivateChatWindows(BMessage & msg, const RemoteUserItem * matchesItem)
 {
 	TRACE_BESHAREWINDOW(("ShareWindow::SendToPrivateChatWindows begin\n"));
 	PrivateChatWindow * next;
 	for (HashtableIterator<PrivateChatWindow*, String> iter(_privateChatWindows.GetIterator()); iter.HasData(); iter++) {
 		next = iter.GetKey();
-		
+
 		String filter = iter.GetValue();	// don't inline this!
 		if ((matchesItem == NULL)
 			|| (MatchesUserFilter(matchesItem, filter.Cstr())))
 			next->PostMessage(&msg);
-	}	
+	}
 	TRACE_BESHAREWINDOW(("ShareWindow::SendToPrivateChatWindows end\n"));
 }
 
 
-void 
+void
 ShareWindow::PutResult(const char* sessionID, const char* fileName, bool isFirewalled, const MessageRef& fileInfo)
 {
 	TRACE_BESHAREWINDOW(("ShareWindow::PutResult begin\n"));
 	PutUser(sessionID, NULL, NULL, -1, NULL, 0, NULL, NULL);	// make sure the RemoteUserItem is present!
-	
+
 	RemoteUserItem* user;
 	if (_users.Get(sessionID, user) == B_NO_ERROR) {
 		user->SetFirewalled(isFirewalled);
 		user->PutFile(fileName, fileInfo);
 	}
-	
+
 	TRACE_BESHAREWINDOW(("ShareWindow::PutResult end\n"));
 }
 
 
-void 
+void
 ShareWindow::RemoveResult(const char* sessionID, const char* fileName)
 {
 	RemoteUserItem* user;
-	
+
 	if (_users.Get(sessionID, user) == B_NO_ERROR)
 		user->RemoveFile(fileName);
 }
 
-void 
+void
 ShareWindow::ClearResults()
 {
 	TRACE_BESHAREWINDOW(("ShareWindow::ClearResults begin\n"));
 	_resultsView->MakeEmpty();	// for efficiency
-	
+
 	TRACE_BESHAREWINDOW(("ShareWindow::ClearResults before loop\n"));
 	for (int i = _resultsPages.GetNumItems()-1; i >= 0; i--)
 		delete _resultsPages[i];
-	
+
 	_resultsPages.Clear();
 	SwitchToPage(0);
-	 
+
 	TRACE_BESHAREWINDOW(("ShareWindow::ClearResults before loop 2\n"));
 
 	RemoteUserItem * next;
@@ -3199,7 +3199,7 @@ ShareWindow::ClearResults()
 		if (next != NULL)
 			next->ClearFiles();
 	}
-	TRACE_BESHAREWINDOW(("ShareWindow::ClearResults after loop 2\n"));	
+	TRACE_BESHAREWINDOW(("ShareWindow::ClearResults after loop 2\n"));
 	_bytesShown = 0LL;
 	UpdateTitleBar();
 	TRACE_BESHAREWINDOW(("ShareWindow::ClearResults end\n"));
@@ -3290,18 +3290,18 @@ ShareWindow::FileTransferDisconnected(ShareFileTransfer * who)
 	UpdateDownloadButtonStatus();
 
 	// Don't send the idle chat string quite yet -- it may be that someone connects again in the next few seconds
-	// (i.e. someone who is downloading things one per box). Instead, I set a flag, and if nothing has happened 
+	// (i.e. someone who is downloading things one per box). Instead, I set a flag, and if nothing has happened
 	// by the next moribund-connection check, I'll send the /onidle string then.
 	if ((_onIdleString.Length() > 0)
 		&& (CountActiveSessions(true, NULL) == 0)
 		&& (CountActiveSessions(false, NULL) == 0))
 			_idleSendPending = true;
-	
+
 	TRACE_BESHAREWINDOW(("ShareWindow::FileTransferDisconnected end\n"));
 }
 
 
-const char * 
+const char *
 ShareWindow::
 GetFileCellText(const RemoteFileItem * item, int32 columnIndex) const
 {
@@ -3374,7 +3374,7 @@ ShareWindow::AddFileItem(RemoteFileItem* item)
 	for (MessageFieldNameIterator iter = attrs.GetFieldNameIterator(); iter.HasData(); iter++) {
 		CreateColumn(optMimeInfo, iter.GetFieldName().Cstr(), true);
 	}
-	
+
 	TRACE_BESHAREWINDOW(("ShareWindow::AddFileItem end\n"));
 }
 
@@ -3391,11 +3391,11 @@ ShareWindow::CreateColumn(ShareMIMEInfo* optMimeInfo, const char* attrName, bool
 			type = attrName[1]-'0';
 			label += 2;
 		} else {
-		
+
 			if (strncmp(attrName, "beshare:", 8) == 0) {
-				// A BeShare var; handle these a bit differently	
+				// A BeShare var; handle these a bit differently
 				label += 8;
-				
+
 				if (strcmp(label, "Kind") == 0)
 					label = str(STR_KIND);		// hacked-in language support :^P
 				else if (strcmp(label, "File Size") == 0)
@@ -3404,13 +3404,13 @@ ShareWindow::CreateColumn(ShareMIMEInfo* optMimeInfo, const char* attrName, bool
 					label = str(STR_MODIFICATION_TIME);
 				else if (strcmp(label, "Path")==0)
 					label = str(STR_PATH);
-				
+
 				optMimeInfo = NULL;	// these vars are not type specific
 			} else {
 				// It's a genuine attribute; try to find a better name for it
 				if (optMimeInfo) {
 					const char* desc = optMimeInfo->GetAttributeDescription(attrName);
-			 		
+
 			 		if (desc)
 			 			label = desc;
 				}
@@ -3458,7 +3458,7 @@ ShareWindow::RemoveFileItem(RemoteFileItem * item)
 	 {
 		if (i == (int)_currentPage) _resultsView->RemoveItem(item);
 		if (nextTable->GetNumItems() == 0)
-		{ 
+		{
 			_resultsPages.RemoveItemAt(i);
 			delete nextTable;
 				if (i < (int)_currentPage) _currentPage--;
@@ -3531,7 +3531,7 @@ RefreshTransfersFor(RemoteUserItem * user)
 	for (int i=_transferList->CountItems()-1; i>=0; i--)
 	{
 	 ShareFileTransfer * next = (ShareFileTransfer *) _transferList->ItemAt(i);
-	 if ((user == NULL)||(strcmp(next->GetRemoteSessionID(), user->GetSessionID()) == 0)) 
+	 if ((user == NULL)||(strcmp(next->GetRemoteSessionID(), user->GetSessionID()) == 0))
 	 {
 		next->UpdateRemoteUserName();
 		RefreshTransferItem(next);
@@ -3544,7 +3544,7 @@ int
 ShareWindow::
 CompareFunc(const CLVListItem* item1, const CLVListItem* item2, int32 sortKey)
 {
-	return ((RemoteFileItem *)item1)->Compare(((RemoteFileItem *)item2), sortKey);	
+	return ((RemoteFileItem *)item1)->Compare(((RemoteFileItem *)item2), sortKey);
 }
 
 int ShareWindow::
@@ -3553,7 +3553,7 @@ UserCompareFunc(const CLVListItem * i1, const CLVListItem * i2, int32 sortKey)
 	return ((const RemoteUserItem *) i1)->Compare((const RemoteUserItem *)i2, sortKey);
 }
 
-int 
+int
 ShareWindow::
 Compare(const RemoteFileItem * rf1, const RemoteFileItem * rf2, int32 sortKey) const
 {
@@ -3561,7 +3561,7 @@ Compare(const RemoteFileItem * rf1, const RemoteFileItem * rf2, int32 sortKey) c
 }
 
 
-void 
+void
 ShareWindow::
 ResetLayout()
 {
@@ -3570,7 +3570,7 @@ ResetLayout()
 
 
 // Pattern matching for BGA's tab-completion
-int 
+int
 ShareWindow::MatchUserName(const char * un, String & result, const char * optMatchFilter) const
 {
 	int matchCount = 0;
@@ -3581,12 +3581,12 @@ ShareWindow::MatchUserName(const char * un, String & result, const char * optMat
 		userName = userName.ToLowerCase().Trim();
 		if (((optMatchFilter == NULL) || (MatchesUserFilter(next, optMatchFilter))) && (userName.StartsWith(un))) {
 			matchCount++;
-		
+
 			if (matchCount == 1) {
 				result = next->GetDisplayHandle();
 			} else {
 				// oops!	Several matches!	Chop any chars out of (result) that aren't in both names!
-				String temp(result); 
+				String temp(result);
 				temp = temp.ToLowerCase();
 				for (uint32 i=0; i<temp.Length(); i++) {
 					// Gotta compare with case-insensitivity, while maintaining the correct case
@@ -3625,10 +3625,10 @@ DoTabCompletion(const char * origText, String & returnCompletedText, const char 
 		}
 	 }
 	 else if ((*next == ' ')||(*next == '\t')) inSpace = true;
- 
+
 	 next++;
 	}
-		
+
 	// Now try matching, starting with the last word.
 	// If no match is found, try the last two words, and so on.
 	const char * startAt = NULL, * backupStartAt = NULL;
@@ -3637,7 +3637,7 @@ DoTabCompletion(const char * origText, String & returnCompletedText, const char 
 	{
 	 const char * matchAt = words[i];
 	 String resultName;
-	 int numMatches = MatchUserName(words[i], resultName, optMatchFilter); 
+	 int numMatches = MatchUserName(words[i], resultName, optMatchFilter);
 	 if (numMatches == 1)
 	 {
 		matchString = resultName;	// found a unique match!	We're done!
@@ -3683,7 +3683,7 @@ ShareWindow::ParseUserTargets(const char * text, Hashtable<RemoteUserItem *, Str
 	String restOfString2(wholeStringTok.GetRemainderOfString());	// store this for later full-name matching
 	restOfString2.Replace(CLUMP_CHAR, ' ');
 	const char * w2 = wholeStringTok.GetNextToken();
-	
+
 	if (w2) {
 		setTargetStr = w2;
 		setTargetStr.Replace(CLUMP_CHAR, ' ');
@@ -3717,11 +3717,11 @@ ShareWindow::ParseUserTargets(const char * text, Hashtable<RemoteUserItem *, Str
 
 			bool foundMatches = false;
 			RemoteUserItem * user;
-			
+
 			for (HashtableIterator<const char *, RemoteUserItem *> iter(_users.GetIterator()); iter.HasData(); iter++) {
 				user = iter.GetValue();
 				String userName = String(user->GetDisplayHandle()).Trim();
-			
+
 				if ((userName.Length() > 0)&&(sm.Match(userName()))) {
 					sendTo.Put(user, setRestOfString);
 					foundMatches = true;
@@ -3731,7 +3731,7 @@ ShareWindow::ParseUserTargets(const char * text, Hashtable<RemoteUserItem *, Str
 			if (foundMatches)
 				clauses.RemoveItemAt(j);
 		}
-	 
+
 	 	// If we *still* haven't found any matches, try a full-string match.
 	 	// This way, we can support tab-completed names with spaces.
 		if (sendTo.GetNumItems() == 0) {
@@ -3747,7 +3747,7 @@ ShareWindow::ParseUserTargets(const char * text, Hashtable<RemoteUserItem *, Str
 			}
 		}
 		return B_NO_ERROR;
-	} else 
+	} else
 		return B_ERROR;
 }
 
@@ -3758,12 +3758,12 @@ ShareWindow::SendOutMessageOrPing(const String & text, ChatWindow * optEchoTo, b
 	String targetStr, restOfString;
 	Hashtable<RemoteUserItem *, String> sendTo;
 	if (ParseUserTargets(text()+(isPing ? 6 : 5), sendTo, targetStr, restOfString) == B_NO_ERROR) {
-		if (sendTo.GetNumItems() > 0) { 
+		if (sendTo.GetNumItems() > 0) {
 			String pinging;
 			RemoteUserItem * user;
 			bool first = true;
 			bool showAllTargets = (optEchoTo ? optEchoTo : this)->ShowMessageTargets();
-			
+
 			for (HashtableIterator<RemoteUserItem *, String> iter(sendTo.GetIterator()); iter.HasData(); iter++) {
 				user = iter.GetKey();
 				const char * sendText = iter.GetValue().Cstr();
@@ -3771,7 +3771,7 @@ ShareWindow::SendOutMessageOrPing(const String & text, ChatWindow * optEchoTo, b
 
 				if (isPing) {
 					_netClient->SendPing(sid);
-				
+
 					if (pinging.Length() > 0)
 						pinging += ", ";
 
@@ -3781,25 +3781,25 @@ ShareWindow::SendOutMessageOrPing(const String & text, ChatWindow * optEchoTo, b
 
 				if ((isPing == false) && ((showAllTargets) || (first)))
 					LogMessage(LOG_LOCAL_USER_CHAT_MESSAGE, sendText, user->GetSessionID(), NULL, (isPing==false), optEchoTo);
-				
+
 				first = false;
 			}
-			
+
 			if (isPing) {
 				pinging = pinging.Prepend(str(STR_SENT_PING_REQUEST_TO));
 				LogMessage(LOG_INFORMATION_MESSAGE, pinging(), NULL, NULL, false, optEchoTo);
 			} else
 				_lastPrivateMessageTarget = targetStr;
-		} else { 
+		} else {
 			String temp(str(STR_UNKNOWN_USER));
 			temp += targetStr;
-			
+
 			if (isPing == false) {
 				temp += str(STR_MESSAGE);
 				temp += restOfString;
 				temp += str(STR_NOT_SENT);
 			}
-			
+
 			LogMessage(LOG_ERROR_MESSAGE, temp(), NULL, NULL, false, optEchoTo);
 		}
 	} else
@@ -3807,7 +3807,7 @@ ShareWindow::SendOutMessageOrPing(const String & text, ChatWindow * optEchoTo, b
 }
 
 
-void 
+void
 ShareWindow::
 LogPattern(const char * preamble, const String & pattern, ChatWindow * optEchoTo)
 {
@@ -3822,7 +3822,7 @@ LogPattern(const char * preamble, const String & pattern, ChatWindow * optEchoTo
 	LogMessage(LOG_INFORMATION_MESSAGE, iStr(), NULL, NULL, false, optEchoTo);
 }
 
-void 
+void
 ShareWindow::
 LogRateLimit(const char * preamble, uint32 limit, ChatWindow * optEchoTo)
 {
@@ -3833,7 +3833,7 @@ LogRateLimit(const char * preamble, uint32 limit, ChatWindow * optEchoTo)
 	 iStr += buf;
 	 iStr += str(STR_TOKEN_BYTES_PER_SECOND);
 	}
-	else 
+	else
 	{
 	 iStr += " (";
 	 iStr += str(STR_NO_LIMIT);
@@ -3842,7 +3842,7 @@ LogRateLimit(const char * preamble, uint32 limit, ChatWindow * optEchoTo)
 	LogMessage(LOG_INFORMATION_MESSAGE, iStr(), NULL, NULL, false, optEchoTo);
 }
 
-String 
+String
 ShareWindow::
 GetQualifiedSharedFileName(const String & name) const
 {
@@ -3875,7 +3875,7 @@ SendChatText(const String & t, ChatWindow * optEchoTo)
 	String altText;
 
 	String lowerText = text->ToLowerCase();
-	if (lowerText.StartsWith("/action ")) 
+	if (lowerText.StartsWith("/action "))
 	{
 	 altText = text->Substring(8).Prepend("/me ");
 	 text = &altText;	// oops, we'll use the alternate string instead
@@ -3953,7 +3953,7 @@ SendChatText(const String & t, ChatWindow * optEchoTo)
 	 if (text->Length() > 7) _fileNameQueryEntry->SetText(text->Cstr()+7);
 	 BMessage setMsg(SHAREWINDOW_COMMAND_CHANGE_FILE_NAME_QUERY); // in case we have a query going
 	 setMsg.AddBool("activate", true);						 // in case we don't
-	 PostMessage(&setMsg); 
+	 PostMessage(&setMsg);
 	}
 	else if (lowerText.StartsWith("/stop"))
 	{
@@ -3975,14 +3975,14 @@ SendChatText(const String & t, ChatWindow * optEchoTo)
 	}
 	else if (lowerText.StartsWith("/ignore"))
 	{
-	 if (text->Length() > 8) 
+	 if (text->Length() > 8)
 	 {
 		_ignorePattern = text->Substring(8).Trim();
 		String s(str(STR_IGNORE_PATTERN_SET_TO));
 		s += _ignorePattern;
 		LogMessage(LOG_INFORMATION_MESSAGE, s(), NULL, NULL, false, optEchoTo);
 	 }
-	 else 
+	 else
 	 {
 		_ignorePattern = "";
 		LogMessage(LOG_INFORMATION_MESSAGE, str(STR_IGNORE_PATTERN_REMOVED), NULL, NULL, false, optEchoTo);
@@ -3990,14 +3990,14 @@ SendChatText(const String & t, ChatWindow * optEchoTo)
 	}
 	else if (lowerText.StartsWith("/watch"))
 	{
-	 if (text->Length() > 7) 
+	 if (text->Length() > 7)
 	 {
 		_watchPattern = text->Substring(7).Trim();
 		String s(str(STR_WATCH_PATTERN_SET_TO));
 		s += _watchPattern;
 		LogMessage(LOG_INFORMATION_MESSAGE, s(), NULL, NULL, false, optEchoTo);
 	 }
-	 else 
+	 else
 	 {
 		_watchPattern = "";
 		LogMessage(LOG_INFORMATION_MESSAGE, str(STR_WATCH_PATTERN_REMOVED), NULL, NULL, false, optEchoTo);
@@ -4005,14 +4005,14 @@ SendChatText(const String & t, ChatWindow * optEchoTo)
 	}
 	else if (lowerText.StartsWith("/autopriv"))
 	{
-	 if (text->Length() > 10) 
+	 if (text->Length() > 10)
 	 {
 		_autoPrivPattern = text->Substring(10).Trim();
 		String s(str(STR_AUTOPRIV_PATTERN_SET_TO));
 		s += _autoPrivPattern;
 		LogMessage(LOG_INFORMATION_MESSAGE, s(), NULL, NULL, false, optEchoTo);
 	 }
-	 else 
+	 else
 	 {
 		_autoPrivPattern = "";
 		LogMessage(LOG_INFORMATION_MESSAGE, str(STR_AUTOPRIV_PATTERN_REMOVED), NULL, NULL, false, optEchoTo);
@@ -4026,7 +4026,7 @@ SendChatText(const String & t, ChatWindow * optEchoTo)
 	 s += _awayStatus;
 	 LogMessage(LOG_INFORMATION_MESSAGE, s(), NULL, NULL, false, optEchoTo);
 	}
-	else if ((lowerText.Equals("/away"))||(lowerText.StartsWith("/away "))) 
+	else if ((lowerText.Equals("/away"))||(lowerText.StartsWith("/away ")))
 	{
 	 if (text->Length() > 6) _oneTimeAwayStatus = text->Substring(6).Trim();
 	 MakeAway();
@@ -4048,7 +4048,7 @@ SendChatText(const String & t, ChatWindow * optEchoTo)
 	{
 	 _onIdleString = lowerText.Substring(7).Trim();
 
-	 String s(str(STR_IDLE_COMMAND_SET_TO)); 
+	 String s(str(STR_IDLE_COMMAND_SET_TO));
 	 s += " [";
 	 s += _onIdleString();
 	 s += "]";
@@ -4059,7 +4059,7 @@ SendChatText(const String & t, ChatWindow * optEchoTo)
 	 String ol = lowerText.Substring(9).Trim();
 	 _onLoginStrings.AddTail(ol);
 
-	 String report(str(STR_ADDED_STARTUP_COMMAND)); 
+	 String report(str(STR_ADDED_STARTUP_COMMAND));
 	 report += ol;
 	 LogMessage(LOG_INFORMATION_MESSAGE, report(), NULL, NULL, false, optEchoTo);
 	}
@@ -4069,7 +4069,7 @@ SendChatText(const String & t, ChatWindow * optEchoTo)
 	 LogMessage(LOG_INFORMATION_MESSAGE, str(STR_ONLOGIN_COMMANDS_CLEARED), NULL, NULL, false, optEchoTo);
 	}
 	else if (lowerText.Equals("/serverinfo"))
-	{ 
+	{
 	 _showServerStatus = true;
 	 _netClient->SendGetParamsMessage();	// request server status.
 	 LogMessage(LOG_INFORMATION_MESSAGE, str(STR_SERVER_STATUS_REQUESTED), NULL, NULL, false, optEchoTo);
@@ -4154,7 +4154,7 @@ SendChatText(const String & t, ChatWindow * optEchoTo)
 
 	 String s(str(STR_CUSTOM_WINDOW_TITLE_IS_NOW));
 	 s += ": ";
-	 s += arg ? arg : str(STR_DISABLED); 
+	 s += arg ? arg : str(STR_DISABLED);
 	 LogMessage(LOG_INFORMATION_MESSAGE, s(), NULL, NULL, false, optEchoTo);
 	}
 	else if (lowerText.StartsWith("/setulrate")) SetBandwidthLimit(true, lowerText, optEchoTo);
@@ -4184,7 +4184,7 @@ SendChatText(const String & t, ChatWindow * optEchoTo)
 	 LogHelp("onlogin",	STR_TOKEN_COMMAND,				STR_ADD_STARTUP_COMMAND,		 optEchoTo);
 	 LogHelp("priv",		STR_TOKEN_NAMES_OR_SESSION_IDS,	STR_OPEN_PRIVATE_CHAT_WINDOW,	 optEchoTo);
 	 LogHelp("ping",		STR_TOKEN_NAMES_OR_SESSION_IDS,	STR_PING_OTHER_CLIENTS,			optEchoTo);
-	 LogHelp("quit",		-1,							 STR_QUIT_BESHARE,				optEchoTo);	
+	 LogHelp("quit",		-1,							 STR_QUIT_BESHARE,				optEchoTo);
 	 LogHelp("screenshot", -1,							 STR_SHARE_SCREENSHOT,			optEchoTo);
 	 LogHelp("serverinfo", -1,							 STR_REQUEST_SERVER_STATUS,		optEchoTo);
 	 LogHelp("setdlrate",	STR_TOKEN_BYTES_PER_SECOND,		STR_SET_MAX_DOWNLOAD_RATE,		optEchoTo);
@@ -4239,12 +4239,12 @@ void ShareWindow::SetBandwidthLimit(bool upload, const String & lowerText, ChatW
 	uint32 limit = arg ? atoi(arg) : 0;
 	if (upload)
 	{
-	 _maxUploadRate = limit;	
+	 _maxUploadRate = limit;
 	 LogRateLimit(str(STR_MAX_UPLOAD_RATE_IS), _maxUploadRate, optEchoTo);
 	}
 	else
 	{
-	 _maxDownloadRate = limit;	
+	 _maxDownloadRate = limit;
 	 LogRateLimit(str(STR_MAX_DOWNLOAD_RATE_IS), _maxDownloadRate, optEchoTo);
 	}
 }
@@ -4281,7 +4281,7 @@ GetUserNameBySessionID(const char * sessionID) const
 {
 	RemoteUserItem * user;
 	return (_users.Get(sessionID, user) == B_NO_ERROR) ? user->GetVerbatimHandle() : NULL;
-}		
+}
 
 void ShareWindow::GetUserNameForSession(const char * sessionID, String & retUserName) const
 {
@@ -4333,7 +4333,7 @@ SetQueryInProgress(bool qp)
 		BMessenger toMe(this);
 		_queryInProgressRunner = new BMessageRunner(toMe, new BMessage(SHAREWINDOW_COMMAND_QUERY_IN_PROGRESS_ANIM), 100000LL); //	10fps
 	 }
-	 else 
+	 else
 	 {
 		delete _queryInProgressRunner;
 		_queryInProgressRunner = NULL;
@@ -4385,7 +4385,7 @@ DrawQueryInProgress(bool inProgress)
 	 }
 	 _radarSweep -= diff/2.0f;
 	}
-	else 
+	else
 	{
 	 clv->FillEllipse(center, radius.x, radius.y, B_SOLID_LOW);
 	 _radarSweep = 0.0f;
@@ -4395,7 +4395,7 @@ DrawQueryInProgress(bool inProgress)
 }
 
 
-void 
+void
 ShareWindow::UpdatePagingButtons()
 {
 	uint32 numPages = _resultsPages.GetNumItems();
@@ -4424,12 +4424,12 @@ ShareWindow::DispatchMessage(BMessage * msg, BHandler * handler)
 		{
 			switch(c)
 			{
-			 case B_ENTER: 
-				if ((_isConnected)&&(handler == _fileNameQueryEntry->TextView())) PostMessage(SHAREWINDOW_COMMAND_ENABLE_QUERY); 
+			 case B_ENTER:
+				if ((_isConnected)&&(handler == _fileNameQueryEntry->TextView())) PostMessage(SHAREWINDOW_COMMAND_ENABLE_QUERY);
 			 break;
-				
+
 			 case B_UP_ARROW: case B_DOWN_ARROW:
-				if (modifiers & B_COMMAND_KEY) 
+				if (modifiers & B_COMMAND_KEY)
 				{
 					_transferList->MoveSelectedItems((c == B_UP_ARROW) ? -1 : 1);
 					msg = NULL;
@@ -4465,7 +4465,7 @@ ShareWindow::LogStat(int statName, const char * statValue)
 	temp += statValue;
 	LogMessage(LOG_INFORMATION_MESSAGE, temp());
 }
-	
+
 
 String
 ShareWindow::MakeTimeElapsedString(int64 t) const
@@ -4548,7 +4548,7 @@ ShareWindow::IsFieldSuperset(const BMessage & m1, const BMessage & m2) const
 	for (int32 i = 0; (m1.GetInfo(B_ANY_TYPE, i, &name, &type1, &count1) == B_NO_ERROR); i++) {
 		type_code type2;
 		int32 count2;
-		
+
 		if ((m2.GetInfo(name, &type2, &count2) != B_NO_ERROR)
 			|| (type2 != type1)||(count2 != count1))
 			return false;
@@ -4575,7 +4575,7 @@ ShareWindow::IsFieldSuperset(const BMessage & m1, const BMessage & m2) const
 		}
 	}
 	return true;
-}				
+}
 
 
 void
@@ -4595,7 +4595,7 @@ ShareWindow::BeginAutoReconnect()
 	else DoAutoReconnect();
 }
 
-void 
+void
 ShareWindow::DoAutoReconnect()
 {
 	ResetAutoReconnectState(false);	// once the connection is started, the runner is unnecessary
@@ -4620,7 +4620,7 @@ ShareWindow::ReconnectToServer()
 			TRACE_BESHAREWINDOW(("ShareWindow::ReconnectToServer has host = %s\n", host));
 			const char * portStr = tok.GetNextToken();
 			int port = portStr ? atoi(portStr) : 0;
-			
+
 			if (port <= 0)
 				port = 2960;
 
@@ -4633,21 +4633,21 @@ ShareWindow::ReconnectToServer()
 }
 
 
-void 
+void
 ShareWindow::ResetAutoReconnectState(bool resetCountToo)
 {
 	TRACE_BESHAREWINDOW(("ShareWindow::ResetAutoReconnectState start\n"));
-	
+
 	delete _autoReconnectRunner;
 	_autoReconnectRunner = NULL;
-	
+
 	if (resetCountToo)
 		_autoReconnectAttemptCount = 0;
 	TRACE_BESHAREWINDOW(("ShareWindow::ResetAutoReconnectState end\n"));
 }
 
 
-void 
+void
 ShareWindow::PauseAllUploads()
 {
 	for (int32 i=_transferList->CountItems()-1; i>=0; i--) {
@@ -4663,7 +4663,7 @@ ShareWindow::PauseAllUploads()
 }
 
 
-void 
+void
 ShareWindow::ResumeAllUploads()
 {
 	uint32 num = _transferList->CountItems();
@@ -4681,11 +4681,11 @@ ShareWindow::ResumeAllUploads()
 }
 
 
-void 
+void
 ShareWindow::SetLocalUserName(const char * name)
-{	 
+{
 	_userNameEntry->SetText(name);
-		
+
 	// See if the new name is in our user name list;	if not, add it to the beginning
 	UpdateLRUMenu(_userNameMenu, name, SHAREWINDOW_COMMAND_USER_SELECTED_USER_NAME, "username", 20, true);
 
@@ -4696,7 +4696,7 @@ ShareWindow::SetLocalUserName(const char * name)
 	_resultsView->MakeFocus();	// so that when the user presses a key, it drops to the _textEntry
 }
 
-void 
+void
 ShareWindow::SetLocalUserStatus(const char * status)
 {
 	_userStatusEntry->SetText(status);
@@ -4788,7 +4788,7 @@ status_t ShareWindow::ShareScreenshot(const String & fileName)
 			 }
 
 			 BBitmapStream stream(convertedBitmap ? convertedBitmap : screenshot);
-			 if (roster->Translate(&stream, NULL, NULL, &file, B_PNG_FORMAT) == B_NO_ERROR) 
+			 if (roster->Translate(&stream, NULL, NULL, &file, B_PNG_FORMAT) == B_NO_ERROR)
 			 {
 				const char * mimeString = "image/png";
 				(void) file.WriteAttr("BEOS:TYPE", B_MIME_TYPE, 0, mimeString, strlen(mimeString)+1);
@@ -4817,7 +4817,7 @@ void ShareWindow::DoScreenShot(const String & fn, ChatWindow * optEchoTo)
 	{
 	 if (fileName.EndsWith(".png") == false) fileName += ".png";
 	}
-	else 
+	else
 	{
 	 // Generate a nice filename based on our name and the time
 	 fileName = "beshare_screenshot-";
@@ -4847,7 +4847,7 @@ void ShareWindow::DoScreenShot(const String & fn, ChatWindow * optEchoTo)
 
 	 ad += fn;
 	 String sid = _netClient->GetLocalSessionID();
-	 if ((IsConnected())&&(sid.Length() > 0)) 
+	 if ((IsConnected())&&(sid.Length() > 0))
 	 {
 		ad += "@";
 		ad += sid;
@@ -4867,7 +4867,7 @@ void ShareWindow::DoScreenShot(const String & fn, ChatWindow * optEchoTo)
 void
 ShareWindow::SetSplit(int which, int pos, bool isPercent, char dir)
 {
-	
+
 	// TODO
 }
 

@@ -10,7 +10,7 @@
 #include <TextControl.h>
 #include <Directory.h>
 
-#include "ColumnListView.h"
+#include <santa/ColumnListView.h>
 
 #include "util/Queue.h"
 #include "util/String.h"
@@ -101,7 +101,7 @@ protected:
 	virtual void SendChatText(const String & text, ChatWindow * optEchoTo) = 0;
 	virtual BView * GetChatView() const = 0;
 	virtual String GetQualifiedSharedFileName(const String & name) const = 0;
-	
+
 	void MakeChatTextFocus() {_chatText->MakeFocus();}
 
 	virtual void InsertChatText(LogDestinationType dest, const char * text, int textLen, text_run_array * optStyle);
@@ -152,7 +152,7 @@ private:
 	String _customWindowTitle;
 	String _fontName;
 	float _fontSize;
-	rgb_color _colors[NUM_COLORS]; 
+	rgb_color _colors[NUM_COLORS];
 
 	ReflowingTextView * _chatText;
 	BTextControl * _textEntry;

@@ -16,15 +16,15 @@ NAME= BeShare
 #	DRIVER: Kernel Driver
 TYPE= APP
 
-# 	if you plan to use localization features 
+# 	if you plan to use localization features
 # 	specify the application MIME siganture
-APP_MIME_SIG= 
+APP_MIME_SIG=
 
 #	add support for new Pe and Eddie features
 #	to fill in generic makefile
 
 #%{
-# @src->@ 
+# @src->@
 
 #	specify the source files to use
 #	full paths or paths relative to the makefile can be included
@@ -53,16 +53,6 @@ SRCS= ChatWindow.cpp \
 		ShareWindow.cpp \
 		TransferListView.cpp \
 		UserListView.cpp \
-		santa/BetterScrollView/BetterScrollView.cpp \
-		santa/ColumnListView/CLVColumn.cpp \
-		santa/ColumnListView/CLVColumnLabelView.cpp \
-		santa/ColumnListView/CLVEasyItem.cpp \
-		santa/ColumnListView/CLVListItem.cpp \
-		santa/ColumnListView/ColumnListView.cpp \
-		santa/Cursors/Cursors.cpp \
-		santa/NewStrings/NewStrings.cpp \
-		santa/PrefilledBitmap/PrefilledBitmap.cpp \
-		santa/ScrollViewCorner/ScrollViewCorner.cpp \
 		../muscle/besupport/ConvertMessages.cpp \
 		../muscle/iogateway/AbstractMessageIOGateway.cpp \
 		../muscle/iogateway/MessageIOGateway.cpp \
@@ -112,13 +102,13 @@ SRCS= ChatWindow.cpp \
 #	specify the resource definition files to use
 #	full path or a relative path to the resource file can be used.
 RDEFS= BeShare.rdef
-	
-#	specify the resource files to use. 
+
+#	specify the resource files to use.
 #	full path or a relative path to the resource file can be used.
 #	both RDEFS and RSRCS can be defined in the same makefile.
-RSRCS= 
+RSRCS=
 
-# @<-src@ 
+# @<-src@
 #%}
 
 #	end support for Pe and Eddie
@@ -134,12 +124,12 @@ RSRCS=
 #
 #	-	for localization support add following libs:
 #		locale localestub
-#		
+#
 #	- 	if your library does not follow the standard library
 #		naming scheme you need to specify the path to the library
 #		and it's name
 #		library: my_lib.a entry: my_lib.a or path/my_lib.a
-LIBS= be root translation network stdc++
+LIBS= be translation network santa $(STDCPPLIBS)
 
 #	specify additional paths to directories following the standard
 #	libXXX.so or libXXX.a naming scheme.  You can specify full paths
@@ -147,19 +137,13 @@ LIBS= be root translation network stdc++
 #	be recursive, so include all of the paths where libraries can
 #	be found.  Directories where source files are found are
 #	automatically included.
-LIBPATHS= 
+LIBPATHS=
 
 #	additional paths to look for system headers
 #	thes use the form: #include <header>
 #	source file directories are NOT auto-included here
-SYSTEM_INCLUDE_PATHS = santa ../muscle \
-	../muscle/zlib/zlib \
-	santa santa/BetterScrollView \
-	santa/ColumnListView \
-	santa/Cursors \
-	santa/NewStrings \
-	santa/PrefilledBitmap \
-	santa/ScrollViewCorner 
+SYSTEM_INCLUDE_PATHS = ../muscle \
+	../muscle/zlib/zlib
 
 #	additional paths to look for local headers
 #	thes use the form: #include "header"
@@ -195,7 +179,7 @@ WARNINGS = ALL
 #	specify whether image symbols will be created
 #	so that stack crawls in the debugger are meaningful
 #	if TRUE symbols will be created
-SYMBOLS = 
+SYMBOLS =
 
 #	specify debug settings
 #	if TRUE will allow application to be run from a source-level
@@ -209,16 +193,16 @@ COMPILER_FLAGS =
 LINKER_FLAGS =
 
 #	specify the version of this particular item
-#	(for example, -app 3 4 0 d 0 -short 340 -long "340 "`echo -n -e '\302\251'`"1999 GNU GPL") 
+#	(for example, -app 3 4 0 d 0 -short 340 -long "340 "`echo -n -e '\302\251'`"1999 GNU GPL")
 #	This may also be specified in a resource.
-APP_VERSION = 
+APP_VERSION =
 
 #	(for TYPE == DRIVER only) Specify desired location of driver in the /dev
 #	hierarchy. Used by the driverinstall rule. E.g., DRIVER_PATH = video/usb will
 #	instruct the driverinstall rule to place a symlink to your driver's binary in
 #	~/add-ons/kernel/drivers/dev/video/usb, so that your driver will appear at
 #	/dev/video/usb when loaded. Default is "misc".
-DRIVER_PATH = 
+DRIVER_PATH =
 
 ## include the makefile-engine
 DEVEL_DIRECTORY := \

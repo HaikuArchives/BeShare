@@ -4,7 +4,8 @@
 #include <LayoutBuilder.h>
 
 #include "ShareStrings.h"
-#include "CLVEasyItem.h"
+
+#include <santa/CLVEasyItem.h>
 
 namespace beshare {
 
@@ -21,7 +22,7 @@ static BRect ExtractRect(const BMessage & msg);
 BRect ExtractRect(const BMessage & msg)
 {
 	BRect rect;
-	if (msg.FindRect("frame", &rect) == B_NO_ERROR) 
+	if (msg.FindRect("frame", &rect) == B_NO_ERROR)
 	{
 		BRect screenBounds;
 		{
@@ -35,7 +36,7 @@ BRect ExtractRect(const BMessage & msg)
 	else return BRect(30,523,670,700);
 }
 
-void 
+void
 PrivateChatWindow :: UpdateTitleBar()
 {
 	const String & s = GetCustomWindowTitle();
@@ -54,16 +55,16 @@ PrivateChatWindow :: PrivateChatWindow(bool loggingEnabled, const BMessage & msg
 
 	_logEnabled = new BCheckBox(NULL, str(STR_LOG), NULL);
 	if (loggingEnabled) _logEnabled->SetValue(B_CONTROL_ON);
-	
+
 	// text control for indicating users stretches all the way across the top of the window
 	_usersEntry = new BTextControl(NULL, str(STR_CHAT_WITH), defaultStr, new BMessage(PRIVATE_WINDOW_USER_TEXT_CHANGED));
 	_usersEntry->SetDivider(_usersEntry->StringWidth(str(STR_CHAT_WITH))+4.0f);
 	_usersEntry->SetTarget(toMe);
 	_usersEntry->MakeFocus();
-	
+
 	// chat view is the left side of the split...
 	_chatView = new BView(NULL, 0);
-	
+
 	// the user list is the right side of the split
 	const float ID_WIDTH=24.0f;
 	CLVContainerView * cv;
@@ -73,7 +74,7 @@ PrivateChatWindow :: PrivateChatWindow(bool loggingEnabled, const BMessage & msg
 	_usersList->AddColumn(new CLVColumn(str(STR_ID), ID_WIDTH, CLV_SORT_KEYABLE|CLV_RIGHT_JUSTIFIED));
 	_usersList->SetSortFunction((CLVCompareFuncPtr)CompareFunc);
 	BMessage tableMsg;
-	if (msg.FindMessage("table", &tableMsg) == B_NO_ERROR) 
+	if (msg.FindMessage("table", &tableMsg) == B_NO_ERROR)
 	{
 		int numColumns = _usersList->CountColumns();
 		int32 * order = new int32[numColumns];
@@ -99,8 +100,8 @@ PrivateChatWindow :: PrivateChatWindow(bool loggingEnabled, const BMessage & msg
 			.Add(_chatView)
 			.Add(cv)
 		.End();
-	
-	
+
+
 	float fontSize;
 	if (msg.FindFloat("fontsize", &fontSize) == B_NO_ERROR) SetFontSize(fontSize);
 
@@ -161,7 +162,7 @@ void PrivateChatWindow :: MessageReceived(BMessage * msg)
 		break;
 
 		case PRIVATE_WINDOW_ADD_USER:
-		{ 
+		{
 			const char * id;
 			const char * name;
 			if ((msg->FindString("name", &name) == B_NO_ERROR)&&
@@ -177,7 +178,7 @@ void PrivateChatWindow :: MessageReceived(BMessage * msg)
 		break;
 
 		case PRIVATE_WINDOW_REMOVE_USER:
-		{ 
+		{
 			const char * id;
 			if (msg->FindString("id", &id) != B_NO_ERROR) id = NULL;
 
@@ -260,7 +261,7 @@ bool PrivateChatWindow :: OkayToLog(LogMessageType /*messageType*/, LogDestinati
 		default:						 return false;
 	}
 }
-	
+
 
 bool PrivateChatWindow :: ShowTimestamps(LogDestinationType dest) const
 {
@@ -292,7 +293,7 @@ void PrivateChatWindow :: SendChatText(const String & text, ChatWindow *)
 	if ((text.StartsWith("/"))&&(!text.StartsWith("//")))
 	{
 		_munged = false;
-		// We don't want private /actions to be seen by everyone, so 
+		// We don't want private /actions to be seen by everyone, so
 		// we'll transform them into /msg strings!
 		int actionKeywordChars = 0;
 			  if (text.StartsWith("/me "))	  actionKeywordChars = 4;
@@ -325,7 +326,7 @@ void PrivateChatWindow :: SendChatText(const String & text, ChatWindow *)
 			target.Replace(' ', CLUMP_CHAR);  // keep spaces in target str from being interpreted as delimiters
 			pre += target;
 			pre += ' ';
-			
+
 			String myName;
 			GetLocalUserName(myName);
 			pre += myName;
@@ -333,7 +334,7 @@ void PrivateChatWindow :: SendChatText(const String & text, ChatWindow *)
 			altText = pre.Append(altText);
 		}
 	}
-	else 
+	else
 	{
 		String target(_usersEntry->Text());
 		target = target.Trim();
@@ -355,7 +356,7 @@ void PrivateChatWindow :: SendChatText(const String & text, ChatWindow *)
 
 status_t
 PrivateChatWindow ::
-ExpandAlias(const String & str, String & retStr) const 
+ExpandAlias(const String & str, String & retStr) const
 {
 	status_t ret = B_ERROR;
 	if (_mainWindow->Lock())
@@ -378,7 +379,7 @@ CompareFunc(const CLVListItem* item1, const CLVListItem* item2, int32 sortKey)
 		case 1:  return atoi(e1->GetColumnContentText(1))-atoi(e2->GetColumnContentText(1));
 	}
 	return 0;
-}	
+}
 
 void
 PrivateChatWindow ::
@@ -406,7 +407,7 @@ DispatchMessage(BMessage * msg, BHandler * handler)
 	if (msg) ChatWindow::DispatchMessage(msg, handler);
 }
 
-String 
+String
 PrivateChatWindow ::
 GetQualifiedSharedFileName(const String & name) const
 {

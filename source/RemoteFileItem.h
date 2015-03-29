@@ -4,7 +4,7 @@
 #include "util/Queue.h"
 #include "message/Message.h"
 
-#include "CLVListItem.h"
+#include <santa/CLVListItem.h>
 
 using namespace muscle;
 
@@ -39,7 +39,7 @@ public:
 private:
 	RemoteUserItem * _owner;
 	String _fileName;
-	MessageRef _attributes;		
+	MessageRef _attributes;
 	float _textOffset;
 };
 

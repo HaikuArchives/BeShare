@@ -3,7 +3,9 @@
 
 #include "util/String.h"
 
-#include "CLVColumn.h"
+#include <Font.h>
+#include <View.h>
+#include <santa/CLVColumn.h>
 
 #include "RemoteFileItem.h"
 #include "RemoteUserItem.h"
@@ -18,7 +20,7 @@ public:
 	ShareColumn(int type, const char * attrName, const char * label, float width);
 
 	virtual ~ShareColumn() {/* empty */}
-	
+
 	const char * GetAttributeName() const {return _attrName();}
 
 	const char * GetFileCellText(const RemoteFileItem * item) const;

@@ -1,7 +1,7 @@
 #ifndef RESULTSVIEW_H
 #define RESULTSVIEW_H
 
-#include "ColumnListView.h"
+#include <santa/ColumnListView.h>
 
 namespace beshare {
 
@@ -9,13 +9,13 @@ class ResultsView : public ColumnListView
 {
 public:
 	ResultsView(uint32 replyWhat, BRect frame, CLVContainerView** containerView,
-		const char* name = NULL, 
-		uint32 resizingMode = B_FOLLOW_LEFT | B_FOLLOW_TOP, 
-		uint32 flags = B_WILL_DRAW | B_FRAME_EVENTS | B_NAVIGABLE, 
-		list_view_type type = B_SINGLE_SELECTION_LIST, 
-		bool hierarchical = false, bool horizontal = true, 
-		bool vertical = true, bool scroll_view_corner = true, 
-		border_style border = B_NO_BORDER, 
+		const char* name = NULL,
+		uint32 resizingMode = B_FOLLOW_LEFT | B_FOLLOW_TOP,
+		uint32 flags = B_WILL_DRAW | B_FRAME_EVENTS | B_NAVIGABLE,
+		list_view_type type = B_SINGLE_SELECTION_LIST,
+		bool hierarchical = false, bool horizontal = true,
+		bool vertical = true, bool scroll_view_corner = true,
+		border_style border = B_NO_BORDER,
 		const BFont* labelFont = be_plain_font);
 
 	~ResultsView();

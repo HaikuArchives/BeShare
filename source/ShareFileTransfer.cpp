@@ -15,7 +15,8 @@
 #include "iogateway/MessageIOGateway.h"
 #include "reflector/RateLimitSessionIOPolicy.h"
 
-#include "Colors.h"
+#include <santa/Colors.h>
+
 #include "ChatWindow.h"
 #include "ShareUtils.h"
 #include "md5.h"
@@ -33,7 +34,7 @@ namespace beshare {
 static rgb_color ModifyColor(rgb_color col, int delta)
 {
 	int vars[3] = {col.red, col.green, col.blue};
-	int max = muscleMax(vars[0], muscleMax(vars[1], vars[2])); 
+	int max = muscleMax(vars[0], muscleMax(vars[1], vars[2]));
 	bool allSame = ((vars[0] == vars[1])
 		&& (vars[1] == vars[2]));
 	for (int i=0; i<3; i++)
@@ -62,7 +63,7 @@ static void CheckPath(String & path)
 
 
 /* Abstract base class */
-class MD5Looper : public BLooper 
+class MD5Looper : public BLooper
 {
 public:
 	MD5Looper() : BLooper(NULL, B_LOW_PRIORITY)
@@ -74,9 +75,9 @@ public:
 	{
 		_replyCode = replyCode;
 		_msgRef	 = msgRef;
-		_replyTo	= replyTo; 
+		_replyTo	= replyTo;
 		_shutdownFlagMD5 = shutdownFlag;
-		
+
 
 		if (Run() >= 0) {
 			BMessage whatever;
@@ -113,10 +114,10 @@ class MD5SendLooper : public MD5Looper
 {
 public:
 	MD5SendLooper(const Hashtable<String, OffsetAndPath>& fileSet, const BDirectory& dir, off_t bytesFromBack)
-		: 
+		:
 		_fileSet(fileSet),
 		_dir(dir),
-		_bytesFromBack(bytesFromBack) 
+		_bytesFromBack(bytesFromBack)
 	{/* empty */}
 
 	virtual void MessageReceived(BMessage*)
@@ -134,10 +135,10 @@ public:
 			BDirectory dir(_dir);
 			StringTokenizer tok(nextValue._path(), "/");
 			const char * nextDir;
-			
+
 			while ((nextDir = tok.GetNextToken()) != NULL) {
 				BDirectory subDir(&dir, nextDir);
-				if (subDir.InitCheck() == B_NO_ERROR) 
+				if (subDir.InitCheck() == B_NO_ERROR)
 					dir = subDir;
 				else {
 					dir.Unset();	// oops, nevermind;	file doesn't exist
@@ -161,10 +162,10 @@ public:
 			(void) HashFileMD5(BEntry(&_entryRefs[i], true), fileOffset, _bytesFromBack, retBytesHashed, digest, _shutdownFlagMD5);
 			msg.AddInt64("offsets", fileOffset);
 			msg.AddString("beshare:Path", _entryPaths[i]);
-			
+
 			if (_bytesFromBack > 0)
 				msg.AddInt64("numbytes", retBytesHashed);
-			
+
 			msg.AddData("md5", B_RAW_TYPE, digest, (fileOffset > 0) ? sizeof(digest) : 1);
 		}
 		Reply();
@@ -216,7 +217,7 @@ public:
 						// readLength now gets the value to seek too,
 						// and offset is now the number of bytes to hash.
 						// Just the opposite of the var names, but, oh well
-						off_t temp = readLength;		
+						off_t temp = readLength;
 						readLength = offset - readLength;	// readLength is now the seekTo value
 						offset = temp;							// and offset is now the numBytes value
 					}
@@ -284,11 +285,11 @@ ShareFileTransfer::~ShareFileTransfer()
 	MD5Looper* next;
 	for (HashtableIterator<MD5Looper*, bool> iter(_md5Loopers.GetIterator()); iter.HasData(); iter++) {
 		next = iter.GetKey();
-		
+
 		if (next->Lock())
 			next->Quit();
 	}
-	
+
 	if (_mtt) {
 		_mtt->ShutdownInternalThread();
 		delete _mtt;
@@ -354,12 +355,12 @@ ShareFileTransfer::SetBandwidthLimit(uint32 limit)
 	TRACE_SHAREFILETRANFER(("%s::%s : begin\n",CLASSNAME, __func__));
 	if (_bandwidthLimit != limit) {
 		_bandwidthLimit = limit;
-		
+
 		if (_mtt) {
 			AbstractSessionIOPolicyRef pref;
 			if (_bandwidthLimit > 0)
 				pref.SetRef(new RateLimitSessionIOPolicy(_bandwidthLimit));
-			
+
 			if (_uploadSession)
 				_mtt->SetNewOutputPolicy(pref);
 			else
@@ -369,7 +370,7 @@ ShareFileTransfer::SetBandwidthLimit(uint32 limit)
 }
 
 
-void 
+void
 ShareFileTransfer::AddRequestedFileName(const char* fileName, off_t optStartByte, const char* path, BPoint* point)
 {
 	TRACE_SHAREFILETRANFER(("%s::%s : begin\n",CLASSNAME, __func__));
@@ -378,14 +379,14 @@ ShareFileTransfer::AddRequestedFileName(const char* fileName, off_t optStartByte
 	_origFileSet.Put(s, oap);
 	_displayFileSet.Put(s, oap);
 	_fileSet.Put(s, oap);
-	
+
 	if (point)
 		_pointSet.Put(s, *point);
 }
 
 
 void
-ShareFileTransfer::UpdateRemoteUserName() 
+ShareFileTransfer::UpdateRemoteUserName()
 {
 	TRACE_SHAREFILETRANFER(("%s::%s : begin\n",CLASSNAME, __func__));
 	const char * name = ((ShareWindow*)Looper())->GetUserNameBySessionID(_remoteSessionID());
@@ -396,7 +397,7 @@ ShareFileTransfer::UpdateRemoteUserName()
 }
 
 
-status_t 
+status_t
 ShareFileTransfer::InitConnectSession(const char * hostName, uint16 port, uint32 remoteIP, const char * remoteSessionID)
 {
 	TRACE_SHAREFILETRANFER(("%s::%s : begin\n",CLASSNAME, __func__));
@@ -413,7 +414,7 @@ ShareFileTransfer::InitConnectSession(const char * hostName, uint16 port, uint32
 	_currentFileBytesDone = _currentFileSize = -1;
 	_transferStamps.Clear();
 	_uploadSession = (_origFileSetSize == 0);
-	
+
 	if (_uploadSession)
 		((ShareWindow*)Looper())->DoBeep(SYSTEM_SOUND_UPLOAD_STARTED);
 
@@ -441,7 +442,7 @@ ShareFileTransfer::InitAcceptSession(const char * remoteSessionID)
 	_currentFileBytesDone = _currentFileSize = -1;
 	_transferStamps.Clear();
 	_uploadSession = (_origFileSetSize == 0);
-	
+
 	if (_uploadSession)
 		((ShareWindow*)Looper())->DoBeep(SYSTEM_SOUND_UPLOAD_STARTED);
 
@@ -467,13 +468,13 @@ ShareFileTransfer::InitAcceptSession(const char * remoteSessionID)
 
 	if (ret == B_NO_ERROR)
 		_isAccepting = true;
-	
+
 	UpdateTransferTime();	// enable inactivity timeout when waiting for a connection
 	return ret;
 }
 
 
-status_t 
+status_t
 ShareFileTransfer::InitSocketUploadSession(const ConstSocketRef& socket, uint32 remoteIP, bool sendQueuedNotify)
 {
 	TRACE_SHAREFILETRANFER(("%s::%s : begin\n",CLASSNAME, __func__));
@@ -514,7 +515,7 @@ ShareFileTransfer::GetTransferSessionRef()
 		else
 			workerRef()->SetInputPolicy(pref);
 	}
-	return workerRef; 
+	return workerRef;
 }
 
 
@@ -531,7 +532,7 @@ ShareFileTransfer::SendNotifyQueuedMessage()
 }
 
 
-void 
+void
 ShareFileTransfer::MessageReceived(BMessage* msg)
 {
 	switch(msg->what)
@@ -549,11 +550,11 @@ ShareFileTransfer::MessageReceived(BMessage* msg)
 					looper->Quit();
 
 				Message* pmsg = msgRef();
-				const char* nextFile; 
+				const char* nextFile;
 				for (int i = 0; (pmsg->FindString("files", i, &nextFile) == B_NO_ERROR); i++) {
 					String nextPath;
 					if (pmsg->FindString("beshare:Path", i, nextPath) == B_NO_ERROR)
-						CheckPath(nextPath); 
+						CheckPath(nextPath);
 
 					uint64 offset = 0LL;
 					(void) pmsg->FindInt64("offsets", i, (int64*) &offset);
@@ -566,7 +567,7 @@ ShareFileTransfer::MessageReceived(BMessage* msg)
 					_origFileSetSize = numFiles;
 					_fileSetIter = _fileSet.GetIterator();
 					((ShareWindow*)Looper())->RefreshTransferItem(this);
-					((ShareWindow*)Looper())->DequeueTransferSessions();	
+					((ShareWindow*)Looper())->DequeueTransferSessions();
 					DoUpload();
 				} else
 					AbortSession(true);	// he's gotta ask for something, otherwise why did he connect?
@@ -585,10 +586,10 @@ ShareFileTransfer::MessageReceived(BMessage* msg)
 				msgRef = looper->GetMessageRef();
 				if (looper->Lock())
 					looper->Quit();
-				
+
 				if (_mtt)
 					_mtt->SendMessageToSessions(msgRef);
-				
+
 				((ShareWindow*)Looper())->RefreshTransferItem(this);
 				((ShareWindow*)Looper())->DequeueTransferSessions();	 // in case the resume changed our sort position
 			}
@@ -640,7 +641,7 @@ ShareFileTransfer::MessageReceived(BMessage* msg)
 										fileRequest()->AddString("beshare:FromUserName", localUserName);
 										fileRequest()->AddInt32("mm", MUNGE_MODE_XOR);	// let him know we prefer XOR munging, if he can do that
 
-										// Reading files and calculating md5 hashes could take a long time if there are lots of files, 
+										// Reading files and calculating md5 hashes could take a long time if there are lots of files,
 										// or the files are big, so I'll do it all in a background thread instead.
 										MD5Looper * md5Looper = new MD5SendLooper(_fileSet, _dir, _partialHashSize);
 										if (md5Looper->StartProcessing(TRANSFER_COMMAND_MD5_SEND_READ_DONE, fileRequest, BMessenger(this), &_shutdownFlag) == B_NO_ERROR) {
@@ -654,7 +655,7 @@ ShareFileTransfer::MessageReceived(BMessage* msg)
 									} else
 										AbortSession(true);
 								}
-							} 
+							}
 							((ShareWindow*)Looper())->FileTransferConnected(this);
 						}
 						break;
@@ -677,18 +678,18 @@ ShareFileTransfer::MessageReceived(BMessage* msg)
 
 							if (_autoRestart == false)
 								((ShareWindow*)Looper())->FileTransferDisconnected(this);
-							
+
 							if (_mtt) {
 								_mtt->ShutdownInternalThread();
 								delete _mtt;	// might as well get rid of it, it's useless now
 								_mtt = NULL;
 							}
 							ResetTransferTime();
-					
+
 							if (_autoRestart) {
 								_autoRestart = false;
 								RestartSession();
-								((ShareWindow*)Looper())->DequeueTransferSessions();	
+								((ShareWindow*)Looper())->DequeueTransferSessions();
 							}
 						}
 						break;
@@ -708,22 +709,22 @@ ShareFileTransfer::MessageReceived(BMessage* msg)
 									DoUpload();
 							}
 						break;
-/*						
+/*
 						case MTT_EVENT_SESSION_ATTACHED:
 							TRACE_SHAREFILETRANFER(("ShareFileTransfer::MessageReceived : BMessage : MUSCLE_THREAD_SIGNAL (MTT_EVENT_SESSION_ATTACHED)\n"));
 							MessageReceived(next);
 						break;
-						
+
 						case MTT_EVENT_SESSION_DETACHED:
 							TRACE_SHAREFILETRANFER(("ShareFileTransfer::MessageReceived : BMessage : MUSCLE_THREAD_SIGNAL (MTT_EVENT_SESSION_DETACHED)\n"));
 							MessageReceived(next);
 						break;
-						
+
 						case MTT_EVENT_FACTORY_ATTACHED:
 							TRACE_SHAREFILETRANFER(("ShareFileTransfer::MessageReceived : BMessage : MUSCLE_THREAD_SIGNAL (MTT_EVENT_FACTORY_ATTACHED)\n"));
 							MessageReceived(next);
 						break;
-						
+
 						case MTT_EVENT_SERVER_EXITED:
 							TRACE_SHAREFILETRANFER(("ShareFileTransfer::MessageReceived : BMessage : MUSCLE_THREAD_SIGNAL (MTT_EVENT_SERVER_EXITED)\n"));
 							MessageReceived(next);
@@ -732,7 +733,7 @@ ShareFileTransfer::MessageReceived(BMessage* msg)
 				}
 			}
 		}
-		break;				
+		break;
 	}
 }
 
@@ -764,7 +765,7 @@ bool
 ShareFileTransfer::DoUploadAux()
 {
 	TRACE_SHAREFILETRANFER(("%s::%s : begin\n",CLASSNAME, __func__));
-	if (_isWaitingOnLocal) 
+	if (_isWaitingOnLocal)
 		return false;	// not yet!
 
 	if (_mtt) {
@@ -788,8 +789,8 @@ ShareFileTransfer::DoUploadAux()
 								for (ssize_t x=0; x<numBytes; x++)
 									scratchBuffer[x] ^= 0xFF;
 							break;
-	
-							default:	
+
+							default:
 								unknownMungeMode = true;	// oops, we don't how to do that that munge.	We'll leave the data as-is.
 							break;
 						}
@@ -816,7 +817,7 @@ ShareFileTransfer::DoUploadAux()
 					((ShareWindow*)Looper())->AddToTransferCounts(true, (uint32) numBytes);
 					if (OnceEvery(OPTIONAL_REFRESH_INTERVAL, _lastRefreshTime))
 						((ShareWindow *)Looper())->RefreshTransferItem(this);
-					return false;	
+					return false;
 				}
 
 				if (numBytes == 0) {
@@ -880,17 +881,17 @@ ShareFileTransfer::DoUploadAux()
 							header()->AddString("beshare:Kind", attrName);
 							_bitmap = ((ShareWindow*)Looper())->GetBitmap(attrName);
 						} else
-							_bitmap = ((ShareWindow*)Looper())->GetBitmap(NULL); 
+							_bitmap = ((ShareWindow*)Looper())->GetBitmap(NULL);
 
 						while(_currentFile.GetNextAttrName(attrName) == B_NO_ERROR) {
 							struct attr_info attrInfo;
 							if ((_currentFile.GetAttrInfo(attrName, &attrInfo) == B_NO_ERROR)
 								&& (attrInfo.size > 0)) {
 								char * attrData = new char[attrInfo.size];
-								
-								if (_currentFile.ReadAttr(attrName, attrInfo.type, 0L, attrData, attrInfo.size) == attrInfo.size) 
+
+								if (_currentFile.ReadAttr(attrName, attrInfo.type, 0L, attrData, attrInfo.size) == attrInfo.size)
 									(void) header()->AddData(attrName, attrInfo.type, attrData, attrInfo.size);
-								
+
 								delete [] attrData;
 							}
 						}
@@ -918,7 +919,7 @@ ShareFileTransfer::DoUploadAux()
 static const uint64 BESHARE_UNKNOWN_BAN_TIME_LEFT = (uint64)-2;
 
 
-void 
+void
 ShareFileTransfer::MessageReceived(const MessageRef& msgRef)
 {
 	Message * msg = msgRef.GetItemPointer();
@@ -965,7 +966,7 @@ ShareFileTransfer::MessageReceived(const MessageRef& msgRef)
 			TRACE_SHAREFILETRANFER(("%s::%s : \n",CLASSNAME, __func__));
 			//msg->PrintToStream();
 			TRACE_SHAREFILETRANFER(("ShareFileTransfer::MessageReceived : MessageRef (TRANSFER_COMMAND_FILE_LIST) \n"));
-			const char * file;				
+			const char * file;
 			if ((_uploadSession)
 				&& (msg->FindString("files", &file) == B_NO_ERROR)) {	// make sure he's asking for at least one file
 				TRACE_SHAREFILETRANFER(("ShareFileTransfer::MessageReceived : MessageRef (TRANSFER_COMMAND_FILE_LIST) Files exist file = %s\n", file));
@@ -995,7 +996,7 @@ ShareFileTransfer::MessageReceived(const MessageRef& msgRef)
 				AbortSession(true);	// you're going the wrong way buddy!
 		}
 		TRACE_SHAREFILETRANFER(("'%s' : MessageRef (TRANSFER_COMMAND_FILE_LIST) end\n", __func__));
-		break;		
+		break;
 
 		// When downloading, this indicates the start of the next incoming file
 		case TRANSFER_COMMAND_FILE_HEADER:
@@ -1078,7 +1079,7 @@ ShareFileTransfer::MessageReceived(const MessageRef& msgRef)
 							(void) node.WriteAttr(attrname, B_RAW_TYPE, 0, &pinfo, sizeof(pinfo));
 						}
 					}
-					
+
 					// Make sure our display, etc, all reflect the generated file name
 					char buf[B_FILE_NAME_LENGTH];
 					existingFileEntry.GetName(buf);
@@ -1099,8 +1100,8 @@ ShareFileTransfer::MessageReceived(const MessageRef& msgRef)
 						size_t attrSize;
 						uint32 c;
 						type_code type;
-						
-						if ((msg->GetInfo(fieldName(), &type, &c) == B_NO_ERROR) 
+
+						if ((msg->GetInfo(fieldName(), &type, &c) == B_NO_ERROR)
 							&& (msg->FindData(fieldName(), type, &attrData, &attrSize) == B_NO_ERROR)) {
 							(void)_currentFile.WriteAttr(fieldName(), type, 0, attrData, attrSize);
 						}
@@ -1170,8 +1171,8 @@ ShareFileTransfer::MessageReceived(const MessageRef& msgRef)
 						case MUNGE_MODE_XOR:
 							for (size_t x=0; x<numBytes; x++) data[x] ^= 0xFF;
 						break;
- 
-						default:	
+
+						default:
 						{
 							// Oh dear.	This should never happen....
 							String errStr(str(STR_ERROR_UNKNOWN_DATA_FORMAT));
@@ -1193,10 +1194,10 @@ ShareFileTransfer::MessageReceived(const MessageRef& msgRef)
 						_currentFileBytesDone += numBytes;
 						_saveLastFileBytesDone = _currentFileBytesDone;
 						((ShareWindow*)Looper())->AddToTransferCounts(false, (uint32) numBytes);
-						
+
 						if (_currentFileBytesDone >= _currentFileSize)
 							_origFileSet.Remove(_currentFileName);
-						
+
 						if (OnceEvery(OPTIONAL_REFRESH_INTERVAL, _lastRefreshTime))
 							((ShareWindow*)Looper())->RefreshTransferItem(this);
 					} else {
@@ -1233,7 +1234,7 @@ ShareFileTransfer::SharesScanComplete()
 				CheckPath(nextPath);
 			md5Looper->AddEntryRef(((ShareWindow*)Looper())->FindSharedFile(nextFile), nextPath());
 		}
-		
+
 		if (md5Looper->StartProcessing(TRANSFER_COMMAND_MD5_RECV_READ_DONE, temp, BMessenger(this), &_shutdownFlag) == B_NO_ERROR) {
 			SendNotifyQueuedMessage();	// so they know they are waiting for us to get done...
 			_md5Loopers.Put(md5Looper, true);
@@ -1247,7 +1248,7 @@ ShareFileTransfer::SharesScanComplete()
 }
 
 
-status_t 
+status_t
 ShareFileTransfer::GenerateNewFilename(const BDirectory & dir, BEntry & entry, uint32 count) const
 {
 	TRACE_SHAREFILETRANFER(("%s::%s : begin\n",CLASSNAME, __func__));
@@ -1301,7 +1302,7 @@ ShareFileTransfer::GenerateNewFilename(const BDirectory & dir, BEntry & entry, u
 		} else
 			return B_ERROR;
 	}
-	return B_NO_ERROR;	
+	return B_NO_ERROR;
 }
 
 
@@ -1312,7 +1313,7 @@ ShareFileTransfer::AbortSession(bool error, bool forceNoRestart, bool notifyWind
 	if ((error == false)
 		|| (forceNoRestart))
 		_autoRestart = false;	// don't restart if we are done or the user asked to be stopped...
-	
+
 	_isConnecting = _isAccepting = _isConnected = _isWaitingOnLocal = _isWaitingOnRemote = false;
 	_currentFileBytesDone = _currentFileSize = -1;
 	_errorOccurred = error;
@@ -1321,23 +1322,23 @@ ShareFileTransfer::AbortSession(bool error, bool forceNoRestart, bool notifyWind
 	if (_mtt) {
 		if (notifyWindow)
 			((ShareWindow*)Looper())->FileTransferDisconnected(this);
-		
+
 		_mtt->ShutdownInternalThread();
 		delete _mtt;
 		_mtt = NULL;
 	}
-	
+
 	ResetTransferTime();
 
 	if (_autoRestart) {
 		_autoRestart = false;
 		RestartSession();
-		((ShareWindow*)Looper())->DequeueTransferSessions();	
+		((ShareWindow*)Looper())->DequeueTransferSessions();
 	}
 }
 
 
-void 
+void
 ShareFileTransfer::Update(BView * lv, const BFont * font)
 {
 	TRACE_SHAREFILETRANFER(("%s::%s : begin\n",CLASSNAME, __func__));
@@ -1362,12 +1363,12 @@ ShareFileTransfer::DrawText(BView * lv, const BRect & r, const BBitmap * b, cons
 }
 
 
-void 
+void
 ShareFileTransfer::DrawItem(BView* lv, BRect itemRect, bool /*complete*/)
 {
 	TRACE_SHAREFILETRANFER(("%s::%s : begin\n",CLASSNAME, __func__));
 	ShareWindow* win = (ShareWindow*) Looper();
-	
+
 	if ((win == NULL)
 		|| (itemRect.Width() <= 0)
 		|| (itemRect.Height() <= 0))
@@ -1385,7 +1386,7 @@ ShareFileTransfer::DrawItem(BView* lv, BRect itemRect, bool /*complete*/)
 		const uint32 colorType = ((_isWaitingOnLocal)||(_isWaitingOnRemote)||(_isConnected)||(_isConnecting)) ? (_uploadSession ? (_beginTransferEnabled ? COLOR_UPLOAD : COLOR_PAUSEDUPLOAD) : COLOR_DOWNLOAD) : COLOR_BORDERS;
 		const int colorDiff = (colorType == COLOR_BORDERS) ? 10 : 20;
 		rgb_color backgroundColor = ModifyColor(win->GetColor(colorType), colorDiff);
-	 
+
 		BRect drawRect(0,0,itemRect.Width(),itemRect.Height());
 
 		BRegion Region;
@@ -1393,7 +1394,7 @@ ShareFileTransfer::DrawItem(BView* lv, BRect itemRect, bool /*complete*/)
 		doubleBufferView->ConstrainClippingRegion(&Region);
 
 		BRect colorRect = drawRect;
-		colorRect.InsetBy(1.0f, 1.0f);	// avoid flicker by not drawing on the outer layer of pixels 
+		colorRect.InsetBy(1.0f, 1.0f);	// avoid flicker by not drawing on the outer layer of pixels
 		String text;
 		float percent = ((_isConnected)
 			&& (_currentFileSize > 0)) ? ((float)_currentFileBytesDone)/_currentFileSize : ((_saveLastFileSize > 0) ? ((float)_saveLastFileBytesDone)/_saveLastFileSize : 0.0f);
@@ -1457,22 +1458,22 @@ ShareFileTransfer::DrawItem(BView* lv, BRect itemRect, bool /*complete*/)
 								struct tm now = *t;
 								if ((now.tm_year != then.tm_year)
 									|| (now.tm_yday != then.tm_yday)) {
-									sprintf(buf, " %i/%i/%02i", then.tm_mon+1, then.tm_mday, then.tm_year%100); 
+									sprintf(buf, " %i/%i/%02i", then.tm_mon+1, then.tm_mday, then.tm_year%100);
 									text += buf;
 								}
-	 
+
 								sprintf(buf, " %02i:%02i", then.tm_hour, then.tm_min);
 								text += buf;
 							}
 						}
-					}	
+					}
 				}
 			} else
 				text = str(STR_AN_ERROR_OCCURRED);
 		} else {
-			if (_isWaitingOnLocal) 
+			if (_isWaitingOnLocal)
 				text = str(STR_QUEUED_LOCAL_MACHINE_TOO_BUSY);
-			else if (_isWaitingOnRemote) 
+			else if (_isWaitingOnRemote)
 				text = str(STR_QUEUED_REMOTE_MACHINE_TOO_BUSY);
 			else if (_isConnected) {
 				if (_md5Loopers.GetNumItems() > 0)
@@ -1480,7 +1481,7 @@ ShareFileTransfer::DrawItem(BView* lv, BRect itemRect, bool /*complete*/)
 				else {
 					text = _uploadSession ? str(STR_SENT) : str(STR_RCVD);
 
-					bool useCurrent = (_currentFileSize > 0); 
+					bool useCurrent = (_currentFileSize > 0);
 					text += GetFileSizeDataString(useCurrent ? _currentFileBytesDone : _saveLastFileBytesDone, useCurrent ? _currentFileSize : _saveLastFileSize);
 					addSizeData = false;
 
@@ -1493,16 +1494,16 @@ ShareFileTransfer::DrawItem(BView* lv, BRect itemRect, bool /*complete*/)
 
 							// Add performance info, e.g. (43KB/sec, 5:05)
 							text += " (";
-			
+
 							uint64 bytesPerSecond = (((bytesInQueue)*1000000LL)/elapsedTime);
 							uint64 bytesToGo		= _currentFileSize-_currentFileBytesDone;
 							uint64 secondsToGo	 = (bytesPerSecond > 0) ? (bytesToGo/bytesPerSecond) : 0;
 
 							char buf[32];
-							GetByteSizeString(bytesPerSecond, buf); 
+							GetByteSizeString(bytesPerSecond, buf);
 							text += buf;
 							text += str(STR_SEC);
-						
+
 							if (secondsToGo >= (60*60))
 								sprintf(buf, "%Lu:%02Lu:%02Lu", secondsToGo/(60*60), (secondsToGo/60)%60, secondsToGo%60);
 							else
@@ -1526,7 +1527,7 @@ ShareFileTransfer::DrawItem(BView* lv, BRect itemRect, bool /*complete*/)
 					text = _uploadSession ? str(STR_PREPARING_TO_UPLOAD) : str(STR_PREPARING_TO_DOWNLOAD);
 			}
 		}
-		
+
 		if (addSizeData) {
 			String fsds = GetFileSizeDataString(_saveLastFileBytesDone, _saveLastFileSize);
 			if (fsds.Length() > 0) {
@@ -1543,7 +1544,7 @@ ShareFileTransfer::DrawItem(BView* lv, BRect itemRect, bool /*complete*/)
 		line2Str += ")";
 		const char* cfn = _GetFileName();
 		TRACE_SHAREFILETRANFER(("%s::%s : Getting Filname = %s\n",CLASSNAME, __func__, cfn));
-		
+
 		float vNudge = 2.0f;
 		float vSpace = (colorRect.Height()-(_fontHeight*3.0f))/4.0f;
 		float topTextY = vSpace+_fontHeight-vNudge;
@@ -1578,7 +1579,7 @@ ShareFileTransfer::DrawItem(BView* lv, BRect itemRect, bool /*complete*/)
 		doubleBufferView->ConstrainClippingRegion(NULL);
 
 		doubleBufferView->Sync();
-		doubleBufferBitmap->Unlock(); 
+		doubleBufferBitmap->Unlock();
 
 		lv->DrawBitmap(doubleBufferBitmap, drawRect, itemRect);
 	}
@@ -1632,7 +1633,7 @@ ShareFileTransfer::BeginTransfer()
 				if ((_mtt->StartInternalThread() == B_NO_ERROR)
 					&& (_mtt->AddNewConnectSession(_remoteHostName(), _remotePort, GetTransferSessionRef()) == B_NO_ERROR))
 					_isConnecting = true;
-				else 
+				else
 					((ShareWindow*)Looper())->LogMessage(LOG_ERROR_MESSAGE, str(STR_ERROR_STARTING_DELAYED_CONNECT));
 			} else
 				((ShareWindow*)Looper())->LogMessage(LOG_ERROR_MESSAGE, str(STR_ERROR_STARTING_DELAYED_CONNECT_NO_TRANSCEIVER_THREAD));
@@ -1659,13 +1660,13 @@ status_t
 ShareFileTransfer::LaunchCurrentItem()
 {
 	TRACE_SHAREFILETRANFER(("%s::%s : begin\n",CLASSNAME, __func__));
-	
+
 	const char * cfn = _GetFileName();
-	
+
 	if (cfn[0] != '\0') {
 		entry_ref er = ((ShareWindow*)Looper())->FindSharedFile(cfn);
 		return be_roster->Launch(&er);
-	}	
+	}
 /*	const char * cfn = _currentFileName();
 	if (cfn[0] != '\0')
 		return be_roster->Launch(&_currentFileEntry);
@@ -1719,7 +1720,7 @@ ShareFileTransfer::RestartSession()
 	_isWaitingOnLocal = true;
 	_currentFileIndex = 0;
 	_shutdownFlag = false;	// so our MD5's will work
-	
+
 	// Reset our state to the initial state
 	_transferStamps.Clear();
 	_currentFileName = "";	 // gotta reset this!
@@ -1743,7 +1744,7 @@ ShareFileTransfer::RequeueTransfer()
 }
 
 
-void 
+void
 ShareFileTransfer::TransferCallbackRejected(uint64 banTimeLeft)
 {
 	TRACE_SHAREFILETRANFER(("%s::%s : begin\n",CLASSNAME, __func__));
@@ -1752,7 +1753,7 @@ ShareFileTransfer::TransferCallbackRejected(uint64 banTimeLeft)
 }
 
 
-uint64 
+uint64
 ShareFileTransfer::GetNumBytesLeftToUpload(const ShareNetClient * snc) const
 {
 	TRACE_SHAREFILETRANFER(("%s::%s : begin\n",CLASSNAME, __func__));
@@ -1778,13 +1779,13 @@ ShareFileTransfer::_GetFileName()
 	TRACE_SHAREFILETRANFER(("%s::%s : begin\n",CLASSNAME, __func__));
 	String str = _currentFileName;
 	TRACE_SHAREFILETRANFER(("%s::%s : str 1 = %s\n",CLASSNAME, __func__, str.Cstr()));
-	
+
 	if (str.Length() > 0)
 		return str.Cstr();
-		
+
 	if (_fileSet.GetIterator().HasData())
 		str = _fileSet.GetIterator().GetKey();
-	
+
 	TRACE_SHAREFILETRANFER(("%s::%s : str 2 = %s\n",CLASSNAME, __func__, str.Cstr()));
 	if (str.Length() > 0)
 		return str.Cstr();
@@ -1794,7 +1795,7 @@ ShareFileTransfer::_GetFileName()
 		str = _origFileSet.GetIterator().GetKey();
 
 	TRACE_SHAREFILETRANFER(("%s::%s : str 3 = %s\n",CLASSNAME, __func__, str.Cstr()));
-	
+
 	return str.Cstr();
 }
 

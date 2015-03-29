@@ -9,9 +9,9 @@
 #include <Screen.h>
 #include <PopUpMenu.h>
 #include <File.h>
-#include <Path.h>	  
-#include <FindDirectory.h>	  
-#include <NodeMonitor.h>	  
+#include <Path.h>
+#include <FindDirectory.h>
+#include <NodeMonitor.h>
 #include <Resources.h>
 #include <Roster.h>
 
@@ -21,6 +21,9 @@
 #include <TranslationUtils.h>
 #include <TranslatorRoster.h>
 #include <TranslatorFormats.h>
+
+#include <santa/CLVColumnLabelView.h>
+#include <santa/CLVColumn.h>
 
 #include "util/StringTokenizer.h"
 #include "util/Socket.h"
@@ -33,8 +36,6 @@
 #include "iogateway/PlainTextMessageIOGateway.h"
 
 #include "ShareConstants.h"
-#include "CLVColumnLabelView.h"
-#include "CLVColumn.h"
 #include "ShareStrings.h"
 #include "ShareUtils.h"
 #include "ShareWindow.h"
@@ -42,8 +43,8 @@
 
 namespace beshare {
 
-TransferListView::TransferListView(BRect rect, uint32 banCommand) 
-	: BListView(rect, NULL, B_MULTIPLE_SELECTION_LIST, B_FOLLOW_ALL_SIDES, 
+TransferListView::TransferListView(BRect rect, uint32 banCommand)
+	: BListView(rect, NULL, B_MULTIPLE_SELECTION_LIST, B_FOLLOW_ALL_SIDES,
 		B_WILL_DRAW|B_FRAME_EVENTS|B_NAVIGABLE|B_FULL_UPDATE_ON_RESIZE)
 	, fBanCommand(banCommand)
 {
@@ -54,7 +55,7 @@ TransferListView::TransferListView(BRect rect, uint32 banCommand)
 }
 
 
-void 
+void
 TransferListView::MessageReceived(BMessage * msg)
 {
 	TRACE_TRANSFERLISTVIEW(("TransferListView::MessageReceived begin\n"));
@@ -73,17 +74,17 @@ TransferListView::Draw(BRect ur)
 {
 	TRACE_TRANSFERLISTVIEW(("TransferListView::Draw begin\n"));
 	BRect backgroundArea = ur;
-	
+
 	int numItems = CountItems();
 
-	if (numItems > 0) 
+	if (numItems > 0)
 		backgroundArea.top = ItemFrame(CountItems() - 1).bottom + 1.0f;
 
 	if (ur.Intersects(backgroundArea)) {
 		SetHighColor(((ShareWindow*)Window())->GetColor(COLOR_BORDERS));
 		FillRect(backgroundArea & ur);
 	}
-	
+
 	BListView::Draw(ur);
 	TRACE_TRANSFERLISTVIEW(("TransferListView::Draw end\n"));
 }
@@ -97,13 +98,13 @@ TransferListView::MouseDown(BPoint where)
 	ulong buttons;
 
 	GetMouse(&pt, &buttons);
-	
+
 	if (buttons & B_SECONDARY_MOUSE_BUTTON) {
-		
+
 		// no multiple selection? select what's under the mouse
 		if (CurrentSelection(1) < 0)
 			Select(IndexOf(pt));
-		
+
 		if (CurrentSelection() >= 0) {
 			ShareWindow * win = (ShareWindow *) Window();
 			int idx;
@@ -112,35 +113,35 @@ TransferListView::MouseDown(BPoint where)
 
 			BMenuItem * moveTop = new BMenuItem(str(STR_MOVE_TO_TOP), NULL);
 			popup->AddItem(moveTop);
- 
+
 			BMenuItem * moveUp = new BMenuItem(str(STR_MOVE_UP), NULL);
 			popup->AddItem(moveUp);
 
 			BMenuItem * moveDown = new BMenuItem(str(STR_MOVE_DOWN), NULL);
 			popup->AddItem(moveDown);
 
-			BMenuItem * moveBottom = 
+			BMenuItem * moveBottom =
 				new BMenuItem(str(STR_MOVE_TO_BOTTOM), NULL);
-			
+
 			popup->AddItem(moveBottom);
 
 			popup->AddSeparatorItem();
- 
+
  			// just for our temporary use
 			static const type_code OPEN_FILE = 'OpFi';
-			
+
 			// just for our temporary use
 			static const type_code OPEN_FOLDER = 'OpFo';
 
 			Hashtable<uint32, bool> canBans;
 			bool haltEnabled = false, resumeEnabled = false;
-			
+
 			for (int h=0; (idx = CurrentSelection(h)) >= 0; h++) {
 				ShareFileTransfer * xfr = (ShareFileTransfer*)ItemAt(idx);
 
 				if (xfr->IsUploadSession()) {
 					uint32 rip = xfr->GetRemoteIP();
-					
+
 					if (rip > 0)
 						canBans.Put(rip, true);
 
@@ -152,14 +153,14 @@ TransferListView::MouseDown(BPoint where)
 					else
 						haltEnabled = true;
  				} else {
-					// For downloaders, 'restart download' means 'reconnect' 
-					// if we failed, or 'force start now' if we are waiting 
+					// For downloaders, 'restart download' means 'reconnect'
+					// if we failed, or 'force start now' if we are waiting
 					// for the local queues to free up.
-					resumeEnabled = (xfr->IsFinished()) ? 
-						(xfr->GetOriginalFileSet().GetNumItems() > 0) : 
+					resumeEnabled = (xfr->IsFinished()) ?
+						(xfr->GetOriginalFileSet().GetNumItems() > 0) :
 						xfr->IsWaitingOnLocal();
-					
-					haltEnabled = ((xfr->IsWaitingOnLocal()) 
+
+					haltEnabled = ((xfr->IsWaitingOnLocal())
 						|| (xfr->IsWaitingOnRemote())
 						|| (xfr->IsConnected())
 						|| (xfr->IsConnecting())
@@ -246,10 +247,10 @@ TransferListView::MouseDown(BPoint where)
 
 			BMenuItem * result = popup->Go(pt);
 			BMessage * rMsg = result ? result->Message() : NULL;
-			
+
 			if (rMsg) {
  				entry_ref er;
- 				if (rMsg->FindRef("entry", &er) == B_NO_ERROR) { 
+ 				if (rMsg->FindRef("entry", &er) == B_NO_ERROR) {
 					switch(rMsg->what) {
  						case OPEN_FILE:
 							be_roster->Launch(&er);
@@ -289,7 +290,7 @@ TransferListView::MouseDown(BPoint where)
 					ShareFileTransfer * xfr = (ShareFileTransfer *) ItemAt(idx);
 					if (xfr->IsUploadSession()) {
 						if (xfr->IsWaitingOnLocal()) {
-							if (xfr->GetBeginTransferEnabled()) 
+							if (xfr->GetBeginTransferEnabled())
 								xfr->BeginTransfer();
  							else xfr->SetBeginTransferEnabled(true);
 						}
@@ -345,13 +346,13 @@ TransferListView::MoveSelectedItems(int delta)
 	for (int j = (delta < 0) ? 0 : (numMovers-1); (delta < 0)?(j < numMovers):(j >= 0); j -= delta) {
 		int oldIdx = IndexOf((BListItem*)movers.ItemAt(j));
 		int newIdx = oldIdx+delta;
-		
+
 		if (newIdx >= numItems)
 			newIdx = numItems-1;
-		
+
 		if (newIdx < 0)
 			newIdx = 0;
-		
+
 		if ((newIdx != oldIdx) && (oldIdx >= 0) && (movers.IndexOf(ItemAt(newIdx))==-1))
 			SwapItems(oldIdx, newIdx);
 	}
@@ -360,7 +361,7 @@ TransferListView::MoveSelectedItems(int delta)
 	for (int k = 0; k<numMovers; k++) {
 		int32 idx = IndexOf((BListItem*)movers.ItemAt(k));
 		if (idx >= 0) Select(idx, true);
-	} 
+	}
 	TRACE_TRANSFERLISTVIEW(("TransferListView::MoveSelectedItems end\n"));
 }
 
@@ -377,7 +378,7 @@ TransferListView::MoveSelectedToExtreme(int dir)
 			BListItem * next = ItemAt(i);
 			if (next->IsSelected())
 				selected.AddItem(next);
-			else 
+			else
 				unselected.AddItem(next);
 		}
 	}
@@ -390,7 +391,7 @@ TransferListView::MoveSelectedToExtreme(int dir)
 		AddList(&selected);
 		Select(CountItems()-selected.CountItems(), CountItems()-1);
 	} else {
-		AddList(&selected); 
+		AddList(&selected);
 		AddList(&unselected);
 		Select(0, selected.CountItems()-1);
 	}
@@ -406,25 +407,25 @@ TransferListView::_AddFileItems(BMenu * menu, type_code tc, const ShareFileTrans
 	String next;
 
 	for (HashtableIterator<String, OffsetAndPath> iter(xfr->GetDisplayFileSet().GetIterator()); iter.HasData(); iter++) {
-		next = iter.GetKey(); 
-		
+		next = iter.GetKey();
+
 		BMenuItem * mi = new BMenuItem(next.Cstr(), new BMessage(tc));
 		bool enableIt = false;
-		
+
 		if (xfr->IsUploadSession()) {
 			entry_ref er = win->FindSharedFile(next.Cstr());
-		
+
 			if (BEntry(&er).Exists())
 				enableIt = (mi->Message()->AddRef("entry", &er) == B_NO_ERROR);
 		} else {
 			String path = iter.GetValue()._path;
-			
+
 			if (path.Length() > 0)
 				path += '/';
-			
+
 			BEntry entry(&win->_downloadsDir, (path+(next))(), true);
 			entry_ref er;
-			
+
 			if ((entry.Exists()) && (entry.GetRef(&er) == B_NO_ERROR))
 				enableIt = (mi->Message()->AddRef("entry", &er) == B_NO_ERROR);
 		}
@@ -439,7 +440,7 @@ void
 TransferListView::_AddLimitItem(BMenu * addTo, uint32 transferRate, uint32 currentLimit, uint32 & prevVal)
 {
 	TRACE_TRANSFERLISTVIEW(("TransferListView::_AddLimitItem begin\n"));
-	char buf[128]; 
+	char buf[128];
 	if (transferRate > 0) {
 		sprintf(buf, "%luKB%s", transferRate, str(STR_SEC));
 		char * comma = strchr(buf, ','); if (comma) *comma = '\0';
@@ -454,7 +455,7 @@ TransferListView::_AddLimitItem(BMenu * addTo, uint32 transferRate, uint32 curre
 
 	if ((currentLimit == transferRate) || ((prevVal < currentLimit) && (transferRate > currentLimit)))
 		mi->SetMarked(true);
-	
+
 	addTo->AddItem(mi);
 	prevVal = transferRate;
 	TRACE_TRANSFERLISTVIEW(("TransferListView::_AddLimitItem end\n"));
@@ -474,13 +475,13 @@ TransferListView::_AddBanItem(BMenu* addTo, const Hashtable<uint32, bool>& canBa
 	BMessage * msg = new BMessage(fBanCommand);
 	HashtableIterator<uint32,bool> iter = canBans.GetIterator();
 	uint32 nextKey;
-	
+
 	while((nextKey = iter.GetKey()) == B_NO_ERROR)
 		msg->AddInt32("ip", nextKey);
 
 	msg->AddString("durstr", buf);
-	
-	if (microsPerUnit > 0) 
+
+	if (microsPerUnit > 0)
 		msg->AddInt64("duration", (count >= 0) ? count*microsPerUnit : 0);
 
 	addTo->AddItem(new BMenuItem(buf, msg));
