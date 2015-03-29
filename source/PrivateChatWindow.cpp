@@ -97,10 +97,10 @@ PrivateChatWindow :: PrivateChatWindow(bool loggingEnabled, const BMessage & msg
 		.End()
 		.AddSplit(B_HORIZONTAL, B_USE_HALF_ITEM_SPACING)
 			.SetInsets(0, 0, 0, 0)
-			.Add(_chatView)
-			.Add(cv)
-		.End();
-
+			.Add(_chatView, 3)
+			.Add(cv, 1)
+		.End()
+	.End();
 
 	float fontSize;
 	if (msg.FindFloat("fontsize", &fontSize) == B_NO_ERROR) SetFontSize(fontSize);
