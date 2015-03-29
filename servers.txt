@@ -1,0 +1,50 @@
+# servers.txt file for BeShare.
+beshare_version			= 2.30					# as of 3/29/2015
+
+# Current active servers:
+
+beshare_addserver		= beshare.tycomsystems.com		# Minox's Server (Default Server)		minox@tycomsystems.com
+beshare_addserver		= beshare.neonplasma.com		# Zaranthos's server				Zaranthos@bemail.org
+beshare_addserver		= coquilletkd.com			# bbjimmy's server				black_belt_jimmy@gmail.com
+beshare_addserver		= tunetracker.dyndns.org		# TuneTracker server				tunetrackersystems@gmail.com
+beshare_addserver		= beshare.agmsmith.ca			# Alexander G. M. Smith's server		agmsmith@alumni.uwaterloo.ca
+
+# Clear outdated servers
+
+beshare_removeserver               = fairharborradio.dyndns.org            # TuneTracker server                            tunetrackersystems@gmail.com
+beshare_removeserver		= momoziro.ath.cx			# Japanese user group				koki@aequus.net
+beshare_removeserver		= beryllium.homeunix.com		#
+beshare_removeserver		= justbe.ath.cx				# Polish BeShare Server				bs0@o2.pl
+beshare_removeserver		= beshare.tx.hu				# The HBUG server				htmm@fbi.hu
+beshare_removeserver		= beshare.tycomsystems.com:5038		# TT Discussion Server				minox@tycomsystems.com
+beshare_removeserver		= chaosdna.com				# ChaOS's server				beos@shaw.ca
+beshare_removeserver		= suti.ath.cx				# Mr6volt's server				mr6volt@yahoo.com
+beshare_removeserver		= zurgs.beshare.org			# Zurg's server					luis.nogueira@bebox.ath.cx
+beshare_removeserver		= sdo.dyndns.org			# SDO's server					super_dooper_dave_osbourne@yahoo.com
+beshare_removeserver		= banther-trx.homeunix.com		# Troy's Server					-
+beshare_removeserver		= servidor2.bug-br.org.br		# BGA's Server					bga@bug-br.org.br
+beshare_removeserver		= port8021.com				# Theolos's server				00drhoman@go.com
+beshare_removeserver		= beshare.beryllium.ca			# Beryllium's server				beryllium@shaw.ca
+beshare_removeserver		= bebox.jocose.org			# Pete's server					pete@beforever.com
+beshare_removeserver		= keelrdesigns.ath.cx			# Keelr's server				keelr@netvisao.pt
+beshare_removeserver		= beshare.cgsoftware.org		# Voidref's server				alan@cgsoftware.org
+beshare_removeserver		= beshare.dyndns.org			# Technix's server (Educational Material)	technix4beos@yahoo.ca
+beshare_removeserver		= norseland.dnsalias.net		# NorseLord's Server
+beshare_removeserver		= Jocose.beshare.com			# Pete's Server
+beshare_removeserver		= profuzion.beshare.com			# Jean Schwerer's Server?
+beshare_removeserver		= beshare.bentonrea.com			# original beshare server (RIP - Thanks for the good times Ben!)
+beshare_removeserver		= tycomsystems.beshare.com		# removing beshare.com dependency
+beshare_removeserver		= bug-br.beshare.com			# removing beshare.com dependency
+beshare_removeserver		= beryllium.beshare.com			# removing beshare.com dependency
+beshare_removeserver		= beshare.beryllium.com			# Typo on Beryllium's server name - big surprise coming from Minox :-P
+beshare_removeserver		= transition.beshare.com		# begirl's transitional server
+beshare_removeserver		= befaqs.beshare.com			# begirl's server
+beshare_removeserver		= beshare.befaqs.com			# begirl's server
+beshare_removeserver		= beshare.befaqs.net			# begirl's backup server
+beshare_removeserver		= zurgs.beshare.com			# ZurGs' server
+beshare_removeserver		= beshare.homeip.net			# ZurGs' server					luis.nogueira@bebox.ath.cx
+beshare_removeserver		= www.3rd-rock.net			# Zathros' server				Zathros@3rd-rock.net
+beshare_removeserver		= norseland.dnsalias.net		# NorseLord's server
+beshare_removeserver		= norseland.beshare.com			# NorseLord's server				christiansen@itgdata.net
+beshare_removeserver		= nic.beshare.com			# Nic's server					112
+beshare_removeserver		= profuzion.org				# Jean Schwerer's server?
