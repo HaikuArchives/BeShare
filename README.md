@@ -1,6 +1,6 @@
 BeShare
 ===================
-BeShare is a BeOS/Haiku-native file sharing program. It operates similarly to
+BeShare is a Haiku-native filesharing program. It operates similarly to
 other such programs (Napster, Hotline, etc) but with a few advantages:
 
 - BeShare allows you to upload or download any type of file, not just mp3.
