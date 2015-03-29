@@ -7,18 +7,18 @@ namespace beshare {
 
 #define DEFAULT_LISTEN_PORT 7000
 #define LISTEN_PORT_RANGE	50
-#define CLUMP_CHAR			 '\1' 
+#define CLUMP_CHAR			 '\1'
 
 #define BESHARE_MIME_TYPE "application/x-vnd.Haiku-BeShare"
 #define FACTORY_DEFAULT_USER_NAME		  "BeShareUser"
 #define FACTORY_DEFAULT_USER_STATUS		"here"
 #define FACTORY_DEFAULT_USER_AWAY_STATUS "away"
 
-#define AUTO_UPDATER_SERVER "beshare.tycomsystems.com"
-#define AUTO_UPDATER_URL	 "http://" AUTO_UPDATER_SERVER "/servers.txt"
+#define AUTO_UPDATER_SERVER	 "haikuarchives.github.io"
+#define AUTO_UPDATER_URL	 "http://haikuarchives.github.io/BeShare/servers.txt"
 
-#define BESHARE_HOMEPAGE_URL	"http://haikuarchives.github.io/BeShare/"
 #define BESHARE_SOURCE_URL		"https://github.com/HaikuArchives/BeShare"
+#define BESHARE_HOMEPAGE_URL	BESHARE_SOURCE_URL
 
 #define NO_FILE_LIMIT 999999
 
@@ -91,7 +91,7 @@ enum LogFilterType {
 	FILTER_ERROR_MESSAGES,
 	FILTER_USER_IDS,
 	NUM_FILTERS
-};			  
+};
 
 // Destinations for the chat to be filtered to
 enum LogDestinationType {
@@ -99,7 +99,7 @@ enum LogDestinationType {
 	DESTINATION_LOG_FILE,
 	NUM_DESTINATIONS
 };
-				
+
 // Sound names for the prefs panel
 #define SYSTEM_SOUND_USER_NAME_MENTIONED						"BeShare-Name Said"
 #define SYSTEM_SOUND_PRIVATE_MESSAGE_RECEIVED				 "BeShare-Private Msg"
