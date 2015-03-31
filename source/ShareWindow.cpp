@@ -661,7 +661,7 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 	_transferList->SetTarget(toMe);
 	_transferList->SetSelectionMessage(new BMessage(SHAREWINDOW_COMMAND_RESULT_SELECTION_CHANGED));
 	_transferList->SetInvocationMessage(new BMessage(SHAREWINDOW_COMMAND_LAUNCH_TRANSFER_ITEM));
-	BScrollView* _transferListScroll = new BScrollView("", _transferList, B_FOLLOW_ALL_SIDES, 0L, false, true, B_FANCY_BORDER);
+	BScrollView* _transferListScroll = new BScrollView("", _transferList, 0L, false, true, B_FANCY_BORDER);
 
 	_cancelTransfersButton = new BButton(NULL, str(STR_REMOVE_SELECTED), new BMessage(SHAREWINDOW_COMMAND_CANCEL_DOWNLOADS));
 
@@ -682,20 +682,19 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 			.SetInsets(B_USE_SMALL_INSETS, 0, B_USE_SMALL_INSETS, B_USE_SMALL_INSETS)
 			.AddGroup(B_HORIZONTAL, B_USE_HALF_ITEM_SPACING)
 				.Add(_serverMenuField)
-				.Add(_serverEntry)
+				.Add(_serverEntry, 3)
 				.Add(_userNameMenuField)
-				.Add(_userNameEntry)
+				.Add(_userNameEntry, 2)
 				.Add(_userStatusMenuField)
-				.Add(_userStatusEntry)
+				.Add(_userStatusEntry, 2)
 			.End()
 			.AddSplit(B_HORIZONTAL, B_USE_HALF_ITEM_SPACING)
 				.AddGroup(B_VERTICAL, B_USE_HALF_ITEM_SPACING)
 					.AddGroup(B_HORIZONTAL, B_USE_HALF_ITEM_SPACING)
 						.Add(_queryMenuField)
-						.Add(_fileNameQueryEntry)
+						.Add(_fileNameQueryEntry, 2)
 						.Add(_enableQueryButton)
 						.Add(_disableQueryButton)
-						.AddStrut(B_USE_ITEM_SPACING)
 					.End()
 
 					.Add(resultsContainerView)
@@ -705,15 +704,15 @@ ShareWindow::ShareWindow(uint64 installID, BMessage & settingsMsg, const char * 
 						.Add(_requestDownloadsButton)
 						.Add(_clearFinishedDownloadsButton)
 						.Add(_nextPageButton)
-						.AddStrut(B_USE_ITEM_SPACING)
+						.AddGlue()
 					.End()
 				.End()
 				.AddGroup(B_VERTICAL, B_USE_HALF_ITEM_SPACING)
 					.Add(_transferListScroll)
 					.AddGroup(B_HORIZONTAL, B_USE_HALF_ITEM_SPACING)
-						.AddStrut(B_USE_ITEM_SPACING)
+						.AddGlue()
 						.Add(_cancelTransfersButton)
-						.AddStrut(B_USE_ITEM_SPACING)
+						.AddGlue()
 					.End()
 				.End()
 			.End()
