@@ -1463,7 +1463,7 @@ ShareWindow::DequeueTransferSessions()
 		if (origList.GetNumItems() > 0) {
 			// Then sort the list so that smallest transfers are first
 			Hashtable<ShareFileTransfer *, bool> sortList = origList;
-			#warning "Sort borde fixas?"
+			#warning "Does this sorting need fixing?"
 			//sortList.SortByKey(SortShareFileTransfersBySize, _netClient);
 
 			bool sortOrderChanged = false;
