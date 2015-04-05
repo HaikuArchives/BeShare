@@ -126,7 +126,7 @@ LOCAL_INCLUDE_PATHS =
 
 #	Specify the level of optimization that you want. Specify either NONE (O0),
 #	SOME (O1), FULL (O2), or leave blank (for the default optimization level).
-OPTIMIZE := SOME
+OPTIMIZE := FULL
 
 # 	Specify the codes for languages you are going to support in this
 # 	application. The default "en" one must be provided too. "make catkeys"
@@ -140,11 +140,13 @@ LOCALES =
 #	use. For example, setting DEFINES to "DEBUG=1" will cause the compiler
 #	option "-DDEBUG=1" to be used. Setting DEFINES to "DEBUG" would pass
 #	"-DDEBUG" on the compiler's command line.
-DEFINES = MUSCLE_ENABLE_ZLIB_ENCODING \
-	MUSCLE_AVOID_IPV6 \
-	MUSCLE_NO_EXCEPTIONS \
-	MUSCLE_USE_PTHREADS # \
-	# MUSCLE_SINGLE_THREAD_ONLY
+DEFINES += MUSCLE_ENABLE_ZLIB_ENCODING
+DEFINES += MUSCLE_AVOID_IPV6
+DEFINES += MUSCLE_NO_EXCEPTIONS
+DEFINES += MUSCLE_USE_PTHREADS 
+#DEFINES += DEBUG_BESHARE=1
+#DEFINES += SAVE_BEOS 
+#DEFINES += MUSCLE_SINGLE_THREAD_ONLY
 
 #	Specify the warning level. Either NONE (suppress all warnings),
 #	ALL (enable all warnings), or leave blank (enable default warnings).
