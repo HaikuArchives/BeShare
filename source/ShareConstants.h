@@ -22,6 +22,11 @@ namespace beshare {
 
 #define NO_FILE_LIMIT 999999
 
+//Sett this to beta for now (easier to run 2 Beshare on one server)
+#define BESHARE_SETTINGS_FILE_NAME "beshare_settings_beta"
+#define BESHARE_USER_KEY_FILE_NAME "beshare_user_key_beta"
+#define BESHARE_USER_FILE_LOCATION "BeShare User Data"
+
 #define NUM_PARTIAL_HASH_BYTES (64*1024) // 64k seems like a good tradeoff between surety and speed
 
 //Add those files you want to debug
@@ -29,8 +34,9 @@ namespace beshare {
 //#define DEBUG_BESHAREWINDOW
 //#define DEBUG_REMOTEUSERITEM
 //#define DEBUG_BESHARENETCLIENT
-#define DEBUG_SHAREFILETRANFER
+//#define DEBUG_SHAREFILETRANFER
 //#define DEBUG_TRANSFERLISTVIEW
+//#define DEBUG_CHATWINDOW
 #endif
 
 #ifdef DEBUG_BESHAREWINDOW
@@ -64,6 +70,13 @@ namespace beshare {
 #define TRACE_REMOTEUSERITEM(x) printf x
 #else
 #define TRACE_REMOTEUSERITEM(x) /* nothing */
+#endif
+
+// The ChatWindow.cpp file
+#ifdef DEBUG_CHATWINDOW
+#define TRACE_CHATWINDOW(x) printf x
+#else
+#define TRACE_CHATWINDOW(x) /* nothing */
 #endif
 
 // types of message that are printed to the text view.

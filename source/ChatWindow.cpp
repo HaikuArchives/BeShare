@@ -11,12 +11,14 @@
 #include <MessageFilter.h>
 #include <StringView.h>
 #include <LayoutBuilder.h>
+#include <FindDirectory.h>
 
 #include "regex/StringMatcher.h"
 #include "util/StringTokenizer.h"
 
 #include <santa/Colors.h>
 
+#include "ShareConstants.h"
 #include "ShareUtils.h"
 #include "ShareStrings.h"
 
@@ -1166,24 +1168,40 @@ ChatWindow::AddBorderView(BView * v)
 status_t
 ChatWindow::GetAppSubdir(const char * subDirName, BDirectory & subDir, bool createIfNecessary) const
 {
-	app_info appInfo;
-	be_app->GetAppInfo(&appInfo);
-	BEntry appEntry(&appInfo.ref);
-	appEntry.GetParent(&appEntry);  // get the directory it's in
-	BPath path(&appEntry);
-	BPath subPath(&appEntry);
-	subPath.Append(subDirName);
+	TRACE_CHATWINDOW(("%s::%s begin\n",B_TRANSLATION_CONTEXT, __func__));
+	TRACE_CHATWINDOW(("%s::%s subDirName = %s\n",B_TRANSLATION_CONTEXT, __func__, subDirName));
+	BPath path;
+	status_t error = B_ERROR;
+	if (find_directory(B_USER_DIRECTORY, &path) == B_OK) {
+		path.Append(BESHARE_USER_FILE_LOCATION);
+		
+		// If the directory is already there, use it		
+		if ((error = subDir.SetTo(path.Path())) != B_OK) {
+			//This one we need to create, it's the "main" diretory			
+			if (error = subDir.CreateDirectory(path.Path(), &subDir) != B_OK)
+				return error;
+		}
 
-	// If the directory is already there, use it
-	if (subDir.SetTo(subPath.Path()) == B_NO_ERROR) return B_NO_ERROR;
+		//Now it's next part
+		path.Append(subDirName);
+				
+		if ((error = subDir.SetTo(path.Path())) != B_OK) {
+			//We have an error do we continue and create the directory?
+			if (!createIfNecessary)
+				return error;
+		}
 
-	// Directory not there?  Shall we create it then?
-	if (createIfNecessary)
-	{
-		BDirectory appDir(path.Path());
-		if ((appDir.InitCheck() == B_NO_ERROR)&&(appDir.CreateDirectory(subDirName, &subDir) == B_NO_ERROR)) return B_NO_ERROR;
+		// Directory not there?  Shall we create it then?
+		if (createIfNecessary) {
+			if ((error = subDir.CreateDirectory(path.Path(), &subDir)) == B_OK) {
+				TRACE_CHATWINDOW(("%s::%s CreateDirectory ok\n",B_TRANSLATION_CONTEXT, __func__));
+				return error;
+			}
+				
+		}
 	}
-	return B_ERROR;  // oops, couldn't get it
+	TRACE_CHATWINDOW(("%s::%s error = %s\n",B_TRANSLATION_CONTEXT, __func__, strerror(error)));					
+	return error;  // oops, couldn't get it
 }
 
 

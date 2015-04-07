@@ -14,26 +14,14 @@
 
 namespace beshare {
 
-#define BESHARE_SETTINGS_FILE_NAME "beshare_settings"	
-#define BESHARE_USER_KEY_FILE_NAME "beshare_user_key"	
-
 ShareApplication::ShareApplication(const char * optConnectTo) : 
 	BApplication(BESHARE_MIME_TYPE), fWindow(NULL), fOptConnectTo(optConnectTo)
 {
-	// If there is a BeShare settings file in the current directory, use that.
-	app_info appInfo;
-	GetAppInfo(&appInfo);
-	BEntry appEntry(&appInfo.ref);
-	appEntry.GetParent(&appEntry);  // get the directory this executable is in
-	BPath path(&appEntry);
-	path.Append(BESHARE_SETTINGS_FILE_NAME);
-	if ((fSettingsFileEntry.SetTo(path.Path()) != B_NO_ERROR) 
-		|| (fSettingsFileEntry.Exists() == false)) {
-		// Otherwise, get the default settings path (whether it exists or not)
-		if (find_directory(B_USER_SETTINGS_DIRECTORY, &path) == B_NO_ERROR) {
-			path.Append(BESHARE_SETTINGS_FILE_NAME);
-			(void) fSettingsFileEntry.SetTo(path.Path());
-		}
+	BPath path;
+	// Only use files in our how directory
+	if (find_directory(B_USER_SETTINGS_DIRECTORY, &path) == B_NO_ERROR) {
+		path.Append(BESHARE_SETTINGS_FILE_NAME);
+		(void) fSettingsFileEntry.SetTo(path.Path());
 	}
 }
 
