@@ -22,8 +22,8 @@
 #include "ShareUtils.h"
 #include "ShareStrings.h"
 
-#undef B_TRANSLATION_CONTEXT
-#define B_TRANSLATION_CONTEXT "ChatWindow"
+#undef B_TRANSLATE_CONTEXT
+#define B_TRANSLATE_CONTEXT "ChatWindow"
 
 namespace beshare {
 
