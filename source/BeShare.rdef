@@ -6,11 +6,11 @@ resource app_name_catalog_entry "x-vnd.Haiku-BeShare:System name:BeShare";
 
 resource app_version {
 	major  = 2,
-	middle = 31,
+	middle = 32,
 	minor  = 0,
 
 	variety = B_APPV_BETA,
-	internal = 4,
+	internal = 0,
 
 	short_info = "BeShare",
 	long_info = "BeShare ©1999-2012"
