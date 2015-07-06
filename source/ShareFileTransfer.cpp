@@ -848,9 +848,10 @@ ShareFileTransfer::DoUploadAux()
 			}
 
 			// Get the next file from our send list
-			if (_fileSetIter.HasData()) {
+			_fileSetIter++;
+			if (_fileSetIter.HasData())
+			{
 				_currentFileName = _fileSetIter.GetKey();
-				TRACE_SHAREFILETRANFER(("ShareFileTransfer::DoUploadAux _currentFileName=%s\n", _currentFileName.Cstr()));
 				const OffsetAndPath& value = _fileSetIter.GetValue();
 				_saveLastFileBytesDone = _currentFileBytesDone = value._offset;	// get the starting byte to read from...
 				_currentFileEntry = ((ShareWindow*)Looper())->FindSharedFile(_currentFileName());
