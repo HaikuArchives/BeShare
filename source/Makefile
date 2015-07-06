@@ -140,7 +140,8 @@ LOCALES =
 #	use. For example, setting DEFINES to "DEBUG=1" will cause the compiler
 #	option "-DDEBUG=1" to be used. Setting DEFINES to "DEBUG" would pass
 #	"-DDEBUG" on the compiler's command line.
-DEFINES = MUSCLE_ENABLE_ZLIB_ENCODING \
+DEFINES = _BSD_SOURCE \
+	MUSCLE_ENABLE_ZLIB_ENCODING \
 	MUSCLE_AVOID_IPV6 \
 	MUSCLE_NO_EXCEPTIONS \
 	MUSCLE_USE_PTHREADS # \
