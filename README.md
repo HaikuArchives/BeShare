@@ -1,5 +1,5 @@
 BeShare
-![BeShare](https://github.com/ayushmunot/BeShare/blob/master/beshare.png?raw=true "BeShare App")
+![BeShare](beshare.png "BeShare App")
 ===================
 BeShare is a Haiku-native filesharing program. It operates similarly to
 other such programs (Napster, Hotline, etc) but with a few advantages:
