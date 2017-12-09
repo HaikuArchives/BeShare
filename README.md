@@ -1,5 +1,6 @@
 BeShare
 ===================
+![BeShare Screenshot](BeShare.png "BeShare")
 BeShare is a Haiku-native filesharing program. It operates similarly to
 other such programs (Napster, Hotline, etc) but with a few advantages:
 
@@ -19,3 +20,4 @@ NOTE:  If you are behind a firewall, make sure you have checked the
        other people who are not behind firewalls will be able to download
        from you, but other people who are also behind firewalls will
        not be able to see or download the files in your "shared" directory.
+       
