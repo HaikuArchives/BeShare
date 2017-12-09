@@ -1,5 +1,4 @@
 BeShare
-
 ===================
 
 ![BeShare Screenshot](BeShare.png "BeShare")
