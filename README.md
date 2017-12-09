@@ -1,6 +1,7 @@
 BeShare
-![BeShare Screenshot](BeShare.png "BeShare")
 ===================
+![BeShare Screenshot](BeShare.png "BeShare")
+
 BeShare is a Haiku-native filesharing program. It operates similarly to
 other such programs (Napster, Hotline, etc) but with a few advantages:
 
