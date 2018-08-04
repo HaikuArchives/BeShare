@@ -41,6 +41,12 @@ RemoteUserItem::RemoteUserItem(ShareWindow* owner, const char* sessionID)
 	SetColumnContent(REMOTE_USER_COLUMN_HANDLE, _displayHandle(), false, false);
 	SetColumnContent(REMOTE_USER_COLUMN_STATUS, _displayStatus(), false, false);
 	SetColumnContent(REMOTE_USER_COLUMN_ID,	  _sessionID(), false, true);
+//  Set all the content to avoid crash on draw for the fields that will not be set
+	SetColumnContent(REMOTE_USER_COLUMN_FILES, NULL, false, false);
+	SetColumnContent(REMOTE_USER_COLUMN_BANDWIDTH, NULL, false, false);
+	SetColumnContent(REMOTE_USER_COLUMN_LOAD, NULL, false, false);
+	SetColumnContent(REMOTE_USER_COLUMN_CLIENT, NULL, false, false);
+
 	SetNumSharedFiles(-1);
 	SetUploadStats(NO_FILE_LIMIT, NO_FILE_LIMIT);
 }
