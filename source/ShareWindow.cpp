@@ -1412,6 +1412,7 @@ ShareWindow::SendConnectBackRequestMessage(const char * sessionID, uint16 port)
 }
 
 
+/* TODO see DequeueTransferSessions
 static int
 SortShareFileTransfersBySize(ShareFileTransfer * const & s1, ShareFileTransfer * const & s2, void * cookie)
 {
@@ -1420,6 +1421,7 @@ SortShareFileTransfersBySize(ShareFileTransfer * const & s1, ShareFileTransfer *
 	uint64 nb2 = s2->GetNumBytesLeftToUpload(nc);
 	return muscleCompare((nb1>0)?nb1:((uint64)-1), (nb2>0)?nb2:((uint64)-1));	// empty gets prioritized last!
 }
+*/
 
 void
 ShareWindow::DequeueTransferSessions(bool upload)
@@ -1459,7 +1461,11 @@ ShareWindow::DequeueTransferSessions()
 				&& (next->ErrorOccurred() == false))
 					(void) origList.Put(next, true);
 		}
-
+		// TODO Look into this!!!
+		// In this code sortList and origList are the same -> SortByKey is commented
+		// the logic in the while loop is wrong
+		// and sortOrderChange is always false
+/*
 		if (origList.GetNumItems() > 0) {
 			// Then sort the list so that smallest transfers are first
 			Hashtable<ShareFileTransfer *, bool> sortList = origList;
@@ -1501,7 +1507,7 @@ ShareWindow::DequeueTransferSessions()
 				ResumeAllUploads();
 				_dequeueCount--;
 			}
-		}
+		} */
 	}
 
 	DequeueTransferSessions(true);
@@ -3482,9 +3488,12 @@ ShareWindow::SwitchToPage(int page)
 	{
 	 Hashtable<RemoteFileItem *, bool> * table = _resultsPages[page];
 	 HashtableIterator<RemoteFileItem *, bool> iter = table->GetIterator();
-	 RemoteFileItem * next;
+	 RemoteFileItem * remoteFileItem;
 	 BList tempList(table->GetNumItems());
-	 while((next = iter.GetKey()) == B_NO_ERROR) tempList.AddItem(next);
+	 for (; iter.HasData(); iter++) {
+		remoteFileItem = iter.GetKey();
+		tempList.AddItem(remoteFileItem);
+	 }
 	 AddResultsItemList(tempList);
 	}
 	UpdateTitleBar();
