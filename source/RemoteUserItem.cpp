@@ -128,9 +128,9 @@ RemoteUserItem::SetNumSharedFiles(int32 bw)
 	char temp[100] = "?";
 	if (_numSharedFiles >= 0) {
 		if ((_firewalled)&&(_shareWindow->GetFirewalled()))
-			sprintf(temp, "(%li)", _numSharedFiles);
+			sprintf(temp, "(%" B_PRIi32 ")", _numSharedFiles);
 		else
-			sprintf(temp, "%li", _numSharedFiles);
+			sprintf(temp, "%" B_PRIi32, _numSharedFiles);
 	}
 	SetColumnContent(REMOTE_USER_COLUMN_FILES, temp, false, true);
 	_shareWindow->RefreshUserItem(this);
@@ -147,9 +147,9 @@ RemoteUserItem::SetUploadStats(uint32 cu, uint32 mu)
 	char temp[128];
 	if (_curUploads < NO_FILE_LIMIT) {
 		if (_maxUploads >= NO_FILE_LIMIT)
-			sprintf(temp, "(%lu) 0%%", _curUploads);
+			sprintf(temp, "(%" B_PRIu32 ") 0%%", _curUploads);
 		else
-			sprintf(temp, "(%lu/%lu) %.0f%%", _curUploads, _maxUploads, GetLoadFactor()*100.0f);
+			sprintf(temp, "(%" B_PRIu32 "/%" B_PRIu32 ") %.0f%%", _curUploads, _maxUploads, GetLoadFactor()*100.0f);
 	} else
 		strcpy(temp, "?");
 

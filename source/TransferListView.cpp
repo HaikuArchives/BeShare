@@ -280,9 +280,9 @@ TransferListView::MouseDown(BPoint where)
 					if (xfr->IsUploadSession()) {
 						if (xfr->IsWaitingOnLocal() == false)
 							xfr->RequeueTransfer();
-							xfr->SetBeginTransferEnabled(false);
-						}else
-							xfr->AbortSession(true, true);
+						xfr->SetBeginTransferEnabled(false);
+					} else
+						xfr->AbortSession(true, true);
 				}
 				win->DequeueTransferSessions();
 			} else if (result == resumeDownload) {

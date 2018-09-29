@@ -131,7 +131,7 @@ ResultsView::InitiateDrag(BPoint /*point*/, int32 /*index*/, bool /*wasSelected*
 		  RemoteUserItem * owner = item->GetOwner();
 		  uint64 ID = owner->GetInstallID();
 		  char strbuf[17];
-		  sprintf(strbuf,"%Lx", ID);
+		  sprintf(strbuf,"%" B_PRIx64, ID);
 
 		  String URL;
 		  URL << "beshare://" 

@@ -1178,7 +1178,7 @@ ChatWindow::GetAppSubdir(const char * subDirName, BDirectory & subDir, bool crea
 		// If the directory is already there, use it
 		if ((error = subDir.SetTo(path.Path())) != B_OK) {
 			//This one we need to create, it's the "main" diretory
-			if (error = subDir.CreateDirectory(path.Path(), &subDir) != B_OK)
+			if ((error = subDir.CreateDirectory(path.Path(), &subDir)) != B_OK)
 				return error;
 		}
 

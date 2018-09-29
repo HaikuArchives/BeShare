@@ -2169,7 +2169,7 @@ ShareWindow::MessageReceived(BMessage* msg)
 				MessageRef pmsg = GetMessageFromPool();
 				if (pmsg())
 				{
-					pmsg()->AddString(PR_NAME_TEXT_LINE, "GET /servers.txt HTTP/1.1\nUser-Agent: BeShare/"VERSION_STRING"\nHost: "AUTO_UPDATER_SERVER"\n\n");
+					pmsg()->AddString(PR_NAME_TEXT_LINE, "GET /servers.txt HTTP/1.1\nUser-Agent: BeShare/" VERSION_STRING "\nHost: " AUTO_UPDATER_SERVER "\n\n");
 					_checkServerListThread.SendMessageToSessions(pmsg);
 				}
 			 }
@@ -2756,7 +2756,7 @@ UpdateConnectStatus(bool titleToo)
 
 	char buf[200];
 	strcpy(buf, str(STR_CONNECT_TO));
-	strncat(buf, sname, sizeof(buf));
+	strncat(buf, sname, sizeof(buf) - 1);
 	buf[sizeof(buf)-1] = '\0';
 	_connectMenuItem->SetLabel(buf);
 

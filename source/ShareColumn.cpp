@@ -76,7 +76,7 @@ GetFileCellText(const RemoteFileItem * item) const
 						if (msg.FindInt64(attrName, &v) == B_NO_ERROR) 
 						{
 							if (strcmp(attrName, "beshare:File Size") == 0) GetByteSizeString(v, _buf);
-																					 else sprintf(_buf, "%Li", v);
+																					 else sprintf(_buf, "%" B_PRIi64, v);
 						}
 					}
 					break;
