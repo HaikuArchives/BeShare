@@ -67,7 +67,7 @@ void
 ResultsView::MouseDown(BPoint where)
 {
 	BPoint pt;
-	ulong buttons;
+	uint32 buttons;
 
 	GetMouse(&pt, &buttons);
 	

@@ -95,7 +95,7 @@ TransferListView::MouseDown(BPoint where)
 {
 	TRACE_TRANSFERLISTVIEW(("TransferListView::MouseDown begin\n"));
 	BPoint pt;
-	ulong buttons;
+	uint32 buttons;
 
 	GetMouse(&pt, &buttons);
 

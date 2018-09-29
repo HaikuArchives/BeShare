@@ -197,7 +197,7 @@ public:
 				&& (offset > 0)) {
 				off_t uploadOffset = 0LL;	// default to starting the upload at the beginning of the file
 				const uint8 * hisDigest;
-				size_t numBytes;
+				uint32 numBytes;
 				if ((msg->FindData("md5", B_RAW_TYPE, i, (const void **) &hisDigest, &numBytes) == B_NO_ERROR)
 					&& (numBytes == MD5_DIGEST_SIZE)) {
 					// Okay, the requestor has told us enough so that we can check our local file...
@@ -1098,7 +1098,7 @@ ShareFileTransfer::MessageReceived(const MessageRef& msgRef)
 					fieldName = iter.GetFieldName();
 					if (strncmp(fieldName(), "beshare:", 8)) {	// don't save our attributes, they aren't necessary
 						const void * attrData;
-						size_t attrSize;
+						uint32 attrSize;
 						uint32 c;
 						type_code type;
 
@@ -1134,7 +1134,7 @@ ShareFileTransfer::MessageReceived(const MessageRef& msgRef)
 		{
 			TRACE_SHAREFILETRANFER(("%s::%s : TRANSFER_COMMAND_FILE_DATA\n",CLASSNAME, __func__));
 			uint8 * data;
-			size_t numBytes;
+			uint32 numBytes;
 			if ((_uploadSession == false)
 				&& (msg->FindDataPointer("data", B_RAW_TYPE, (void **) &data, &numBytes) == B_NO_ERROR)) {
 				bool abortSession = false;

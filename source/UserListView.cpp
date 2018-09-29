@@ -30,7 +30,7 @@ void
 UserListView::MouseDown(BPoint where)
 {
 	BPoint pt;
-	ulong buttons;
+	uint32 buttons;
 	
 	GetMouse(&pt, &buttons);
 	if (buttons & B_SECONDARY_MOUSE_BUTTON) {
